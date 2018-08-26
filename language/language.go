@@ -92,6 +92,13 @@ type Table interface {
 	SubType() Type
 }
 
+type Pointer interface {
+	Type
+	Pointer() string
+	
+	SubType() Type
+}
+
 type Stream interface {
 	Type
 	
@@ -393,6 +400,14 @@ type Language interface {
 		
 		//Returns a Custom intialised with 'tokens' corresponding to 'elements' AKA a tuple when tokens are empty.
 		LiteralCustom(tokens []string, elements []Type) Custom
+		
+	// Pointers.
+		
+		//Returns a Pointer type based of value 'T'.
+		PointerTo(value Type) Pointer
+		
+		//Returns the refernce of the Pointer 'pointer'.
+		Dereference(pointer Pointer) Type
 		
 	//Dynamic types.
 		

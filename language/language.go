@@ -1,27 +1,27 @@
 package language
 
-type Statement interface {
-	Statement() string
-}
+var Default Interface
+
+type Statement string
 
 type Type interface{
 	Name() string
-	SameAs(Type)
+	SameAs(interface{}) bool
 }
 
 type Number interface {
 	Type
-	Number() string
+	Number()
 }
 
 type Float interface {
 	Type
-	Float() string
+	Float()
 }
 
 type Switch interface {
 	Type
-	Switch() string
+	Switch()
 }
 
 type Symbol interface {
@@ -31,30 +31,33 @@ type Symbol interface {
 
 type String interface {
 	Type
-	String() string
+	String()
 }
 
 type Error interface {
 	Type
-	Error() string
+	Error()
 }
 
 type List interface {
 	Type
-	List() string
+	List()
+	
 	SubType() Type
 }
 
 type Array interface {
 	Type
+	Array()
+	
 	SubType() Type
-	Array() string
 	Length()  int
 }
 
 type Function interface {
 	Type 
-	Function() string
+	Function()
+	
 	Arguments() []Type
 	Returns() Type
 }
@@ -62,24 +65,25 @@ type Function interface {
 //Type of type.
 type Metatype interface {
 	Type
-	Metatype() string
+	Metatype()
 }
 
 type Dynamic interface {
 	Type
-	Dynamic() string
+	Dynamic()
 }
 
 type FunctionType interface {
 	Type
-	FunctionType() string
+	FunctionType()
+	
 	Arguments() []Type
 	Returns() Type
 }
 
 type Custom interface {
 	Type
-	Custom() string
+	Custom()
 	
 	Tokens() []string
 	Elements() []Type
@@ -94,19 +98,18 @@ type Table interface {
 
 type Pointer interface {
 	Type
-	Pointer() string
+	Pointer()
 	
 	SubType() Type
 }
 
 type Stream interface {
 	Type
-	
-	Stream() string
+	Stream()
 }
 
 type LanguageWithFloats interface {
-	Language
+	Interface
 	// Floats
 
 	//Returns a Float that the Go style literal represents (0.2 etc).
@@ -131,12 +134,12 @@ type LanguageWithFloats interface {
 }
 
 // Defines a Language, all methods can panic on error. Make sure to deal with this accordingly.
-type Language interface {
+type Interface interface {
 
 	// Hooks
 	
 		//Hook that is run before compilation.
-		Init() Statement
+		Init()
 		
 		//These hooks are executed at the end of compilation:
 		// Statements are added in the respective order.
@@ -164,16 +167,16 @@ type Language interface {
 	// Logic
 		
 		//Returns a Statement that begins an if.
-		If(condition Switch)
+		If(condition Switch) Statement
 		
 		//Returns a Statement that begins an elseif.
-		ElseIf(condition Switch)
+		ElseIf(condition Switch) Statement
 		
 		//Returns a Statement that begins an else.
-		Else()
+		Else() Statement
 		
 		//Returns a Statement that ends an if/else.
-		EndIf()
+		EndIf() Statement
 		
 	// Loops
 		
@@ -230,7 +233,7 @@ type Language interface {
 		Run(functiom Function, arguments []Type) Statement
 		
 		//Returns a Statement that returns T from the current function.
-		Return(T Type)
+		Return(T Type) Statement
 		
 	//Threading
 	
@@ -242,53 +245,56 @@ type Language interface {
 		//Returns a Statement that prints a Strings to os.Stdout with a newline.
 		Print(...String) Statement
 		
-		//Returns a Statement that prints a String to os.Stdout without a newline.
-		Write(...String) Statement
-	
-		//Reads Symbols from Stdin until Symbol is reached, returns a String of all Symbols up until Symbol.
-		ReadSymbol(Symbol) String
+		//Returns a Statement that writes a String to Stream (or Stdout) without a newline.
+		WriteString(Stream, String) Statement
 		
-		//Reads 'amount' bytes from Stdin, returns Array of all Bytes up until 'amount'. 
-		ReadNumber(amount Number) Array
+		//Returns a Statement that writes the contents of Array to a Stream (or Stdout) without a newline.
+		WriteArray(Stream, Array) Statement
 
-		//Returns a Statement that Reads bytes from Stdin and fills Array. 
-		ReadArray(fill Array) Statement
+		//Returns a statement that sends Type 't' over Stream 'c'.
+		Send(c Stream, t Type) Statement
+		
+		//Returns Type 't' from Stream 'c'.
+		Read(c Stream, t Type) Type
+	
+		//Reads Symbols from Stream (or Stdin) until Symbol is reached, returns a String of all Symbols up until Symbol.
+		ReadSymbol(Stream, Symbol) String
+		
+		//Reads 'amount' bytes from Stream (or Stdin), returns Array of all Bytes up until 'amount'. 
+		ReadNumber(s Stream, amount Number) Array
+
+		//Returns a Statement that Reads bytes from Stream (or Stdin) and fills Array. 
+		ReadArray(s Stream, fill Array) Statement
 		
 	//Streams
 	
 		//Returns a Stream at 'path' associated with the given 'protocol'.
-		OpenStream(protocol String, path String) Stream
+		Open(protocol String, path String) Stream
 		
 		//Returns a String at 'path' associated with the given 'protocol'.
-		LoadStream(protocol String, path String) String
-		
-		//Returns a statement that sends Type 't' over Stream 'c'.
-		SendStream(c Stream, t Type) Statement
-		
-		//Returns Type 't' from Stream 'c'.
-		ReadStream(c Stream, t Type) Type
+		Load(protocol String, path String) String
 		
 		//Returns a statement that stops Stream 'c'.
-		StopStream(c Stream) Statement
+		Stop(c Stream) Statement
 		
 		//Returns a statement that seeks Stream 'c' by 'amount'.
-		SeekStream(c Stream, amount Number) Statement
+		Seek(c Stream, amount Number) Statement
 		
 		//Returns a String that is the result of a 'query' on Stream 'c'.
-		InfoStream(c Stream, query String) String
+		Info(c Stream, query String) String
 		
 		//Returns a Statement that moves Stream 'c' to 'location'.
-		MoveStream(c Stream, location String) Statement
+		Move(c Stream, location String) Statement
 
 	// Errors
 		//Returns an Error with 'code' and 'message'.
 		LiteralError(code Number, message String) Error
 		
 		//Returns a Statement that throws an error to the thread, this should not halt the program.
-		ThrowError(err Error) Statement
+		Throw(err Error) Statement
 		
 		//Returns a Error that is sitting on the thread.
-		CatchError() Error
+		Catch() Error
 		
 	// Switches aka Booleans
 	
@@ -362,11 +368,11 @@ type Language interface {
 		//Returns a Number representing the length of 'list'
 		LengthList(list List) Number
 		
-		//Returns a statement that adds grows the 'list' by 'amount'.
-		Grow(list List, amount Number)
+		//Returns a statement that adds 't' to the 'list'.
+		Grow(list List, t Type) Statement
 		
-		//Returns a statement that shrinks the 'list' by 'amount'.
-		Shrink(list List, amount Number)
+		//Returns a statement that shrinks the 'list' by removing the element at the end..
+		Shrink(list List) Statement
 		
 	//Function Types
 
@@ -377,7 +383,7 @@ type Language interface {
 		CallFunctionType(function FunctionType, arguments []Type) Type
 		
 		//Returns a statement that calls the FunctionType 'function' with 'arguments'.
-		RunFunctionType(function FunctionType, arguments []Type)
+		RunFunctionType(function FunctionType, arguments []Type) Statement
 	
 	// Tables.
 		
@@ -394,6 +400,15 @@ type Language interface {
 		
 		//Returns a Statement that begins the method 'name' on Custom 'T' with 'arguments' and 'returns'.
 		Method(T Custom, name string, arguments []Type, returns Type) Statement
+		
+		//Returns a string representing the variable pointing to the variable of type 'T' that the current Method is acting on.
+		This(T Custom) string
+		
+		//Returns the Type resuting from calling the method 'name' on Custom 'T' with 'arguments'.
+		CallMethod(name string, arguments []Type, T Custom) Type
+		
+		//Returns a Statement that runs the method 'name' on Custom 'T' with 'arguments'.
+		RunMethod(name string, arguments []Type, T Custom) Statement
 		
 		//Returns a Statement that closes the last method.
 		EndMethod() Statement

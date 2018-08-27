@@ -1,34 +1,34 @@
 package Null
 
-import . "github.com/qlova/script/language"
+import "github.com/qlova/script/language"
 
 
 //Returns a Pointer type based of value 'T'.
-func (l *language) PointerTo(value Type) Pointer {
+func (l *implementation) PointerTo(value language.Type) language.Pointer {
 	panic("Error in "+Name+".PointerTo(Type): Unimplemented")
 	return nil
 }
 		
 //Returns the refernce of the Pointer 'pointer'.
-func (l *language) Dereference(pointer Pointer) Type {
+func (l *implementation) Dereference(pointer language.Pointer) language.Type {
 	panic("Error in "+Name+".Dereference(Pointer): Unimplemented")
 	return nil
 }
 
 //Returns a Dynamic type based of value 'T'.
-func (l *language) ToDynamic(value Type) Dynamic {
+func (l *implementation) ToDynamic(value language.Type) language.Dynamic {
 	panic("Error in "+Name+".ToDynamic(Type): Unimplemented")
 	return nil
 }
 		
 //Returns a Type cast from value 'T'.
-func (l *language) DynamicTo(value Type) Type {
+func (l *implementation) DynamicTo(value language.Type) language.Type {
 	panic("Error in "+Name+".DynamicTo(Type): Unimplemented")
 	return nil
 }
 		
 //Returns Dynamic's type as a Metatype.
-func (l *language) DynamicMetatype(value Dynamic) Metatype {
+func (l *implementation) DynamicMetatype(value language.Dynamic) language.Metatype {
 	panic("Error in "+Name+".DynamicMetatype(Dynamic): Unimplemented")
 	return nil
 }

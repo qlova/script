@@ -6,6 +6,7 @@ const Name = "Go"
 
 type implementation struct {
 	imports []string
+	helpers []string
 }
 
 func (l *implementation) Import(pkg string) {
@@ -17,10 +18,65 @@ func (l *implementation) Import(pkg string) {
 	l.imports = append(l.imports, pkg)
 }
 
+
+func (l *implementation) AddHelper(helper string) {
+	for i := range l.helpers {
+		if l.helpers[i] == helper {
+			return
+		}
+	}
+	l.helpers = append(l.helpers, helper)
+}
+
 func Language() *implementation {
 	return new(implementation)
 }
 
+const NumberHelper = `func Number(representation string) *big.Int {
+	var z big.Int
+	z.SetString(representation, 10)
+	return &z
+}`
+
+
+func (l *implementation) GetExpression(T language.Type) string {
+	var PanicName = "Error in "+Name+".GetExpression(Type)"
+	
+	switch T.(type) {
+		case language.String:
+			return string(T.(String))
+			
+		case language.Number:
+			n := T.(Number)
+			
+			if n.Literal == nil {
+				return n.Expression
+			} else {
+				
+				l.Import("math/big")
+				
+				if n.Literal.IsInt64() {
+					return "big.NewInt("+n.Literal.String()+")"
+				}
+				
+				l.AddHelper(NumberHelper)
+				
+				return "Number("+n.Literal.String()+")"
+			}
+		
+		case language.Switch, language.Symbol, 
+			language.Custom, language.Stream, language.List, language.Array, 
+			language.Table, language.Error, language.Float, language.Pointer, 
+			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
+		
+		panic(PanicName+": Unimplented")
+			
+		default:
+			panic(PanicName+": Invalid Type")
+	}
+	
+	return ""
+}
 
 //TODO remove.
 func init() {
@@ -30,10 +86,16 @@ func init() {
 
 func (l *implementation) Init() {}
 func (l *implementation) Head() language.Statement {
-	var result = "package main\n"
+	var result = "package main\n\n"
 
 	for _, pkg := range l.imports {
-		result += `import "`+pkg+`"`
+		result += `import "`+pkg+`"`+"\n"
+	}
+	
+	result += "\n"
+	
+	for _, helper := range l.helpers {
+		result += helper
 	}
 
 	return language.Statement(result)
@@ -59,91 +121,4 @@ func (l *implementation) Exit() language.Statement {
 //Returns a Statement that ends the main entry point to the program.
 func (l *implementation) EndMain() language.Statement {
 	return "}"
-}
-
-//Returns a statement that defines 'name' to be of type 'T' with optional 'value'.
-func (l *implementation) Define(name string, T language.Type, value ...language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Define("+name+", "+T.Name()
-	if len(value) == 0 {
-		PanicName += ", "+value[0].Name()+")"
-	} else {
-		PanicName += ")"
-	}
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return ""
-}
-
-//Returns a Statement that sets the type 'T' variable 'name' to be set to 'value'.
-func (l *implementation) Set(name string, T language.Type, value ...language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Set("+name+", "+T.Name()
-	if len(value) == 0 {
-		PanicName += ", "+value[0].Name()+")"
-	} else {
-		PanicName += ")"
-	}
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return ""
-}
-
-//Returns the Type at 'index' of 'T'.
-func (l *implementation) Index(T language.Type, index language.Type) language.Type {
-	var PanicName = "Error in "+Name+".Index("+T.Name()+", "+index.Name()+")"
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return nil
-}
-
-//Returns a statement that modifies type T at 'index' to be 'value'.
-func (l *implementation) Modify(T language.Type, index language.Type, value language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Modify("+T.Name()+", "+index.Name()
-	PanicName += ", "+value.Name()+")"
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return ""
 }

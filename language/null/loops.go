@@ -34,9 +34,9 @@ func (l *implementation) EndWhile() language.Statement {
 }
 
 //Returns a Statement that begins a for loop that iterates along the range between 'a' and 'b'.
-func (l *implementation) ForRange(a, b language.Number) language.Statement {
-	panic("Error in "+Name+".ForRange(Number, Number): Unimplemented")
-	return ""	
+func (l *implementation) ForRange(i string, a, b language.Number) (language.Number, language.Statement) {
+	panic("Error in "+Name+".ForRange("+i+", Number, Number): Unimplemented")
+	return nil, ""	
 }
 
 //Returns a Statement that ends a ranged for loop.

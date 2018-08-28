@@ -2,9 +2,61 @@ package Interpreter
 
 import "github.com/qlova/script/language"
 
+func (c *implementation) PrintString(text String) {
+	block := c.loadBlock()
+	
+	if text.IsLiteral {
+
+		str := text.Literal
+		block.AddInstruction(func() {
+			print(str)
+		})
+
+	} else {
+
+		var BlockPointer = text.BlockPointer
+		var Address = text.Address
+		block.AddInstruction(func() {
+			print(BlockPointer.GetString(Address))
+		})
+
+	}
+}
+
+func (c *implementation) PrintNumber(number Number) {
+	block := c.loadBlock()
+	
+	if number.Literal != nil {
+
+		literal := *number.Literal
+		block.AddInstruction(func() {
+			print(literal.String())
+		})
+
+	} else {
+
+		var BlockPointer = number.BlockPointer
+		var Address = number.Address
+		block.AddInstruction(func() {
+			print(BlockPointer.GetNumber(Address).String())
+		})
+
+	}
+}
+
 
 //Returns a Statement that prints a Strings to os.Stdout with a newline.
-func (c *implementation) Print(values ...language.String) language.Statement {
+func (c *implementation) Print(values ...language.Type) language.Statement {
+	
+	var PanicName = "Error in "+Name+".Print("
+	for i := range values {
+		PanicName += values[i].Name()
+		if i < len(values)-1 {
+			PanicName += ","
+		}
+	}
+	PanicName += ")"
+	
 	block := c.loadBlock()
 	
 	if len(values) == 0 {
@@ -22,23 +74,28 @@ func (c *implementation) Print(values ...language.String) language.Statement {
 			continue
 		}
 		
-		text := values[i].(String)
+		switch values[i].(type) {
+			case language.String:
+				c.PrintString(values[i].(String))
+				
+			case language.Number:
+				c.PrintNumber(values[i].(Number))
+			
+			case language.Switch, language.Symbol, 
+				language.Custom, language.Stream, language.List, language.Array, 
+				language.Table, language.Error, language.Float, language.Pointer, 
+				language.Dynamic, language.Function, language.Metatype, language.FunctionType:
+			
+			panic(PanicName+": Unimplented")
+				
+			default:
+				panic(PanicName+": Invalid Type")
+		}
 		
-		if text.IsLiteral {
-
-			str := text.Literal
+		if i < len(values)-1 {
 			block.AddInstruction(func() {
-				print(str)
+				print(" ")
 			})
-
-		} else {
-
-			var BlockPointer = text.BlockPointer
-			var Address = text.Address
-			block.AddInstruction(func() {
-				print(BlockPointer.GetString(Address))
-			})
-
 		}
 	}
 	

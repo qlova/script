@@ -4,8 +4,18 @@ import "github.com/qlova/script/language"
 
 
 //Returns a Statement that prints a Strings to os.Stdout with a newline.
-func (l *implementation) Print(...language.String) language.Statement {	
-	panic("Error in "+Name+".Print(...String): Unimplemented")
+func (l *implementation) Print(...language.Type) language.Statement {
+	
+	var PanicName = "Error in "+Name+".Print("
+	for i := range values {
+		PanicName += values[i].Name()
+		if i < len(values)-1 {
+			PanicName += ","
+		}
+	}
+	PanicName += ")"
+	
+	panic(PanicName+": Unimplemented")
 	return ""
 }
 

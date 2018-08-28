@@ -1,12 +1,24 @@
 package Go
 
+import "math/big"
 import "github.com/qlova/script/language"
 
+type Number struct {
+	Expression string
+
+	Literal *big.Int
+}
+
+func (Number) Name() string { return "number" }
+func (Number) SameAs(i interface{}) bool {
+	_, ok := i.(Number)
+	return ok
+}
+func (Number) Number() {}
 
 //Returns a Number that the Go style literal represents (01 1 0x1).
-func (l *implementation) LiteralNumber(literal string) language.Number {
-	panic("Error in "+Name+".LiteralSwitch("+literal+"): Unimplemented")
-	return nil
+func (l *implementation) LiteralNumber(literal *big.Int) language.Number {
+	return Number{Literal: literal}
 }
 
 //Returns a Number that is the sum of 'a' and 'b'.

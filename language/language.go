@@ -1,5 +1,7 @@
 package language
 
+import "math/big"
+
 var Default Interface
 
 type Statement string
@@ -152,11 +154,11 @@ type Interface interface {
 		
 	//Variables
 
-		//Returns a statement that defines 'name' to be of type 'T' with optional 'value'.
- 		Define(name string, T Type, value ...Type) Statement
+		//Returns the type and statement that defines 'name' to be of type 'value' initialised to 'value'.
+ 		Define(name string, value Type) (Type, Statement)
  		
  		//Returns a Statement that sets the type 'T' variable 'name' to be set to 'value'.
- 		Set(name string, T Type, value ...Type) Statement
+ 		Set(name string, T Type, value Type) Statement
  		
  		//Returns the Type at 'index' of 'T'.
  		Index(T Type, index Type) Type
@@ -195,8 +197,8 @@ type Interface interface {
 		//Returns a Statement that ends a while loop.
 		EndWhile() Statement
 		
-		//Returns a Statement that begins a for loop that iterates along the range between 'a' and 'b'.
-		ForRange(a, b Number) Statement
+		//Returns an iterator and Statement that begins a for loop that iterates along the range between 'a' and 'b'.
+		ForRange(i string, a, b Number) (Number, Statement)
 		
 		//Returns a Statement that ends a ranged for loop.
 		EndForRange() Statement
@@ -242,8 +244,9 @@ type Interface interface {
 		
 	// Stdin, Stderr and Stdout
 	
-		//Returns a Statement that prints a Strings to os.Stdout with a newline.
-		Print(...String) Statement
+		//Returns a Statement that prints Types to os.Stdout with a newline.
+		//TODO specify how types should be printed.
+		Print(...Type) Statement
 		
 		//Returns a Statement that writes a String to Stream (or Stdout) without a newline.
 		WriteString(Stream, String) Statement
@@ -316,7 +319,7 @@ type Interface interface {
 	// Numbers
 	
 		//Returns a Number that the Go style literal represents (01 1 0x1).
-		LiteralNumber(literal string) Number
+		LiteralNumber(literal *big.Int) Number
 		
 		//Returns a Number that is the sum of 'a' and 'b'.
 		Add(a, b Number) Number

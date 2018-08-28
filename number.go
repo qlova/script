@@ -32,3 +32,27 @@ func (q *Script) DefineNumber(name string, value ...language.Number) language.Nu
 
 	return number.(language.Number)
 }
+
+func (q *Script) Add(a, b language.Number) language.Number {
+	return q.lang.Add(a, b)
+}
+
+func (q *Script) Sub(a, b language.Number) language.Number {
+	return q.lang.Sub(a, b)
+}
+
+func (q *Script) Pow(a, b language.Number) language.Number {
+	return q.lang.Pow(a, b)
+}
+
+func (q *Script) Mul(a, b language.Number) language.Number {
+	return q.lang.Mul(a, b)
+}
+
+func (q *Script) Div(a, b language.Number) language.Number {
+	return q.lang.Div(a, b)
+}
+
+func (q *Script) Mod(a, b language.Number) language.Number {
+	return q.lang.Mod(a, b)
+}

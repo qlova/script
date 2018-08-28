@@ -4,16 +4,46 @@ import "github.com/qlova/script/language"
 
 
 //Returns a Statement that prints a String to os.Stdout with a newline.
-func (l *implementation) Print(values ...language.String) language.Statement {	
-	var result = "println("
+func (l *implementation) Print(values ...language.Type) language.Statement {
+	l.Import("fmt")
+	
+	var PanicName = "Error in "+Name+".Print("
+	for i := range values {
+		PanicName += values[i].Name()
+		if i < len(values)-1 {
+			PanicName += ","
+		}
+	}
+	PanicName += ")"
+	
+	var result = "fmt.Println("
 	
 	for i := range values {
+		
 		if values[i] == nil {
 			result += `"nil"`
 		} else {
-			result += string(values[i].(String))
-		}
 		
+			switch values[i].(type) {
+				case language.String:
+					result += string(values[i].(String))
+					
+				case language.Number:
+					result += l.GetExpression(values[i])
+				
+				case language.Switch, language.Symbol, 
+					language.Custom, language.Stream, language.List, language.Array, 
+					language.Table, language.Error, language.Float, language.Pointer, 
+					language.Dynamic, language.Function, language.Metatype, language.FunctionType:
+				
+				panic(PanicName+": Unimplented")
+					
+				default:
+					panic(PanicName+": Invalid Type")
+			}
+
+		}
+
 		if i < len(values)-1 {
 			result += ","
 		}

@@ -15,7 +15,22 @@ type Block struct {
 	
 	//Which parent is our block? We can access their variables.
 	Parent *Block
+	
+	//Pointers to local Instruction space.
+	pointers []int
 }
+
+func (b *Block) PushPointer() {
+	b.AddInstruction(nil)
+	b.pointers = append(b.pointers, len(b.Instructions)-1)
+}
+
+func (b *Block) PopPointer() (p int) {
+	p = b.pointers[len(b.pointers)-1]
+	b.pointers = b.pointers[:len(b.pointers)-1]
+	return
+}
+
 
 func (b *Block) GetVariable(name string) (int, *Block) {
 	variable, ok := b.Variables[name]

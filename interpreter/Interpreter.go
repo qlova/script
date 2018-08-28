@@ -10,6 +10,7 @@ type implementation struct {
 	
 	BlockPointer *internal.Block
 	InstructionPointer int
+	BreakPoint int //This is where we go when we hit a break.
 	
 	currentBlock string //Used when compiling.
 }
@@ -76,92 +77,5 @@ func (l *implementation) Exit() language.Statement {
 //Returns a Statement that ends the main entry point to the program.
 func (l *implementation) EndMain() language.Statement {
 	l.SetBlock("")
-	return ""
-}
-
-//Returns a statement that defines 'name' to be of type 'T' with optional 'value'.
-func (l *implementation) Define(name string, T language.Type, value ...language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Define("+name+", "+T.Name()
-	if len(value) == 0 {
-		PanicName += ", "+value[0].Name()+")"
-	} else {
-		PanicName += ")"
-	}
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return ""
-}
-
-//Returns a Statement that sets the type 'T' variable 'name' to be set to 'value'.
-func (l *implementation) Set(name string, T language.Type, value ...language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Set("+name+", "+T.Name()
-	if len(value) == 0 {
-		PanicName += ", "+value[0].Name()+")"
-	} else {
-		PanicName += ")"
-	}
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return ""
-}
-
-//Returns the Type at 'index' of 'T'.
-func (l *implementation) Index(T language.Type, index language.Type) language.Type {
-	var PanicName = "Error in "+Name+".Index("+T.Name()+", "+index.Name()+")"
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
-	return nil
-}
-
-//Returns a statement that modifies type T at 'index' to be 'value'.
-func (l *implementation) Modify(T language.Type, index language.Type, value language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Modify("+T.Name()+", "+index.Name()
-	PanicName += ", "+value.Name()+")"
-	
-	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
-			language.Custom, language.Stream, language.List, language.Array, 
-			language.Table, language.Error, language.Float, language.Pointer, 
-			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
-		
-		panic(PanicName+": Unimplented")
-			
-		default:
-			panic(PanicName+": Invalid Type")
-	}
-	
 	return ""
 }

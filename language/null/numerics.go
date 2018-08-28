@@ -1,11 +1,11 @@
 package Null
 
+import "math/big"
 import "github.com/qlova/script/language"
 
-
-//Returns a Number that the Go style literal represents (01 1 0x1).
-func (l *implementation) LiteralNumber(literal string) language.Number {
-	panic("Error in "+Name+".LiteralSwitch("+literal+"): Unimplemented")
+//Returns a Number based on the passed big Integer.
+func (l *implementation) LiteralNumber(literal *big.Int) language.Number {
+	panic("Error in "+Name+".LiteralNumber(Number): Unimplemented")
 	return nil
 }
 

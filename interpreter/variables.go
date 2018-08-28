@@ -1,48 +1,35 @@
-package Null
+package Interpreter
 
 import "github.com/qlova/script/language"
-
-const Name = "Null"
-
-type implementation struct {}
-
-func Language() *implementation {
-	return new(implementation)
-}
-
-var _ = language.Interface(Language())
-
-func (l *implementation) Init() {}
-func (l *implementation) Head() language.Statement { return "" }
-func (l *implementation) Neck() language.Statement { return "" }
-func (l *implementation) Body() language.Statement { return "" }
-func (l *implementation) Tail() language.Statement { return "" }
-func (l *implementation) Last() language.Statement { return "" }
-
-//Returns a Statement that begins the main entry point to the program.
-func (l *implementation) Main() language.Statement {
-	panic("Error in "+Name+".Main(): Unimplemented")
-	return ""
-}
-
-//Returns a Statement that exits the program.
-func (l *implementation) Exit() language.Statement {
-	panic("Error in "+Name+".Exit(): Unimplemented")
-	return ""
-}
-
-//Returns a Statement that ends the main entry point to the program.
-func (l *implementation) EndMain() language.Statement {
-	panic("Error in "+Name+".EndMain(): Unimplemented")
-	return ""
-}
 
 //Returns a statement that defines 'name' to be of type 'T' with optional 'value'.
 func (l *implementation) Define(name string, value language.Type) (language.Type, language.Statement) {
 	var PanicName = "Error in "+Name+".Define("+name+", "+value.Name()+")"
-
+	
+	block := l.loadBlock()
+	
+	var Address = block.CreateNumber()
+	
 	switch value.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
+		case language.Number:
+			number := value.(Number)
+			
+			if number.Literal != nil {
+				literal := *number.Literal
+				block.AddInstruction(func() {
+					block.SetNumber(Address, &literal)
+				})
+			} else {
+				var BlockPointer = number.BlockPointer
+				var ValueAddress = number.Address
+				block.AddInstruction(func() {
+					block.SetNumber(Address, BlockPointer.GetNumber(ValueAddress))
+				})
+			}
+			
+			return number, ""
+		
+		case language.Switch, language.Symbol, language.String, 
 			language.Custom, language.Stream, language.List, language.Array, 
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
@@ -113,3 +100,4 @@ func (l *implementation) Modify(T language.Type, index language.Type, value lang
 	
 	return ""
 }
+ 

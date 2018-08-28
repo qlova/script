@@ -23,36 +23,122 @@ func (l *implementation) LiteralNumber(literal *big.Int) language.Number {
 
 //Returns a Number that is the sum of 'a' and 'b'.
 func (l *implementation) Add(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Add(Number, Number): Unimplemented")
-	return nil
+	
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Add(A.Literal, B.Literal)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Add(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Add(a, b)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Add("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is the difference of 'a' and 'b'.
 func (l *implementation) Sub(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Sub(Number, Number): Unimplemented")
-	return nil
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Sub(A.Literal, B.Literal)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Sub(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Sub(a, b)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Sub("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is the product of 'a' and 'b'.
 func (l *implementation) Mul(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Mul(Number, Number): Unimplemented")
-	return nil
+	
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Mul(A.Literal, B.Literal)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Mul(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Mul(a, b)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Mul("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is the quotient of 'a' and 'b'.
 func (l *implementation) Div(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Div(Number, Number): Unimplemented")
-	return nil
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Div(A.Literal, B.Literal)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Mul(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Div(a, b)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Div("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is 'a' taken to the power of 'b'.
 func (l *implementation) Pow(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Pow(Number, Number): Unimplemented")
-	return nil
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Exp(A.Literal, B.Literal, nil)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Pow(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Exp(a, b, nil)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Pow("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is modulos of 'a' and 'b'.
 func (l *implementation) Mod(a, b language.Number) language.Number {
-	panic("Error in "+Name+".Mod(Number, Number): Unimplemented")
-	return nil
+	A, B := a.(Number), b.(Number)
+	if A.Literal != nil && B.Literal != nil {
+		var z big.Int
+		z.Mod(A.Literal, B.Literal)
+		return Number{Literal: &z}
+	}
+	
+	l.Import("math/big")
+	l.AddHelper(`func Mul(a, b *big.Int) *big.Int {
+	var z = big.NewInt(0)
+	z.Mod(a, b)
+	return &z
+}
+`)
+	
+	return Number{Expression: "Mod("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
 }

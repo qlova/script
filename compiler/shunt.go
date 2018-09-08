@@ -1,6 +1,6 @@
 package compiler
 
-type Shunt func(*Compiler, string, Type, Type) *Type
+type Shunt func(*Compiler, string, Type, Type) Type
 
 func (c *Compiler) Shunt(t Type, precedence int) Type {
 	
@@ -22,13 +22,13 @@ func (c *Compiler) Shunt(t Type, precedence int) Type {
 		
 		for i := range c.Shunts {
 			if result := c.Shunts[i](c, op.Symbol, t, rhs); result != nil {
-				t = *result
+				t = result
 				continue shunting
 			}
 		}
 		
 		c.RaiseError(Translatable{
-			English: "Operator "+op.Symbol+" does not apply to "+t.String(), 
+			English: "Operator "+op.Symbol+" does not apply to "+t.Name(), 
 		})
 	}
 	return t

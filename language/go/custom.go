@@ -17,8 +17,7 @@ func (l *implementation) Method(T language.Custom, name string, arguments []lang
 
 //Returns a string representing the variable pointing to the variable of type 'T' that the current Method is acting on.
 func (l *implementation) This(T language.Custom) string {
-	panic("Error in "+Name+".This(Custom): Unimplemented")
-	return ""
+	return "this"
 }
 
 //Returns the Type resuting from calling the method 'name' on Custom 'T' with 'arguments'.
@@ -37,10 +36,4 @@ func (l *implementation) RunMethod(name string, arguments []language.Type, T lan
 func (l *implementation) EndMethod() language.Statement {
 	panic("Error in "+Name+".EndMethod(): Unimplemented")
 	return ""
-}
-
-//Returns a Custom intialised with 'tokens' corresponding to 'elements' AKA a tuple when tokens are empty.
-func (l *implementation) LiteralCustom(tokens []string, elements []language.Type) language.Custom {
-	panic("Error in "+Name+".LiteralCustom([]string, []Type): Unimplemented")
-	return nil
 }

@@ -1,6 +1,5 @@
 package Go
 
-import "strconv"
 import "github.com/qlova/script/language"
 
 //Returns a Symbol that the Go style literal represents ('').
@@ -22,13 +21,15 @@ func (String) SameAs(i interface{}) bool {
 
 func (String) String() {}
 
-//Returns a String that the Go style literal represents ("").
-func (l *implementation) LiteralString(literal string) language.String {
-	return String(strconv.Quote(literal))
+type Symbol string
+
+func (Symbol) Name() string {
+	return "symbol"
 }
 
-//Returns a new String that concatenates 'a' and 'b'.
-func (l *implementation) JoinString(a, b language.String) language.String {
-	panic("Error in "+Name+".JoinString(String, String): Unimplemented")
-	return nil
+func (Symbol) SameAs(i interface{}) bool {
+	_, ok := i.(Symbol)
+	return ok
 }
+
+func (Symbol) Symbol() {}

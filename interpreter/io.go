@@ -1,6 +1,7 @@
 package Interpreter
 
 import "github.com/qlova/script/language"
+import "os"
 
 func (c *implementation) PrintString(text String) {
 	block := c.loadBlock()
@@ -8,8 +9,9 @@ func (c *implementation) PrintString(text String) {
 	if text.IsLiteral {
 
 		str := text.Literal
+		
 		block.AddInstruction(func() {
-			print(str)
+			os.Stdout.Write([]byte(str))
 		})
 
 	} else {
@@ -17,7 +19,7 @@ func (c *implementation) PrintString(text String) {
 		var BlockPointer = text.BlockPointer
 		var Address = text.Address
 		block.AddInstruction(func() {
-			print(BlockPointer.GetString(Address))
+			os.Stdout.Write([]byte(BlockPointer.GetString(Address)))
 		})
 
 	}
@@ -45,6 +47,29 @@ func (c *implementation) PrintNumber(number Number) {
 }
 
 
+func (c *implementation) PrintBoolean(boolean Boolean) {
+	block := c.loadBlock()
+	
+	if boolean.Literal != nil {
+
+		literal := *boolean.Literal
+		block.AddInstruction(func() {
+			print(literal)
+		})
+
+	} else {
+
+		var BlockPointer = boolean.BlockPointer
+		var Address = boolean.Address
+		block.AddInstruction(func() {
+			print(BlockPointer.GetBoolean(Address))
+		})
+
+	}
+}
+
+
+
 //Returns a Statement that prints a Strings to os.Stdout with a newline.
 func (c *implementation) Print(values ...language.Type) language.Statement {
 	
@@ -61,7 +86,7 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 	
 	if len(values) == 0 {
 		block.AddInstruction(func() {
-			println()
+			os.Stdout.Write([]byte("\n"))
 		})
 		return ""
 	}
@@ -69,7 +94,7 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 	for i := range values {
 		if values[i] == nil {
 			block.AddInstruction(func() {
-				print("nil")
+				os.Stdout.Write([]byte("nil"))
 			})
 			continue
 		}
@@ -81,7 +106,10 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 			case language.Number:
 				c.PrintNumber(values[i].(Number))
 			
-			case language.Switch, language.Symbol, 
+			case language.Boolean:
+				c.PrintBoolean(values[i].(Boolean))
+				
+			case language.Symbol, 
 				language.Custom, language.Stream, language.List, language.Array, 
 				language.Table, language.Error, language.Float, language.Pointer, 
 				language.Dynamic, language.Function, language.Metatype, language.FunctionType:
@@ -94,13 +122,13 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 		
 		if i < len(values)-1 {
 			block.AddInstruction(func() {
-				print(" ")
+				os.Stdout.Write([]byte(" "))
 			})
 		}
 	}
 	
 	block.AddInstruction(func() {
-		println()
+		os.Stdout.Write([]byte("\n"))
 	})
 	
 	return ""

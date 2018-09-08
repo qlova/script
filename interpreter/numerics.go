@@ -7,6 +7,7 @@ import "github.com/qlova/script/interpreter/internal"
 type Number struct {
 	internal.Variable
 	
+	Address internal.NumberAddress
 	Literal *big.Int
 }
 

@@ -1,5 +1,7 @@
 package compiler
 
+import "github.com/qlova/script"
+
 type Variable struct {
 	Type
 	Defined, Protected, Modified, Embedded bool
@@ -10,6 +12,15 @@ type Variable struct {
 	DefinedAtLineNumber int
 	DefinedAtLine string
 }
+
+func (c *Compiler) Define(name string, t script.Type) {
+	c.SetVariable(name, c.Script.Define(name, t))
+}
+
+func (c *Compiler) Variable(name string) Type {
+	return c.GetVariable(name).Type
+}
+
 
 func (c *Compiler) SetVariable(name string, t Type) {
 	if _, ok := c.GetScope().Variables[name]; ok {

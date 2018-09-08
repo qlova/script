@@ -4,7 +4,7 @@ import "github.com/qlova/script/language"
 
 
 //Returns a Statement that prints a Strings to os.Stdout with a newline.
-func (l *implementation) Print(...language.Type) language.Statement {
+func (l *implementation) Print(values ...language.Type) language.Statement {
 	
 	var PanicName = "Error in "+Name+".Print("
 	for i := range values {

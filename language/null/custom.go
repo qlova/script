@@ -38,9 +38,3 @@ func (l *implementation) EndMethod() language.Statement {
 	panic("Error in "+Name+".EndMethod(): Unimplemented")
 	return ""
 }
-
-//Returns a Custom intialised with 'tokens' corresponding to 'elements' AKA a tuple when tokens are empty.
-func (l *implementation) LiteralCustom(tokens []string, elements []language.Type) language.Custom {
-	panic("Error in "+Name+".LiteralCustom([]string, []Type): Unimplemented")
-	return nil
-}

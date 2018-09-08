@@ -2,13 +2,6 @@ package Null
 
 import "github.com/qlova/script/language"
 
-
-//Returns a FunctionType based on 'function'.
-func (l *implementation) LiteralFunctionType(function language.Function) language.FunctionType {
-	panic("Error in "+Name+".LiteralFunctionType(Function): Unimplemented")
-	return nil
-}
-
 //Returns the resulting Type from calling 'function' with 'arguments'.
 func (l *implementation) CallFunctionType(function language.FunctionType, arguments []language.Type) language.Type {
 	panic("Error in "+Name+".CallFunctionType(Function, []Type): Unimplemented")

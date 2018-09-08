@@ -1,6 +1,7 @@
 package Null
 
 import "github.com/qlova/script/language"
+import "os/exec"
 
 const Name = "Null"
 
@@ -12,12 +13,19 @@ func Language() *implementation {
 
 var _ = language.Interface(Language())
 
+func (l *implementation) Name() string { return Name }
+
 func (l *implementation) Init() {}
 func (l *implementation) Head() language.Statement { return "" }
 func (l *implementation) Neck() language.Statement { return "" }
 func (l *implementation) Body() language.Statement { return "" }
 func (l *implementation) Tail() language.Statement { return "" }
 func (l *implementation) Last() language.Statement { return "" }
+
+//Returns a Statement that begins the main entry point to the program.
+func (l *implementation) Build(path string) *exec.Cmd {
+	return nil
+}
 
 //Returns a Statement that begins the main entry point to the program.
 func (l *implementation) Main() language.Statement {
@@ -42,7 +50,7 @@ func (l *implementation) Define(name string, value language.Type) (language.Type
 	var PanicName = "Error in "+Name+".Define("+name+", "+value.Name()+")"
 
 	switch value.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
+		case language.Boolean, language.Number, language.Symbol, language.String, 
 			language.Custom, language.Stream, language.List, language.Array, 
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
@@ -57,11 +65,11 @@ func (l *implementation) Define(name string, value language.Type) (language.Type
 }
 
 //Returns a Statement that sets the type 'T' variable 'name' to be set to 'value'.
-func (l *implementation) Set(name string, T language.Type, value language.Type) language.Statement {
-	var PanicName = "Error in "+Name+".Set("+name+", "+T.Name()+", "+value.Name()+")"
+func (l *implementation) Set(T language.Type, value language.Type) language.Statement {
+	var PanicName = "Error in "+Name+".Set("+T.Name()+", "+value.Name()+")"
 	
 	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
+		case language.Boolean, language.Number, language.Symbol, language.String, 
 			language.Custom, language.Stream, language.List, language.Array, 
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
@@ -80,7 +88,7 @@ func (l *implementation) Index(T language.Type, index language.Type) language.Ty
 	var PanicName = "Error in "+Name+".Index("+T.Name()+", "+index.Name()+")"
 	
 	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
+		case language.Boolean, language.Number, language.Symbol, language.String, 
 			language.Custom, language.Stream, language.List, language.Array, 
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Function, language.Metatype, language.FunctionType:
@@ -100,7 +108,7 @@ func (l *implementation) Modify(T language.Type, index language.Type, value lang
 	PanicName += ", "+value.Name()+")"
 	
 	switch T.(type) {
-		case language.Switch, language.Number, language.Symbol, language.String, 
+		case language.Boolean, language.Number, language.Symbol, language.String, 
 			language.Custom, language.Stream, language.List, language.Array, 
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Function, language.Metatype, language.FunctionType:

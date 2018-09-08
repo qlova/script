@@ -3,12 +3,6 @@ package Null
 import "math/big"
 import "github.com/qlova/script/language"
 
-//Returns a Number based on the passed big Integer.
-func (l *implementation) LiteralNumber(literal *big.Int) language.Number {
-	panic("Error in "+Name+".LiteralNumber(Number): Unimplemented")
-	return nil
-}
-
 //Returns a Number that is the sum of 'a' and 'b'.
 func (l *implementation) Add(a, b language.Number) language.Number {
 	panic("Error in "+Name+".Add(Number, Number): Unimplemented")

@@ -4,7 +4,7 @@ type Expression struct {
 	Name Translatable
 	OnScan func(*Compiler) Type
 	
-	Detect func(*Compiler) *Type
+	Detect func(*Compiler) Type
 }
 
 func (c *Compiler) Expression() Type {
@@ -22,22 +22,34 @@ func (c *Compiler) Expression() Type {
 	for _, expression := range c.Expressions {
 		if expression.Detect != nil {
 			if t := expression.Detect(c); t != nil {
-				return *t
+				
+				if variable, ok := t.(Variable); ok {
+					if variable.Type == nil {
+						continue
+					} else {
+						return variable.Type
+					}
+				}
+				
+				return t
 			}
 		}
 	}
 	
+	c.RaiseError(Translatable{
+		English: "Unknown Expression: "+token,
+	})
 	
-	return Type{Name: NoTranslation(c.Token()), Fake: true}
+	return nil
 }
 
 
 func (c *Compiler) ScanExpression() Type {
 	var result = c.Shunt(c.Expression(), 0)
 	
-	if result.Fake {
+	if result == nil {
 		c.RaiseError(Translatable{
-				English: "Unknown Expression: "+result.Name[c.Language],
+				English: "Invalid Expression ",
 		})
 	}
 	

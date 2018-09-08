@@ -40,9 +40,9 @@ func (c *Compiler) Expecting(token string) {
 }
 
 func (c *Compiler) ExpectingType(t Type) {
-	if b := c.ScanExpression(); !b.Equals(t) {
+	if b := c.ScanExpression(); !b.SameAs(t) {
 		c.RaiseError(Translatable{
-			English: "Expecting this to be of type "+t.Name[c.Language]+", however, it is of type "+b.Name[c.Language],
+			English: "Expecting this to be of type "+t.Name()+", however, it is of type "+b.Name(),
 		})
 	}
 }

@@ -3,56 +3,47 @@ package script
 import "math/big"
 import "github.com/qlova/script/language"
 
+type Number struct {
+	language.Number
+	EmbeddedScript
+	
+	Literal *big.Int
+}
+
 //Converts a Go integer to a language.Number.
-func (q Script) Number(i int) language.Number {
-	return q.lang.LiteralNumber(big.NewInt(int64(i)))
-}
-
-/*	
-	Define 'name' to be a Number with an optional 'value' of type Number.
-	Returns a number.
-	
-	Example:
-		script.DefineNumber(name) -> var name int
-		script.DefineNumber(name, value) -> var name int = value
-*/
-func (q *Script) DefineNumber(name string, value ...language.Number) language.Number {
-	q.indent()
-	
-	var initial language.Number
-	if len(value) == 0 {
-		initial = q.Number(0)
-	} else {
-		initial = value[0]
+func (q *Script) Number(n ...int) Number {
+	if len(n) > 0 {
+		num := n[0]
+		return Number{Literal: big.NewInt(int64(num)), EmbeddedScript: EmbeddedScript{ q: q }}
 	}
-	
-	number, statement := q.lang.Define(name, initial)
-
-	q.write(statement)
-
-	return number.(language.Number)
+	return Number{Literal: new(big.Int), EmbeddedScript: EmbeddedScript{ q: q }}
 }
 
-func (q *Script) Add(a, b language.Number) language.Number {
-	return q.lang.Add(a, b)
+//Converts a Go integer to a language.Number.
+func (q *Script) BigNumber(i *big.Int) Number {
+	return Number{Literal: i, EmbeddedScript: EmbeddedScript{ q: q }}
 }
 
-func (q *Script) Sub(a, b language.Number) language.Number {
-	return q.lang.Sub(a, b)
+func (q *Script) Add(a, b Number) Number {
+	return q.wrap(q.lang.Add(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Pow(a, b language.Number) language.Number {
-	return q.lang.Pow(a, b)
+func (q *Script) Sub(a, b Number) Number {
+	return q.wrap(q.lang.Sub(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Mul(a, b language.Number) language.Number {
-	return q.lang.Mul(a, b)
+func (q *Script) Pow(a, b Number) Number {
+	return q.wrap(q.lang.Pow(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Div(a, b language.Number) language.Number {
-	return q.lang.Div(a, b)
+func (q *Script) Mul(a, b Number) Number {
+	return q.wrap(q.lang.Mul(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Mod(a, b language.Number) language.Number {
-	return q.lang.Mod(a, b)
+func (q *Script) Div(a, b Number) Number {
+	return q.wrap(q.lang.Div(convert(a).(language.Number), convert(b).(language.Number))).(Number)
+}
+
+func (q *Script) Mod(a, b Number) Number {
+	return q.wrap(q.lang.Mod(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }

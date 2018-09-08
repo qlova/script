@@ -1,6 +1,6 @@
 package language
 
-import "math/big"
+import "os/exec"
 
 var Default Interface
 
@@ -21,14 +21,14 @@ type Float interface {
 	Float()
 }
 
-type Switch interface {
+type Boolean interface {
 	Type
-	Switch()
+	Boolean()
 }
 
 type Symbol interface {
 	Type
-	Symbol() string
+	Symbol()
 }
 
 type String interface {
@@ -73,14 +73,6 @@ type Metatype interface {
 type Dynamic interface {
 	Type
 	Dynamic()
-}
-
-type FunctionType interface {
-	Type
-	FunctionType()
-	
-	Arguments() []Type
-	Returns() Type
 }
 
 type Custom interface {
@@ -135,13 +127,33 @@ type LanguageWithFloats interface {
 	//TODO maybe add trig functions.
 }
 
+//Other type ideas.
+/*
+ * Decimal
+ * Complex
+ * Rational
+ * Matrix
+ * Duplex
+ * Vector
+ * 
+ * Far fetched
+ *========
+ * Image?
+ * Color?
+ * Video?
+ * Audio?
+ */
+
 // Defines a Language, all methods can panic on error. Make sure to deal with this accordingly.
 type Interface interface {
+	Name() string
 
 	// Hooks
 	
 		//Hook that is run before compilation.
 		Init()
+		
+		Build(path string) *exec.Cmd
 		
 		//These hooks are executed at the end of compilation:
 		// Statements are added in the respective order.
@@ -154,11 +166,14 @@ type Interface interface {
 		
 	//Variables
 
+		//Returns an Array of type T with 'length' length.
+		Literal(interface{}) Type
+
 		//Returns the type and statement that defines 'name' to be of type 'value' initialised to 'value'.
  		Define(name string, value Type) (Type, Statement)
  		
- 		//Returns a Statement that sets the type 'T' variable 'name' to be set to 'value'.
- 		Set(name string, T Type, value Type) Statement
+ 		//Returns a Statement that sets the variable 'T' to be set to 'value'.
+ 		Set(T Type, value Type) Statement
  		
  		//Returns the Type at 'index' of 'T'.
  		Index(T Type, index Type) Type
@@ -169,16 +184,20 @@ type Interface interface {
 	// Logic
 		
 		//Returns a Statement that begins an if.
-		If(condition Switch) Statement
+		If(condition Boolean) Statement
 		
 		//Returns a Statement that begins an elseif.
-		ElseIf(condition Switch) Statement
+		ElseIf(condition Boolean) Statement
 		
 		//Returns a Statement that begins an else.
 		Else() Statement
 		
 		//Returns a Statement that ends an if/else.
 		EndIf() Statement
+		
+		Equals(Type, Type) Boolean
+		Smaller(Type, Type) Boolean
+		Greater(Type, Type) Boolean
 		
 	// Loops
 		
@@ -192,7 +211,7 @@ type Interface interface {
 		Break() Statement
 		
 		//Returns a Statement that begins a while loop dependent on 'condition' being non zero.
-		While(condition Switch) Statement
+		While(condition Boolean) Statement
 		
 		//Returns a Statement that ends a while loop.
 		EndWhile() Statement
@@ -223,7 +242,7 @@ type Interface interface {
 	//Functions
 		
 		//Returns a Statement that begins the function 'name' with 'arguments' and 'returns'.
-		Function(name string, arguments []Type, returns Type) Statement
+		Function(name string, names []string, arguments []Type, returns Type) (Function, Statement)
 		
 		//Returns a Statement that closes the last function.
 		EndFunction() Statement
@@ -290,36 +309,28 @@ type Interface interface {
 		Move(c Stream, location String) Statement
 
 	// Errors
-		//Returns an Error with 'code' and 'message'.
-		LiteralError(code Number, message String) Error
+		
+		//Returns a Statement that embeds an error within another error.
+		Embed(a Error, b Error) Statement
 		
 		//Returns a Statement that throws an error to the thread, this should not halt the program.
 		Throw(err Error) Statement
 		
-		//Returns a Error that is sitting on the thread.
+		//Returns an Error that is sitting on the thread.
 		Catch() Error
 		
-	// Switches aka Booleans
-	
-		//Returns a Number that the Go style literal represents (true false).
-		LiteralSwitch(literal string) Switch
+	// Booleanes aka Booleans
 		
-		//Returns a Switch that is the logical and of 'a' and 'b'.
-		And(a, b Switch) Switch
+		//Returns a Boolean that is the logical and of 'a' and 'b'.
+		And(a, b Boolean) Boolean
 		
-		//Returns a Switch that is the logical or of 'a' and 'b'.
-		Or(a, b Switch) Switch
+		//Returns a Boolean that is the logical or of 'a' and 'b'.
+		Or(a, b Boolean) Boolean
 		
-		//Returns a Switch that is the logical not of 'a'.
-		Not(a Switch) Switch
-		
-		//Returns a Switch that is the logical xor of 'a' and 'b'.
-		Xor(a, b Number) Switch
-	
+		//Returns a Boolean that is the logical not of 'a'.
+		Not(a Boolean) Boolean
+
 	// Numbers
-	
-		//Returns a Number that the Go style literal represents (01 1 0x1).
-		LiteralNumber(literal *big.Int) Number
 		
 		//Returns a Number that is the sum of 'a' and 'b'.
 		Add(a, b Number) Number
@@ -340,53 +351,30 @@ type Interface interface {
 		Mod(a, b Number) Number
 		
 	//Symbols
-	
-		//Returns a Symbol that the Go style literal represents ('').
-		LiteralSymbol(literal string) Symbol
-	
-	//Strings
 
-		//Returns a String that the Go style literal represents ("").
-		LiteralString(literal string) String
+	//Strings
 		
-		//Returns a new String that concatenates 'a' and 'b'.
-		JoinString(a, b String) String
+		//Returns a new Type that concatenates 'a' and 'b'.
+		Join(a, b Type) Type
 
 	//Arrays, fixed-size collection of elements.
+	
+		//Returns the array type of type 'T' with 'length'.
+		Array(T Type, length Number) Array
+		
+		//Fills type 'T' with 'elements'
+		Fill(T Type, elements []Type) Type
 
-		//Returns an Array of type T with 'length' length.
-		MakeArray(T Type, length Number) Array
-		
-		//Returns a Number representing the length of 'array'
-		LengthArray(array Array) Number
-		
 	//Lists, unordered collection of elements.
 
-		//Returns a List of type T.
-		MakeList(T Type) List
-		
-		//Returns a List of type T, intialised with optional 'elements'.
-		LiteralList(T Type, elements ...Type) List
-		
 		//Returns a Number representing the length of 'list'
-		LengthList(list List) Number
+		Length(t Type) Number
 		
 		//Returns a statement that adds 't' to the 'list'.
 		Grow(list List, t Type) Statement
 		
 		//Returns a statement that shrinks the 'list' by removing the element at the end..
 		Shrink(list List) Statement
-		
-	//Function Types
-
-		//Returns a FunctionType based on 'function'.
-		LiteralFunctionType(function Function) FunctionType
-		
-		//Returns the resulting Type from calling 'function' with 'arguments'.
-		CallFunctionType(function FunctionType, arguments []Type) Type
-		
-		//Returns a statement that calls the FunctionType 'function' with 'arguments'.
-		RunFunctionType(function FunctionType, arguments []Type) Statement
 	
 	// Tables.
 		
@@ -394,7 +382,7 @@ type Interface interface {
 		MakeTable(T Type) Table
 		
 		//Returns a Table intialised with 'indices' corresponding to 'elements'.
-		LiteralTable(indices []String, elements []Type) Table
+		//LiteralTable(indices []String, elements []Type) Table
 		
 	//Custom types.
 
@@ -417,7 +405,7 @@ type Interface interface {
 		EndMethod() Statement
 		
 		//Returns a Custom intialised with 'tokens' corresponding to 'elements' AKA a tuple when tokens are empty.
-		LiteralCustom(tokens []string, elements []Type) Custom
+		//LiteralCustom(tokens []string, elements []Type) Custom
 		
 	// Pointers.
 		
@@ -440,24 +428,12 @@ type Interface interface {
 	
 	//Casting
 		
-		//Returns Error cast to String.
-		ErrorToString(Error) String
+		//Returns Type cast to String.
+		ToString(Type) String
 		
-		//Returns Error cast to Number.
-		ErrorToNumber(Error) Number
+		//Returns Type cast to Number.
+		ToNumber(Type) Number
 		
-		//Returns Number cast to String.
-		NumberToString(Number) String
-		
-		//Returns String cast to Number.
-		StringToNumber(String) Number
-		
-		//Returns Symbol cast to String.
-		SymbolToString(Symbol) String
-		
-		//Returns Symbol cast to Number.
-		SymbolToNumber(Symbol) Number
-		
-		//Returns Symbol cast to Number.
-		NumberToSymbol(Number) Symbol
+		//Returns Type cast to Number.
+		ToSymbol(Type) Symbol
 }

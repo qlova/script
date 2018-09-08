@@ -23,7 +23,7 @@ func (l *implementation) Break() language.Statement {
 }
 
 //Returns a Statement that begins a while loop dependent on 'condition' being non zero.
-func (l *implementation) While(condition language.Switch) language.Statement {
+func (l *implementation) While(condition language.Boolean) language.Statement {
 	panic("Error in "+Name+".While(switch): Unimplemented")
 	return ""
 }

@@ -1,46 +1,34 @@
 package Null
 
+import "fmt"
 import "github.com/qlova/script/language"
 
-
-//Returns a Number that the Go style literal represents (true false).
-func (l *implementation) LiteralSwitch(literal string) language.Switch {
-	panic("Error in "+Name+".LiteralSwitch("+literal+"): Unimplemented")
+//Returns a Boolean that is the logical and of 'a' and 'b'.
+func (l *implementation) And(a, b language.Boolean) language.Boolean {
+	panic("Error in "+Name+".And(Boolean, Boolean): Unimplemented")
 	return nil
 }
 
-//Returns a Switch that is the logical and of 'a' and 'b'.
-func (l *implementation) And(a, b language.Switch) language.Switch {
-	panic("Error in "+Name+".And(Switch, Switch): Unimplemented")
+//Returns a Boolean that is the logical or of 'a' and 'b'.
+func (l *implementation) Or(a, b language.Boolean) language.Boolean {
+	panic("Error in "+Name+".Or(Boolean, Boolean): Unimplemented")
 	return nil
 }
 
-//Returns a Switch that is the logical or of 'a' and 'b'.
-func (l *implementation) Or(a, b language.Switch) language.Switch {
-	panic("Error in "+Name+".Or(Switch, Switch): Unimplemented")
-	return nil
-}
-
-//Returns a Switch that is the logical not of 'a'.
-func (l *implementation) Not(a language.Switch) language.Switch {
-	panic("Error in "+Name+".Not(Switch): Unimplemented")
-	return nil
-}
-
-//Returns a Switch that is the logical xor of 'a' and 'b'.
-func (l *implementation) Xor(a, b language.Number) language.Switch {
-	panic("Error in "+Name+".Xor(Switch, Switch): Unimplemented")
+//Returns a Boolean that is the logical not of 'a'.
+func (l *implementation) Not(a language.Boolean) language.Boolean {
+	panic("Error in "+Name+".Not(Boolean): Unimplemented")
 	return nil
 }
 
 
-func (l *implementation) If(condition language.Switch) language.Statement {
+func (l *implementation) If(condition language.Boolean) language.Statement {
 	panic("Error in "+Name+".If(switch): Unimplemented")
 	return ""
 }
 
 //Returns a Statement that begins an elseif.
-func (l *implementation) ElseIf(condition language.Switch) language.Statement {
+func (l *implementation) ElseIf(condition language.Boolean) language.Statement {
 	panic("Error in "+Name+".ElseIf(switch): Unimplemented")
 	return ""
 }
@@ -55,4 +43,17 @@ func (l *implementation) Else() language.Statement {
 func (l *implementation) EndIf() language.Statement {
 	panic("Error in "+Name+".EndIf(): Unimplemented")
 	return ""
+}
+
+func (l *implementation) Equals(a, b language.Type) language.Boolean {
+	panic("Error in "+Name+".Equals("+a.Name()+", "+b.Name()+"): Unimplemented")
+	return nil
+}
+func (l *implementation) Smaller(a, b language.Type) language.Boolean {
+	panic("Error in "+Name+".EndIf("+a.Name()+", "+b.Name()+"): Unimplemented")
+	return nil
+}
+func (l *implementation) Greater(a, b language.Type) language.Boolean {
+	panic("Error in "+Name+".EndIf("+a.Name()+", "+b.Name()+"): Unimplemented")
+	return nil
 }

@@ -1,10 +1,12 @@
 package script
 
 import (
-	"fmt"
+	//"fmt"
 	"bytes"
-	"errors"
+	//"errors"
 	//"io"
+	
+	"os"
 )
 
 import "github.com/qlova/script/interpreter"
@@ -12,6 +14,7 @@ import "github.com/qlova/script/language"
 
 type Program struct {
 	program func(*Script)
+	language language.Interface
 }
 
 func NewProgram(program func(*Script)) Program {
@@ -27,7 +30,7 @@ func (p Program) Run() (err error) {
 	script.lang = interpreter
 
 	//Catch errors.
-	defer func() {
+	/*defer func() {
 		if r := recover(); r != nil {
 			if message, ok := r.(string); ok {
 				err = errors.New(message)
@@ -35,7 +38,7 @@ func (p Program) Run() (err error) {
 				err = errors.New(fmt.Sprint(r))
 			}
 		}
-	}()
+	}()*/
 	
 	p.program(script)
 	
@@ -51,7 +54,7 @@ func (p Program) Source(language language.Interface) (source string, err error) 
 	script.lang.Init()
 
 	//Catch errors.
-	defer func() {
+	/*defer func() {
 		if r := recover(); r != nil {
 			if message, ok := r.(string); ok {
 				err = errors.New(message)
@@ -59,7 +62,7 @@ func (p Program) Source(language language.Interface) (source string, err error) 
 				err = errors.New(fmt.Sprint(r))
 			}
 		}
-	}()
+	}()*/
 	
 	p.program(script)
 	
@@ -74,6 +77,46 @@ func (p Program) Source(language language.Interface) (source string, err error) 
 	return
 }
 
+func (p Program) WriteToFile(path string, language language.Interface) (err error) {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	
+	script := NewScript()
+
+	script.lang = language
+	script.lang.Init()
+
+	//Catch errors.
+	/*defer func() {
+		if r := recover(); r != nil {
+			if message, ok := r.(string); ok {
+				err = errors.New(message)
+			} else {
+				err = errors.New(fmt.Sprint(r))
+			}
+		}
+	}()*/
+	
+	p.program(script)
+	
+	script.head.WriteString(string(script.lang.Head()))
+	script.neck.WriteString(string(script.lang.Neck()))
+	script.body.WriteString(string(script.lang.Body()))
+	script.tail.WriteString(string(script.lang.Tail()))
+	script.last.WriteString(string(script.lang.Last()))
+	
+	file.Write(script.head.Bytes())
+	file.Write(script.neck.Bytes())
+	file.Write(script.body.Bytes())
+	file.Write(script.tail.Bytes())
+	file.Write(script.last.Bytes())
+	
+	return
+}
+
 type Script struct {
 	depth int
 	
@@ -84,10 +127,20 @@ type Script struct {
 	body bytes.Buffer
 	tail bytes.Buffer
 	last bytes.Buffer
+	
+	returns []Type
 }
 
 func NewScript() *Script {
 	return new(Script)
+}
+
+func (q *Script) Init() {
+	q.lang.Init()
+}
+
+func (q *Script) Last() {
+	q.lang.Last()
 }
 
 func (q *Script) indent() {

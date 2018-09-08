@@ -3,17 +3,19 @@ package compiler
 import "io"
 import "os"
 import "text/scanner"
-import "fmt"
-import "runtime/debug"
 
 import qlova "github.com/qlova/script"
 
+import "reflect"
+import "fmt"
+
+type Type = qlova.Type
+
 type Compiler struct {
 	Syntax
+	*qlova.Script
 	
 	CurrentFunction *Function
-	
-	Script *qlova.Script
 	
 	Language Language
 	
@@ -50,6 +52,10 @@ func New() *Compiler {
 
 func (c *Compiler) SwapOutput() {
 	c.Header, c.Output = c.Output, c.Header
+}
+
+func (c *Compiler) Debug(T Type) {
+	fmt.Println(reflect.TypeOf(T))
 }
 
 func (c *Compiler) Token() string {
@@ -114,6 +120,18 @@ func (c *Compiler) Scan() string {
 	return token
 }
 
+func (c *Compiler) ScanType(T Type) Type {
+	var expression = c.ScanExpression()
+	
+	if !expression.SameAs(T) {
+		
+		fmt.Println(reflect.TypeOf(T), reflect.TypeOf(expression))
+		c.ExpectingTypeName(T.Name(), expression.Name())
+	}
+	
+	return expression
+}
+
 func (c *Compiler) ScanIf(test string) bool {
 	if c.Peek() == test {
 		c.Scan()
@@ -152,38 +170,27 @@ func (c *Compiler) CompileBlock(first, last string) {
 	}
 }
 
-func (c *Compiler) Compile() {
+func (c *Compiler) Compile() qlova.Program {
 	
-	c.Script.Init()
-	
-	if c.GlobalScope.Variables == nil {
-		c.GlobalScope = NewScope()
-	}
-	
-	defer func() {
-        if r := recover(); r != nil {
-			if r == "error" {
-				c.Errors = true
-				
-				if os.Getenv("PANIC") == "1" { 
-					panic("PANIC=1")
-				}
-				
-			} else if r != "done" {
-				fmt.Println(r, string(debug.Stack()))
-			}
-        }
-    }()
-	
-	if len(c.Scanners) == 0 {
-		return
-	}
-	
-	for {
-		c.ScanStatement()
+	return qlova.NewProgram(func(q *qlova.Script) {
+		c.Script = q
+		
+		c.Script.Init()
+		
+		if c.GlobalScope.Variables == nil {
+			c.GlobalScope = NewScope()
+		}
+		
 		if len(c.Scanners) == 0 {
-			c.Script.Last()
 			return
 		}
-	}
+		
+		for {
+			c.ScanStatement()
+			if len(c.Scanners) == 0 {
+				c.Script.Last()
+				return
+			}
+		}
+	})
 }

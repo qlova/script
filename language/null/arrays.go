@@ -2,34 +2,37 @@ package Null
 
 import "github.com/qlova/script/language"
 
+//Returns a new String that concatenates 'a' and 'b'.
+func (l *implementation) Join(a, b language.Type) language.Type {
+	panic("Error in "+Name+".Join("+a.Name()+", "+b.Name()+"): Unimplemented")
+	return nil
+}
+
 
 //Returns an Array of type T with 'length' length.
-func (l *implementation) MakeArray(T language.Type, length language.Number) language.Array {
-	panic("Error in "+Name+".MakeArray(Type, Number): Unimplemented")
+func (l *implementation) Literal(array interface{}) language.Type {
+	panic("Error in "+Name+".Literal(Type, Number): Unimplemented")
 	return nil
 }
 
 //Returns a Number representing the length of 'array'
-func (l *implementation) LengthArray(array language.Array) language.Number {
-	panic("Error in "+Name+".LengthArray(Array): Unimplemented")
+func (l *implementation) Array(T language.Type, length language.Number) language.Array {
+	panic("Error in "+Name+".Array("+T.Name()+", Number): Unimplemented")
 	return nil
 }
+
+
+//Returns a Number representing the length of 'array'
+func (l *implementation) Fill(T language.Type, elements []language.Type) language.Type {
+	
+	panic("Error in "+Name+".Fill("+T.Name()+", []language.Type): Unimplemented")
+	return nil
+}
+
 
 //Returns a List of type T.
 func (l *implementation) MakeList(T language.Type) language.List {
 	panic("Error in "+Name+".MakeList(Type): Unimplemented")
-	return nil
-}
-
-//Returns a List of type T, intialised with optional 'elements'.
-func (l *implementation) LiteralList(T language.Type, elements ...language.Type) language.List {
-	panic("Error in "+Name+".LiteralList(Type, ...Type): Unimplemented")
-	return nil
-}
-
-//Returns a Number representing the length of 'list'
-func (l *implementation) LengthList(list language.List) language.Number {
-	panic("Error in "+Name+".LengthList(List): Unimplemented")
 	return nil
 }
 

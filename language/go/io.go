@@ -20,18 +20,19 @@ func (l *implementation) Print(values ...language.Type) language.Statement {
 	
 	for i := range values {
 		
+		if i > 0 {
+			result += " "
+		}
+		
 		if values[i] == nil {
 			result += `"nil"`
 		} else {
 		
 			switch values[i].(type) {
-				case language.String:
-					result += string(values[i].(String))
-					
-				case language.Number:
+				case language.Number, language.String, language.Boolean:
 					result += l.GetExpression(values[i])
 				
-				case language.Switch, language.Symbol, 
+				case language.Symbol, 
 					language.Custom, language.Stream, language.List, language.Array, 
 					language.Table, language.Error, language.Float, language.Pointer, 
 					language.Dynamic, language.Function, language.Metatype, language.FunctionType:

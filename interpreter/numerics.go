@@ -15,6 +15,14 @@ func (Number) Name() string { return "number" }
 func (Number) SameAs(i interface{}) bool { _, ok := i.(Number); return ok }
 func (Number) Number() {}
 
+func (l *implementation) NewNumber() Number {
+	block := l.loadBlock()
+	
+	var n Number
+	n.Address = block.CreateNumber()
+	n.BlockPointer = block
+	return n
+}
 
 //Returns a Number that the Go style literal represents (01 1 0x1).
 func (l *implementation) LiteralNumber(literal *big.Int) language.Number {

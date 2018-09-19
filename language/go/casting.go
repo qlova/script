@@ -15,6 +15,11 @@ func (l *implementation) ToString(T language.Type) language.String {
 		
 		case Symbol:
 			return String("string("+l.GetExpression(T)+")")
+			
+		case Error:
+			l.Import("fmt")
+			l.AddHelper(ErrorToString)
+			return String(l.GetExpression(T)+".String()")
 	}
 	panic("Error in "+Name+".ToString("+T.Name()+"): Unimplemented")
 	return nil
@@ -28,6 +33,24 @@ func (l *implementation) ToNumber(T language.Type) language.Number {
 	switch T.(type) {
 		case Number:
 			return T.(Number)
+			
+		case String:
+			
+			//TODO throw an error?
+			l.Import(NumberImport)
+			l.AddHelper(NumberTypeDefinition)
+			l.AddHelper(`func ParseNumber(number string) Number {
+	var z big.Int
+	z.SetString(number, 10)
+	if z.IsInt64() {
+		return Number{Small: z.Int64()}
+	}
+	return Number{Large: &z}
+}
+
+`)
+				result.Expression = ("ParseNumber("+l.GetExpression(T)+")")
+				return result
 	
 		case Symbol:
 			result.Expression = "Number{Small:int64("+l.GetExpression(T)+")}"

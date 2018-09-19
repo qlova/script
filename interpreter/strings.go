@@ -21,6 +21,16 @@ func (String) SameAs(i interface{}) bool {
 
 func (String) String() {}
 
+func (l *implementation) NewString() String {
+	block := l.loadBlock()
+	
+	var n String
+	n.Address = block.CreateString()
+	n.BlockPointer = block
+	return n
+}
+
+
 type Symbol struct {	
 	internal.Variable
 	

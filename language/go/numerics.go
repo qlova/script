@@ -32,14 +32,24 @@ func (l *implementation) Add(a, b language.Number) language.Number {
 	}
 	
 	l.Import("math/big")
-	l.AddHelper(`func Add(a, b *big.Int) *big.Int {
-	var z = big.NewInt(0)
-	z.Add(a, b)
-	return &z
+	l.AddHelper(`func (a Number) Add(b Number) Number {
+	if ca, cb := a.Large == nil, b.Large == nil; ca || cb {
+		if ca && cb {
+			if (a.Small > 0 && b.Small > (1<<63 - 1) - a.Small) || (a.Small < 0 && b.Small < (-1 << 63) - a.Small) {
+				return Number{Large: new(big.Int).Add(big.NewInt(a.Small), big.NewInt(b.Small))}
+			}
+			return Number{Small:a.Small+b.Small}
+		} else if !ca {
+			return Number{Large: new(big.Int).Add(a.Large, big.NewInt(b.Small))}
+		} else if !cb {
+			return Number{Large: new(big.Int).Add(big.NewInt(a.Small), b.Large)}
+		}
+	}
+	return Number{Large: new(big.Int).Add(a.Large, b.Large)}
 }
 `)
 	
-	return Number{Expression: "Add("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
+	return Number{Expression: l.GetExpression(A)+".Add("+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is the difference of 'a' and 'b'.

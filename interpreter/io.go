@@ -2,6 +2,7 @@ package Interpreter
 
 import "github.com/qlova/script/language"
 import "os"
+import "bufio"
 
 func (c *implementation) PrintString(text String) {
 	block := c.loadBlock()
@@ -73,7 +74,19 @@ func (c *implementation) PrintBoolean(boolean Boolean) {
 //Returns a Statement that prints a Strings to os.Stdout with a newline.
 func (c *implementation) Print(values ...language.Type) language.Statement {
 	
-	var PanicName = "Error in "+Name+".Print("
+	c.Write(nil, values...)
+	
+	block := c.loadBlock()
+	block.AddInstruction(func() {
+		os.Stdout.Write([]byte("\n"))
+	})
+	
+	return ""
+}
+
+//Returns a Statement that writes a String to Stream (or Stdout) without a newline.
+func (c *implementation) Write(stream language.Stream, values ...language.Type) language.Statement {
+	var PanicName = "Error in "+Name+".Write("
 	for i := range values {
 		PanicName += values[i].Name()
 		if i < len(values)-1 {
@@ -81,6 +94,11 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 		}
 	}
 	PanicName += ")"
+	
+	if stream != nil {
+		panic(PanicName+": Cannot use streams yet")
+	}
+	
 	
 	block := c.loadBlock()
 	
@@ -126,23 +144,6 @@ func (c *implementation) Print(values ...language.Type) language.Statement {
 			})
 		}
 	}
-	
-	block.AddInstruction(func() {
-		os.Stdout.Write([]byte("\n"))
-	})
-	
-	return ""
-}
-
-//Returns a Statement that writes a String to Stream (or Stdout) without a newline.
-func (l *implementation) WriteString(language.Stream, language.String) language.Statement {
-	panic("Error in "+Name+".WriteString(Stream, String): Unimplemented")
-	return ""
-}
-
-//Returns a Statement that writes the contents of Array to a Stream (or Stdout) without a newline.
-func (l *implementation) WriteArray(language.Stream, language.Array) language.Statement {
-	panic("Error in "+Name+".WriteArray(Stream, String): Unimplemented")
 	return ""
 }
 
@@ -152,9 +153,48 @@ func (l *implementation) Send(c language.Stream, t language.Type) language.State
 	return ""
 }
 
+var BufferedStdin = bufio.NewReader(os.Stdin) 
+
 //Returns Type 't' from Stream 'c'.
 func (l *implementation) Read(c language.Stream, t language.Type) language.Type {
-	panic("Error in "+Name+".Read(Stream, Type): Unimplemented")
+	if c != nil { 
+		panic("Error in "+Name+".Read(Stream, "+t.Name()+"): Unimplemented")
+	}
+	block := l.loadBlock()
+	
+	switch value := t.(type) {
+		case Symbol:
+			
+			var s = l.NewString()
+			
+			var Address = s.Address
+			
+			var SymbolBlock = value.BlockPointer
+			var SymbolAddress = value.Address
+			
+			if value.IsLiteral {
+				
+				var literal = value.Literal
+				//TODO deal with errors,
+				block.AddInstruction(func() {
+					result, _ := BufferedStdin.ReadString(byte(literal))
+					block.SetString(Address, result)
+				})
+				
+			} else {
+				//TODO deal with errors,
+				block.AddInstruction(func() {
+					result, _ := BufferedStdin.ReadString(byte(SymbolBlock.GetSymbol(SymbolAddress)))
+					block.SetString(Address, result)
+				})
+			}
+
+			return s
+			
+		default:
+			panic("Error in "+Name+".Read(nil, "+t.Name()+"): Unimplemented")
+	}
+	
 	return nil
 }
 

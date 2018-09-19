@@ -25,6 +25,12 @@ func (q *Script) wrap(t language.Type) Type {
 		
 		case language.Function:
 			return Function{Function: value, EmbeddedScript:EmbeddedScript{q:q}}
+		
+		case language.Array:
+			return Array{Array: value, EmbeddedScript:EmbeddedScript{q:q}}
+		
+		case language.Boolean:
+			return Boolean{Boolean: value, EmbeddedScript:EmbeddedScript{q:q}}
 	}
 	
 	panic("Cannot wrap type "+t.Name())
@@ -46,12 +52,38 @@ func convert(l Type) language.Type {
 				} else {
 					return value.q.lang.Literal(*value.Literal)
 				}
+				
+			case Error:
+				return value.Error
+				
+			case Boolean:
+				if value.Literal == nil {
+					return value.Boolean
+				} else {
+					return value.q.lang.Literal(*value.Literal)
+				}
+				
 			case Number:
 				if value.Literal == nil {
 					return value.Number
 				} else {
 					return value.q.lang.Literal(value.Literal)
 				}
+			
+			case Array:
+				if value.Literal == nil {
+					return value.Array
+				} else {
+					//Special case for arrays.
+					var elements = make([]language.Type, len(value.Literal))
+
+					for i := 0; i < len(value.Literal); i++ {
+						elements[i] = convert(value.Literal[i])
+					}
+
+					return value.q.lang.Fill(value.q.lang.Array(elements[0], len(value.Literal)), elements)
+				}
+				
 			case Function:
 				if value.Literal == nil {
 					return value.Function

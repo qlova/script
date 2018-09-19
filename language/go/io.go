@@ -2,12 +2,9 @@ package Go
 
 import "github.com/qlova/script/language"
 
-
-//Returns a Statement that prints a String to os.Stdout with a newline.
-func (l *implementation) Print(values ...language.Type) language.Statement {
-	l.Import("fmt")
+func (l *implementation) varaidic(fname string, values ...language.Type) language.Statement {
 	
-	var PanicName = "Error in "+Name+".Print("
+	var PanicName = "Error in "+Name+".varaidic("
 	for i := range values {
 		PanicName += values[i].Name()
 		if i < len(values)-1 {
@@ -16,7 +13,7 @@ func (l *implementation) Print(values ...language.Type) language.Statement {
 	}
 	PanicName += ")"
 	
-	var result = "fmt.Println("
+	var result = fname
 	
 	for i := range values {
 		
@@ -55,17 +52,32 @@ func (l *implementation) Print(values ...language.Type) language.Statement {
 	return language.Statement(result)
 }
 
+//Returns a Statement that prints a String to os.Stdout with a newline.
+func (l *implementation) Print(values ...language.Type) language.Statement {
+	l.Import("fmt")
+	return l.varaidic("fmt.Println(", values...)
+}
+
 //Returns a Statement that writes a String to Stream (or Stdout) without a newline.
-func (l *implementation) WriteString(language.Stream, language.String) language.Statement {
-	panic("Error in "+Name+".WriteString(Stream, String): Unimplemented")
+func (l *implementation) Write(stream language.Stream, values ...language.Type) language.Statement {
+	var PanicName = "Error in "+Name+".Write(Stream, "
+	for i := range values {
+		PanicName += values[i].Name()
+		if i < len(values)-1 {
+			PanicName += ","
+		}
+	}
+	PanicName += ")"
+	
+	if stream == nil {
+		l.Import("fmt")
+		return l.varaidic("fmt.Print(", values...)
+	}
+	
+	panic(PanicName+": Unimplemented")
 	return ""
 }
 
-//Returns a Statement that writes the contents of Array to a Stream (or Stdout) without a newline.
-func (l *implementation) WriteArray(language.Stream, language.Array) language.Statement {
-	panic("Error in "+Name+".WriteArray(Stream, String): Unimplemented")
-	return ""
-}
 
 //Returns a statement that sends Type 't' over Stream 'c'.
 func (l *implementation) Send(c language.Stream, t language.Type) language.Statement {
@@ -75,7 +87,28 @@ func (l *implementation) Send(c language.Stream, t language.Type) language.State
 
 //Returns Type 't' from Stream 'c'.
 func (l *implementation) Read(c language.Stream, t language.Type) language.Type {
-	panic("Error in "+Name+".Read(Stream, Type): Unimplemented")
+	if c != nil {
+		panic("Error in "+Name+".Read(Stream, "+t.Name()+"): Unimplemented")
+	}
+	
+	switch t.(type) {
+		case Symbol:
+			
+			l.Import("bufio")
+			l.Import("os")
+			l.AddHelper(`var BStdin = bufio.NewReader(os.Stdin) 
+	func ReadSymbol(symbol rune) string {
+	result, _ := BStdin.ReadString(byte(symbol))
+	return result
+}
+
+`)
+
+			return String("ReadSymbol("+l.GetExpression(t)+")")
+			
+		default:
+			panic("Error in "+Name+".Read(nil, "+t.Name()+"): Unimplemented")
+	}
 	return nil
 }
 

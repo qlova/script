@@ -10,6 +10,8 @@ type Number struct {
 	Literal *big.Int
 }
 
+func (Number) SameAs(i interface{}) bool { _, ok := i.(Number); return ok }
+
 //Converts a Go integer to a language.Number.
 func (q *Script) Number(n ...int) Number {
 	if len(n) > 0 {

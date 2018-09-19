@@ -240,9 +240,15 @@ type Interface interface {
 		EndMain() Statement
 	
 	//Functions
+	
+		//Returns an external function, eg OS command or dynamic library etc
+		External(name String) Function
 		
 		//Returns a Statement that begins the function 'name' with 'arguments' and 'returns'.
 		Function(name string, names []string, arguments []Type, returns Type) (Function, Statement)
+		
+		//A hacky thing requried for the compiler so it can do concepts.
+		UpdateFunction(f Function, name string, names []string, arguments []Type, returns Type) (Function, Statement)
 		
 		//Returns a Statement that closes the last function.
 		EndFunction() Statement
@@ -267,26 +273,14 @@ type Interface interface {
 		//TODO specify how types should be printed.
 		Print(...Type) Statement
 		
-		//Returns a Statement that writes a String to Stream (or Stdout) without a newline.
-		WriteString(Stream, String) Statement
-		
-		//Returns a Statement that writes the contents of Array to a Stream (or Stdout) without a newline.
-		WriteArray(Stream, Array) Statement
+		//Returns a Statement that writes Type to Stream (or Stdout if nil) without a newline.
+		Write(Stream, ...Type) Statement
 
 		//Returns a statement that sends Type 't' over Stream 'c'.
 		Send(c Stream, t Type) Statement
 		
 		//Returns Type 't' from Stream 'c'.
 		Read(c Stream, t Type) Type
-	
-		//Reads Symbols from Stream (or Stdin) until Symbol is reached, returns a String of all Symbols up until Symbol.
-		ReadSymbol(Stream, Symbol) String
-		
-		//Reads 'amount' bytes from Stream (or Stdin), returns Array of all Bytes up until 'amount'. 
-		ReadNumber(s Stream, amount Number) Array
-
-		//Returns a Statement that Reads bytes from Stream (or Stdin) and fills Array. 
-		ReadArray(s Stream, fill Array) Statement
 		
 	//Streams
 	
@@ -309,15 +303,18 @@ type Interface interface {
 		Move(c Stream, location String) Statement
 
 	// Errors
+	
+		//Returns the current error.
+		Error() Error
 		
-		//Returns a Statement that embeds an error within another error.
-		Embed(a Error, b Error) Statement
+		//Set the current trace, this will be attached to all future errors.
+		Trace(line int, file string) Statement
 		
-		//Returns a Statement that throws an error to the thread, this should not halt the program.
-		Throw(err Error) Statement
+		//Returns a Statement that throws an error to the thread with the given parameters, this should not halt the program.
+		Throw(code Number, message String) Statement
 		
-		//Returns an Error that is sitting on the thread.
-		Catch() Error
+		//Checks if there is an error on the stack, makes it the current error and returns whether or not this was succesfull.
+		Catch() Boolean
 		
 	// Booleanes aka Booleans
 		
@@ -360,7 +357,7 @@ type Interface interface {
 	//Arrays, fixed-size collection of elements.
 	
 		//Returns the array type of type 'T' with 'length'.
-		Array(T Type, length Number) Array
+		Array(T Type, length int) Array
 		
 		//Fills type 'T' with 'elements'
 		Fill(T Type, elements []Type) Type

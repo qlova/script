@@ -12,6 +12,10 @@ type Function struct {
 	Names []string
 }
 
+func (q *Script) External(name String) Function {
+	return q.wrap(q.lang.External(convert(name).(language.String))).(Function)
+}
+
 func (q *Script) Function(i interface{}) Function {
 	return Function{Literal: i, EmbeddedScript: EmbeddedScript{q:q}}
 }
@@ -38,6 +42,19 @@ func (f Function) Call(arguments ...Type) Type {
 	f.q.write(f.q.lang.Run(convert(f).(language.Function), converted))
 	return nil
 }
+
+func (f Function) Run(arguments ...Type) {
+	
+	var converted = make([]language.Type, len(arguments))
+	for i := range arguments {
+		converted[i] = convert(arguments[i])
+	}
+	
+	f.q.indent()
+	f.q.write(f.q.lang.Run(convert(f).(language.Function), converted))
+	return 
+}
+
 
 func (function *Function) NameArguments(names []string) {
 	function.Names = names
@@ -97,7 +114,10 @@ func (function *Function) Promote(name string) {
 		reflect.ValueOf(function.Literal).Call(Reflected)
 		
 		if q.returns[len(q.returns)-1] != nil {
-			print("We have a return!")
+			//Damn, we have returns, how we gonna flip this around.
+			//Hmmm... Time to invent a new protocol >:)
+			function.Function, statement = q.lang.UpdateFunction(function.Function, name, function.Names, Arguments, convert(q.returns[len(q.returns)-1]))
+			q.returns = q.returns[:len(q.returns)-1]
 		}
 	}
 	

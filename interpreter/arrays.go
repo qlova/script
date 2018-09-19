@@ -3,6 +3,8 @@ package Interpreter
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/internal"
 
+import "math/big"
+
 //Returns a new String that concatenates 'a' and 'b'.
 func (l *implementation) Join(a, b language.Type) language.Type {
 	block := l.loadBlock()
@@ -44,8 +46,21 @@ func (l *implementation) LiteralArray(array interface{}) language.Array {
 
 //Returns a Number representing the length of 'array'
 func (l *implementation) Length(array language.Type) language.Number {
-	panic("Error in "+Name+".LengthArray("+array.Name()+"): Unimplemented")
-	return nil
+	block := l.loadBlock()
+	
+	var n = l.NewNumber()
+	
+	var Address = n.Address
+	var Length = int64(array.(Array).Length())
+	if Length == 0 {
+		panic("Error in "+Name+".Length("+array.Name()+"): Unimplemented for length == 0")
+	}
+	
+	block.AddInstruction(func() {
+		block.SetNumber(Address, big.NewInt(Length))
+	})
+
+	return n
 }
 
 //Returns a List of type T.
@@ -77,26 +92,26 @@ type Array struct {
 	internal.Variable
 	
 	Address internal.ArrayAddress
-	Empty bool
+	
+	Literal []language.Type
 }
 
 //Returns a Number representing the length of 'array'
-func (l *implementation) Array(T language.Type, length language.Number) language.Array {
-	if (length.(Number).Literal == nil) {
-		panic("Error in "+Name+".Array("+T.Name()+", []language.Type): length is not a literal.")
-	}
-	
+func (l *implementation) Array(T language.Type, length int) language.Array {
 	var result = Array{}
-	result.Empty = true
-	result.Size = int(length.(Number).Literal.Int64())
+	result.Size = length
 	result.Subtype = T
 	return result
 }
 
 
-//Returns a Number representing the length of 'array'
+//Returns a filled type of type T with 'elements'
 func (l *implementation) Fill(T language.Type, elements []language.Type) language.Type {
+	if len(elements) != T.(Array).Length() {
+		panic("Error in "+Name+".Fill("+T.Name()+", []language.Type): Invalid Length")
+	}
 	
-	panic("Error in "+Name+".Fill("+T.Name()+", []language.Type): Unimplemented")
-	return nil
+	var a = T.(Array)
+	a.Literal = elements
+	return a
 }

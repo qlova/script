@@ -129,6 +129,8 @@ type Script struct {
 	last bytes.Buffer
 	
 	returns []Type
+	
+	Optimise bool
 }
 
 func NewScript() *Script {

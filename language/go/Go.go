@@ -63,6 +63,10 @@ func Language() *implementation {
 func (l *implementation) Name() string { return Name }
 
 func (l *implementation) GoTypeOf(T language.Type) string {
+	if T == nil {
+		return ""
+	}
+	
 	switch T.(type) {
 		case language.Number:
 			l.Import(NumberImport)
@@ -120,6 +124,9 @@ func (l *implementation) GetExpression(T language.Type) string {
 		case language.Boolean:
 			return string(fmt.Sprint(T))
 			
+		case language.Error:
+			return T.(Error).Expression
+			
 		case language.Number:
 			n := T.(Number)
 			
@@ -146,7 +153,7 @@ func (l *implementation) GetExpression(T language.Type) string {
 			return T.(Function).Expression
 		
 		case language.Custom, language.Stream, language.List,
-			language.Table, language.Error, language.Float, language.Pointer, 
+			language.Table, language.Float, language.Pointer, 
 			language.Dynamic, language.Metatype, language.FunctionType:
 		
 		panic(PanicName+": Unimplented")

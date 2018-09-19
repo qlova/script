@@ -4,11 +4,13 @@ import "fmt"
 import "github.com/qlova/script/language"
 
 type Boolean struct {
-	language.String
+	language.Boolean
 	EmbeddedScript
 
 	Literal *bool
 }
+
+func (Boolean) SameAs(i interface{}) bool { _, ok := i.(Boolean); return ok }
 
 //Converts a Go bool to a language.Boolean.
 func (q *Script) Boolean(b ...bool) Boolean {

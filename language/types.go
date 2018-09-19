@@ -33,6 +33,8 @@ type ArrayType struct {
 
 	Subtype Type
 	Size int
+	
+	Full bool
 }
 	func (ArrayType) Name() string { return "array" }
 	func (ArrayType) SameAs(i interface{}) bool { _, ok := i.(ArrayType); return ok }

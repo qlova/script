@@ -58,6 +58,10 @@ func (c *Compiler) Debug(T Type) {
 	fmt.Println(reflect.TypeOf(T))
 }
 
+func (c *Compiler) Trace() {
+	c.Script.Trace(c.Scanners[len(c.Scanners)-1].Line, c.Scanners[len(c.Scanners)-1].Filename)
+}
+
 func (c *Compiler) Token() string {
 	return c.token
 }

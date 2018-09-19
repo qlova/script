@@ -80,16 +80,42 @@ func (l *implementation) SymbolToNumber(symbol Symbol) Number {
 	
 	return s
 }
+
+func (l *implementation) StringToNumber(s String) Number {
+	if s.IsLiteral {
+		var z big.Int
+		z.SetString(s.Literal, 10)
+		return Number{Literal: &z}
+	}
+	
+	Block := l.loadBlock()
+
+	var n = l.NewNumber()
+	var Address = n.Address
+
+	var StringPointer = s.BlockPointer
+	var StringAddress = s.Address
+	Block.AddInstruction(func() {
+		var z big.Int
+		z.SetString(StringPointer.GetString(StringAddress), 10)
+		Block.SetNumber(Address, &z)
+	})
+	
+	return n
+}
 		
 //Returns Type cast to Number.
 func (l *implementation) ToNumber(T language.Type) language.Number {
 	
-	switch T.(type) {
+	switch value := T.(type) {
 		case Number:
-			return T.(Number)
+			return value
+		
+		case String:
+			return l.StringToNumber(value)
 			
 		case Symbol:
-			return l.SymbolToNumber(T.(Symbol))
+			return l.SymbolToNumber(value)
 			
 	}
 	

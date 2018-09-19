@@ -21,6 +21,9 @@ type Block struct {
 	
 	//Pointers to local Instruction space.
 	pointers []int
+	
+	//This block stores return values inside, erm yea seems kinda wasteful.
+	ReturnsBlock *Block
 }
 
 func (b *Block) PushPointer() {
@@ -144,6 +147,10 @@ func (address ArrayAddress) Address() int { return int(address) }
 						b.SetNumber(NumberAddress(Address.Address() + i), &z)
 					}
 				})
+			
+			case language.String:
+				Address = StringAddress(len(b.Strings))
+				b.Strings = append(b.Strings, make([]string, Length)...)
 				
 			default:
 				panic("Error in Block.CreateArray("+T.Name()+"): Unsupported subtype for Array: "+T.SubType().Name())

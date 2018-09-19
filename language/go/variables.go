@@ -75,8 +75,11 @@ func (l *implementation) Literal(value interface{}) language.Type {
 
 
 func GetVariable(name string, T language.Type) language.Type {
+	if T == nil {
+		return String(name)
+	}
 	
-	switch T.(type) {
+	switch v := T.(type) {
 		case language.Number:
 			return Number{Expression: name}
 			
@@ -93,6 +96,8 @@ func GetVariable(name string, T language.Type) language.Type {
 		
 		case language.Array:
 			var ret = Array{}
+			ret.Size = v.Length()
+			ret.Subtype = v.SubType()
 			ret.Expression = name
 			return ret
 			

@@ -2,27 +2,26 @@ package Interpreter
 
 import "github.com/qlova/script/language"
 
-//Returns an Error with 'code' and 'message'.
-func (l *implementation) LiteralError(code language.Number, message language.String) language.Error {
-	panic("Error in "+Name+".LiteralError(Number, String): Unimplemented")
+//Returns a Statement that throws an error to the thread, this should not halt the program.
+func (l *implementation) Error() language.Error {
+	panic(Name+".Error() Not Implemented")
 	return nil
 }
 
-
-//Returns a Statement that embeds an error within another error.
-func (l *implementation) Embed(a, b language.Error) language.Statement {
-	panic("Error in "+Name+".Embed(Error, Error): Unimplemented")
+//Returns a Statement that throws an error to the thread, this should not halt the program.
+func (l *implementation) Trace(line int, filename string) language.Statement {
+	panic(Name+".Trace() Not Implemented")
 	return ""
 }
 
 //Returns a Statement that throws an error to the thread, this should not halt the program.
-func (l *implementation) Throw(err language.Error) language.Statement {
-	panic("Error in "+Name+".Throw(String, String): Unimplemented")
+func (l *implementation) Throw(code language.Number, message language.String) language.Statement {
+	panic(Name+".Throw() Not Implemented")
 	return ""
 }
 
 //Returns a Error that is sitting on the thread.
-func (l *implementation) Catch() language.Error {
-	panic("Error in "+Name+".Catch(): Unimplemented")
+func (l *implementation) Catch() language.Boolean {
+	panic(Name+".Catch() Not Implemented")
 	return nil
 }

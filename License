@@ -10,13 +10,8 @@ notice, this list of conditions and the following disclaimer.
 copyright notice, this list of conditions and the following disclaimer
 in the documentation and/or other materials provided with the
 distribution.
-   * Neither the names:
-        Qlovascript, 
-        Qleverscript, 
-        Qlevascript, 
-        Cleverscript, 
-        Clovascript,
-        Clevascript, 
+   * Neither words matching the regular expressions '.*v.*script' or '[GgQqKkCc]l.*script',
+    nor the name of Qlova Limited,
     nor the names of this software's contributors may be used to title, endorse or promote products derived from
 this software without specific prior written permission.
 

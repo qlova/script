@@ -25,7 +25,7 @@ func (l *implementation) Not(a language.Boolean) language.Boolean {
 
 
 func (l *implementation) If(condition language.Boolean) language.Statement {
-	return language.Statement("if "+l.GetExpression(condition)+" {\n")
+	return language.Statement("if ("+l.GetExpression(condition)+") {\n")
 	
 	panic("Error in "+Name+".If(switch): Unimplemented")
 	return ""
@@ -57,7 +57,7 @@ func (l *implementation) EndIf() language.Statement {
 
 
 func (l *implementation) Equals(a, b language.Type) language.Boolean {
-	return Boolean("("+l.GetExpression(a)+".Cmp("+l.GetExpression(b)+") == 0)")
+	return Boolean("("+l.GetExpression(a)+" == "+l.GetExpression(b)+")")
 	
 	panic("Error in "+Name+".Equals("+a.Name()+", "+b.Name()+"): Unimplemented")
 	return nil

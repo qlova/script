@@ -1,6 +1,7 @@
 package script
 
 import "fmt"
+import "reflect"
 import "github.com/qlova/script/language"
 
 type Boolean struct {
@@ -21,7 +22,7 @@ func (q Script) Boolean(b ...bool) Boolean {
 	return Boolean{Literal: &boolean, EmbeddedScript: EmbeddedScript{ q: q }}
 }
 
-func (q Script) Equals(a, b Number) Boolean {
+func (q Script) Equals(a, b Type) Boolean {
 	return q.wrap(q.lang.Equals(convert(a), convert(b))).(Boolean)
 }
 
@@ -53,7 +54,7 @@ func (q Script) If(condition Boolean, block func(Script), ifelsechain ...IfElseC
 		} else if endchain, ok := ifelsechain[0].(*EndChain); ok {
 			chain = endchain.ElseIfChain.Chain
 		} else {
-			panic("Invalid If statement! "+fmt.Sprint(ifelsechain[0]))
+			panic("Invalid If statement! "+fmt.Sprint(reflect.TypeOf(ifelsechain[0])))
 		}
 	}
 

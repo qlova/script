@@ -23,6 +23,10 @@ type Array struct {
 	language.ArrayType
 }
 
+type List struct {
+	language.ListType
+}
+
 //Returns a Number representing the length of 'list'
 func (l *implementation) Length(list language.Type) language.Number {
 	l.Import(NumberImport)

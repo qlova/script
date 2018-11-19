@@ -222,8 +222,8 @@ type Interface interface {
 		//Returns a Statement that ends a ranged for loop.
 		EndForRange() Statement
 		
-		//Returns a Statement that begins an iteration over List 'list', setting 'i' to the index and 'v' to the value at that index.
-		ForEach(i string, v string, list List) Statement
+		//Returns an i, v and a Statement that begins an iteration over List 'list', setting 'i' to the index and 'v' to the value at that index.
+		ForEach(i string, v string, list Type) (Number, Type, Statement)
 		
 		//Returns a Statement that ends an iteration over List
 		EndForEach() Statement

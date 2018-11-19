@@ -12,15 +12,15 @@ type Function struct {
 	Names []string
 }
 
-func (q *Script) External(name String) Function {
+func (q Script) External(name String) Function {
 	return q.wrap(q.lang.External(convert(name).(language.String))).(Function)
 }
 
-func (q *Script) Function(i interface{}) Function {
+func (q Script) Function(i interface{}) Function {
 	return Function{Literal: i, EmbeddedScript: EmbeddedScript{q:q}}
 }
 
-func (q *Script) Return(T Type) {
+func (q Script) Return(T Type) {
 	q.indent()
 	q.write(q.lang.Return(convert(T)))
 

@@ -10,14 +10,14 @@ type Array struct {
 	EmbeddedScript
 	
 	Literal []Type
-	msg string
+	msg string //debug?
 }
 
 func (a Array) SubType() Type {
 	return a.q.wrap(a.Array.SubType())
 }
 
-func (q *Script) Array(T interface{}, length ...int) Array {
+func (q Script) Array(T interface{}, length ...int) Array {
 	if len(length) > 0 {
 		return q.wrap(q.lang.Array(convert(T.(Type)), length[0])).(Array)
 	}
@@ -42,7 +42,7 @@ func (q *Script) Array(T interface{}, length ...int) Array {
 	return a
 }
 
-func (q *Script) Length(T Type) Number {
+func (q Script) Length(T Type) Number {
 	
 	if q.Optimise {
 		if array, ok := T.(Array); ok {
@@ -53,11 +53,11 @@ func (q *Script) Length(T Type) Number {
 	return q.wrap(q.lang.Length(convert(T))).(Number)
 }
 
-func (q *Script) Index(T Type, index Number) Type {
+func (q Script) Index(T Type, index Number) Type {
 	return q.wrap(q.lang.Index(convert(T), convert(index)))
 }
 
-func (q *Script) Modify(T Type, index Number, value Type) {
+func (q Script) Modify(T Type, index Number, value Type) {
 	q.indent()
 	q.write(q.lang.Modify(convert(T), convert(index), convert(value)))
 }

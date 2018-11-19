@@ -13,7 +13,7 @@ type Boolean struct {
 func (Boolean) SameAs(i interface{}) bool { _, ok := i.(Boolean); return ok }
 
 //Converts a Go bool to a language.Boolean.
-func (q *Script) Boolean(b ...bool) Boolean {
+func (q Script) Boolean(b ...bool) Boolean {
 	boolean := false
 	if len(b) > 0 {
 		boolean = b[0]
@@ -21,29 +21,29 @@ func (q *Script) Boolean(b ...bool) Boolean {
 	return Boolean{Literal: &boolean, EmbeddedScript: EmbeddedScript{ q: q }}
 }
 
-func (q *Script) Equals(a, b Number) Boolean {
+func (q Script) Equals(a, b Number) Boolean {
 	return q.wrap(q.lang.Equals(convert(a), convert(b))).(Boolean)
 }
 
-func (q *Script) And(a, b Boolean) Boolean {
+func (q Script) And(a, b Boolean) Boolean {
 	return q.wrap(q.lang.And(convert(a).(language.Boolean), convert(b).(language.Boolean))).(Boolean)
 }
 
-func (q *Script) Or(a, b Boolean) Boolean {
+func (q Script) Or(a, b Boolean) Boolean {
 	return q.wrap(q.lang.Or(convert(a).(language.Boolean), convert(b).(language.Boolean))).(Boolean)
 }
 
-func (q *Script) Not(a Boolean) Boolean {
+func (q Script) Not(a Boolean) Boolean {
 	return q.wrap(q.lang.Not(convert(a).(language.Boolean))).(Boolean)
 }
 
-func (q *Script) Xor(a, b Boolean) Boolean {
+func (q Script) Xor(a, b Boolean) Boolean {
 	return q.And(q.Or(a, b), q.Not(q.And(a, b)))
 }
 
 
 //Magic to make If statements both type and format safe.
-func (q *Script) If(condition Boolean, block func(*Script), ifelsechain ...IfElseChain) {
+func (q Script) If(condition Boolean, block func(Script), ifelsechain ...IfElseChain) {
 	
 	var chain Chain
 	
@@ -80,10 +80,10 @@ func (q *Script) If(condition Boolean, block func(*Script), ifelsechain ...IfEls
 }
 
 type Chain struct {
-	head func(*Script)
-	neck []func(*Script)
-	body []func(*Script)
-	tail func(*Script)
+	head func(Script)
+	neck []func(Script)
+	body []func(Script)
+	tail func(Script)
 }
 
 type IfElseChain interface {
@@ -102,12 +102,12 @@ type EndChain struct {
 
 func (EndChain) ifElseChain() {}
 
-func (q *Script) ElseIf(condition Boolean, block func(*Script)) *ElseIfChain {
+func (q Script) ElseIf(condition Boolean, block func(Script)) *ElseIfChain {
 	return new(ElseIfChain).ElseIf(condition, block)
 }
 
-func (chain *ElseIfChain) ElseIf(condition Boolean, block func(*Script)) *ElseIfChain {
-	chain.body = append(chain.body, func(q *Script) {
+func (chain *ElseIfChain) ElseIf(condition Boolean, block func(Script)) *ElseIfChain {
+	chain.body = append(chain.body, func(q Script) {
 		q.indent()
 		q.write(q.lang.ElseIf(convert(condition).(language.Boolean)))
 		q.depth++
@@ -119,11 +119,11 @@ func (chain *ElseIfChain) ElseIf(condition Boolean, block func(*Script)) *ElseIf
 }
 
 
-func (q *Script) Else(block func(*Script)) *EndChain {
+func (q Script) Else(block func(Script)) *EndChain {
 	return new(ElseIfChain).Else(block)
 }
 
-func (chain *ElseIfChain) Else(block func(*Script)) *EndChain {
+func (chain *ElseIfChain) Else(block func(Script)) *EndChain {
 	chain.tail = block
 	
 	return &EndChain{ElseIfChain: *chain}

@@ -148,11 +148,15 @@ func (l *implementation) GetExpression(T language.Type) string {
 		case language.Array:
 			a := T.(Array)
 			return a.Expression
+			
+		case language.List:
+			a := T.(List)
+			return a.Expression
 		
 		case language.Function:
 			return T.(Function).Expression
 		
-		case language.Custom, language.Stream, language.List,
+		case language.Custom, language.Stream,
 			language.Table, language.Float, language.Pointer, 
 			language.Dynamic, language.Metatype, language.FunctionType:
 		

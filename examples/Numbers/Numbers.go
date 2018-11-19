@@ -8,14 +8,14 @@ const X, Y = 100, 7
 
 func main() {
 	
-	var software = script.NewProgram(func(q *script.Script) {
-		q.Main(func(q *script.Script) {
+	var software = script.NewProgram(func(q script.Script) {
+		q.Main(func(q script.Script) {
 			
 			q.Print(q.String("My Favourite Number:"), q.Number(22))
 			q.Print()
 			
-			x := q.DefineNumber("x", q.Number(X))
-			y := q.DefineNumber("y", q.Number(Y))
+			x := q.Define("x", q.Number(X)).(script.Number)
+			y := q.Define("y", q.Number(Y)).(script.Number)
 
 			q.Print(q.String("Operations on"), x, q.String("&"), y)
 			q.Print(q.String("======================"))

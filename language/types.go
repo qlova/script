@@ -42,6 +42,18 @@ type ArrayType struct {
 	func (a ArrayType) Length() int { return a.Size }
 	func (a ArrayType) SubType() Type { return a.Subtype }
 	
+type ListType struct {
+	Expression string
+
+	Subtype Type
+	Size int
+}
+	func (ListType) Name() string { return "list" }
+	func (ListType) SameAs(i interface{}) bool { _, ok := i.(ListType); return ok }
+	func (ListType) List() {}
+	func (a ListType) Length() int { return a.Size }
+	func (a ListType) SubType() Type { return a.Subtype }
+	
 type FunctionType struct {
 	Expression string
 

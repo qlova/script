@@ -10,7 +10,7 @@ type Symbol struct {
 }
 
 //Converts a Go rune to a Symbol.
-func (q *Script) Symbol(s ...rune) Symbol {
+func (q Script) Symbol(s ...rune) Symbol {
 	var r rune = 0
 	if len(s) > 0 {
 		r = s[0]

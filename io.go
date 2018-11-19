@@ -3,7 +3,7 @@ package script
 import "github.com/qlova/script/language"
 
 //Prints 'values' to Stdout with a trailing newline.
-func (q *Script) Print(value ...Type) {
+func (q Script) Print(value ...Type) {
 	
 	var values = make([]language.Type, len(value))
 	for i := range value {
@@ -15,7 +15,7 @@ func (q *Script) Print(value ...Type) {
 }
 
 //Prints 'values' to Stdout with a trailing newline.
-func (q *Script) Write(value ...Type) {
+func (q Script) Write(value ...Type) {
 	
 	var values = make([]language.Type, len(value))
 	for i := range value {
@@ -27,7 +27,7 @@ func (q *Script) Write(value ...Type) {
 }
 
 //Prints 'values' to Stdout with a trailing newline.
-func (q *Script) Read(value Type) Type {	
+func (q Script) Read(value Type) Type {	
 	switch value.(type) {
 		case Symbol:
 			

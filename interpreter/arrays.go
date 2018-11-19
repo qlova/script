@@ -96,6 +96,13 @@ type Array struct {
 	Literal []language.Type
 }
 
+type List struct {
+	language.ListType
+	internal.Variable
+	
+	Address internal.ValueAddress
+}
+
 //Returns a Number representing the length of 'array'
 func (l *implementation) Array(T language.Type, length int) language.Array {
 	var result = Array{}

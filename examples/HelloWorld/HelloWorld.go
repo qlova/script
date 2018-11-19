@@ -6,9 +6,9 @@ import "github.com/qlova/script/language/go"
 import "fmt"
 
 func main() {
-	var HelloWorld = qlova.NewProgram(func (q *qlova.Script) {
+	var HelloWorld = qlova.NewProgram(func (q qlova.Script) {
 
-		q.Main(func(q *qlova.Script) {
+		q.Main(func(q qlova.Script) {
 			q.Print(q.String("Hello World"))
 		})
 

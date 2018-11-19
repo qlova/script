@@ -3,16 +3,20 @@ package script
 import "github.com/qlova/script/language"
 
 type EmbeddedScript struct {
-	q *Script
+	q Script
 }
-func (e EmbeddedScript) script() *Script { return e.q }
+func (e EmbeddedScript) script() Script { return e.q }
 
 type Type interface {
 	language.Type
-	script() *Script
+	script() Script
 }
 
-func (q *Script) wrap(t language.Type) Type {
+func (q Script) Wrap(t language.Type) Type {
+	return q.wrap(t)
+}
+
+func (q Script) wrap(t language.Type) Type {
 	switch value := t.(type) {
 		case language.String:
 			return String{String: value, EmbeddedScript:EmbeddedScript{q:q}}
@@ -25,6 +29,9 @@ func (q *Script) wrap(t language.Type) Type {
 		
 		case language.Function:
 			return Function{Function: value, EmbeddedScript:EmbeddedScript{q:q}}
+		
+		case language.List:
+			return List{List: value, EmbeddedScript:EmbeddedScript{q:q}}
 		
 		case language.Array:
 			return Array{Array: value, EmbeddedScript:EmbeddedScript{q:q}}
@@ -82,6 +89,13 @@ func convert(l Type) language.Type {
 					}
 
 					return value.q.lang.Fill(value.q.lang.Array(elements[0], len(value.Literal)), elements)
+				}
+				
+			case List:
+				if value.Literal == nil {
+					return value.List
+				} else {
+					panic("Unimplemented")
 				}
 				
 			case Function:

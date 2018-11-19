@@ -1,6 +1,6 @@
 package script
 
-func (q *Script) ToString(T Type) String {
+func (q Script) ToString(T Type) String {
 	
 	switch value := T.(type) {
 		case String:
@@ -16,10 +16,10 @@ func (q *Script) ToString(T Type) String {
 	return q.wrap(q.lang.ToString(convert(T))).(String)
 }
 
-func (q *Script) ToNumber(T Type) Number {
+func (q Script) ToNumber(T Type) Number {
 	return q.wrap(q.lang.ToNumber(convert(T))).(Number)
 }
 
-func (q *Script) ToSymbol(T Type) Symbol {
+func (q Script) ToSymbol(T Type) Symbol {
 	return q.wrap(q.lang.ToSymbol(convert(T))).(Symbol)
 }

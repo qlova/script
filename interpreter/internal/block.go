@@ -1,8 +1,10 @@
 package internal
 
+import "reflect"
 import "math/big"
 import "github.com/qlova/script/language"
 
+//TODO Maybe just use reflect values? I dunno what is faster.
 type Block struct {
 	//Local Type registers.
 	Numbers []*big.Int
@@ -10,6 +12,8 @@ type Block struct {
 	Booleans []bool
 	Symbols []rune
 	Functions []*Block
+	
+	Values []reflect.Value
 
 	Pointers []int
 	
@@ -127,6 +131,22 @@ func (address FunctionAddress) Address() int { return int(address) }
 
 	func (b *Block) GetFunction(address FunctionAddress) *Block {
 		return b.Functions[address]
+	}
+	
+type ValueAddress int
+func (address ValueAddress) Address() int { return int(address) }
+	
+	func (b *Block) CreateValue() ValueAddress {
+		b.Values = append(b.Values, reflect.Value{})
+		return ValueAddress(len(b.Values)-1)
+	}
+
+	func (b *Block) SetValue(address ValueAddress, value reflect.Value)  {
+		b.Values[address] = value
+	}
+
+	func (b *Block) GetValue(address ValueAddress) reflect.Value {
+		return b.Values[address]
 	}
 	
 type ArrayAddress int

@@ -42,9 +42,22 @@ func (l *implementation) Literal(value interface{}) language.Type {
 		return Number{Literal:b}
 	}
 	
-	switch value.(type) {
+	switch v := value.(type) {
 		case rune:
-			return Symbol(strconv.QuoteRune(value.(rune)));
+			return Symbol(strconv.QuoteRune(v));
+			
+		case []Number:
+			var result List
+			result.Expression += "[]Number{"
+			for i := range v {
+				result.Expression += l.GetExpression(v[i])
+				if i < len(v)-1 {
+					result.Expression += ","
+				}
+			}
+			result.Expression += "}"
+			result.Subtype = Number{}
+			return result
 	}
 	
 	var T = reflect.TypeOf(value)
@@ -101,8 +114,14 @@ func GetVariable(name string, T language.Type) language.Type {
 			ret.Expression = name
 			return ret
 			
+		case language.List:
+			var ret = List{}
+			ret.Subtype = v.SubType()
+			ret.Expression = name
+			return ret
+			
 		case language.Symbol, 
-			language.Custom, language.Stream, language.List,
+			language.Custom, language.Stream,
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic, language.Metatype:
 		

@@ -41,6 +41,8 @@ type Compiler struct {
 	token string
 	
 	Errors bool
+	
+	Data interface{}
 }
 
 func New() *Compiler {
@@ -124,6 +126,14 @@ func (c *Compiler) Scan() string {
 	return token
 }
 
+func (c *Compiler) ScanLine() string {
+	var line string
+	for token := c.Scan(); token != "\n"; {
+		line += token
+	}
+	return line
+}
+
 func (c *Compiler) ScanType(T Type) Type {
 	var expression = c.ScanExpression()
 	
@@ -174,7 +184,7 @@ func (c *Compiler) CompileBlock(first, last string) {
 	}
 }
 
-func (c *Compiler) Compile() qlova.Program {
+func (c *Compiler) GetProgram() qlova.Program {
 	
 	return qlova.NewProgram(func(q *qlova.Script) {
 		c.Script = q
@@ -197,4 +207,23 @@ func (c *Compiler) Compile() qlova.Program {
 			}
 		}
 	})
+}
+
+
+func (c *Compiler) Compile() {
+	if c.GlobalScope.Variables == nil {
+		c.GlobalScope = NewScope()
+	}
+	
+	if len(c.Scanners) == 0 {
+		return
+	}
+	
+	for {
+		c.ScanStatement()
+		if len(c.Scanners) == 0 {
+			c.Script.Last()
+			return
+		}
+	}
 }

@@ -13,7 +13,7 @@ type Number struct {
 func (Number) SameAs(i interface{}) bool { _, ok := i.(Number); return ok }
 
 //Converts a Go integer to a language.Number.
-func (q *Script) Number(n ...int) Number {
+func (q Script) Number(n ...int) Number {
 	if len(n) > 0 {
 		num := n[0]
 		return Number{Literal: big.NewInt(int64(num)), EmbeddedScript: EmbeddedScript{ q: q }}
@@ -22,30 +22,30 @@ func (q *Script) Number(n ...int) Number {
 }
 
 //Converts a Go integer to a language.Number.
-func (q *Script) BigNumber(i *big.Int) Number {
+func (q Script) BigNumber(i *big.Int) Number {
 	return Number{Literal: i, EmbeddedScript: EmbeddedScript{ q: q }}
 }
 
-func (q *Script) Add(a, b Number) Number {
+func (q Script) Add(a, b Number) Number {
 	return q.wrap(q.lang.Add(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Sub(a, b Number) Number {
+func (q Script) Sub(a, b Number) Number {
 	return q.wrap(q.lang.Sub(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Pow(a, b Number) Number {
+func (q Script) Pow(a, b Number) Number {
 	return q.wrap(q.lang.Pow(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Mul(a, b Number) Number {
+func (q Script) Mul(a, b Number) Number {
 	return q.wrap(q.lang.Mul(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Div(a, b Number) Number {
+func (q Script) Div(a, b Number) Number {
 	return q.wrap(q.lang.Div(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }
 
-func (q *Script) Mod(a, b Number) Number {
+func (q Script) Mod(a, b Number) Number {
 	return q.wrap(q.lang.Mod(convert(a).(language.Number), convert(b).(language.Number))).(Number)
 }

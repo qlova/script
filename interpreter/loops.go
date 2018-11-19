@@ -36,7 +36,7 @@ func (l *implementation) EndWhile() language.Statement {
 //Returns a Statement that begins a for loop that iterates along the range between 'a' and 'b'.
 func (l *implementation) ForRange(i string, a, b language.Number) (language.Number, language.Statement) {
 	var Block = l.loadBlock()
-	var Address = Block.CreateNumber()
+	var Address = Block.CreateNumber() //This is the address of the iterator.
 	
 	A, B := a.(Number), b.(Number)
 	
@@ -96,13 +96,74 @@ func (l *implementation) EndForRange() language.Statement {
 }
 
 //Returns a Statement that begins an iteration over List 'list', setting 'i' to the index and 'v' to the value at that index.
-func (l *implementation) ForEach(i string, v string, list language.List) language.Statement {
-	panic("Error in "+Name+".ForEach("+i+", "+v+", List): Unimplemented")
-	return ""		
+func (l *implementation) ForEach(i string, v string, list language.Type) (language.Number, language.Type, language.Statement) {
+
+	var Block = l.loadBlock()
+	
+	var value language.Type
+	
+	switch li := list.(type) {
+		case language.Array:
+			value, _ = l.GetVariable(v, li.SubType())
+		case language.List:
+			value, _ = l.GetVariable(v, li.SubType())
+		default:
+			panic("Error in "+Name+".ForEach("+i+", "+v+", "+list.Name()+"): Unimplemented")
+	}
+
+	
+	var number = Number{}
+	var Address = Block.CreateNumber()
+	number.BlockPointer = Block
+	number.Address = Address
+	Block.AddInstruction(func() {
+		Block.SetNumber(Address, big.NewInt(0))
+	})
+	
+	Block.PushPointer()
+	
+	switch list.(type) {
+		case language.Array:
+			panic("Error in "+Name+".ForRange(Number, Number): Unimplemented")
+		case language.List:
+			var ListAddress = list.(List).Address
+			Block.AddInstruction(func() {
+				var number = Block.GetNumber(Address)
+				var list = Block.GetValue(ListAddress)
+				if number.Cmp(big.NewInt(int64(list.Len()))) == -1 {
+					
+					//Set v
+					
+					
+					number.Add(number, big.NewInt(1))
+				} else {
+					l.InstructionPointer = l.BreakPoint
+				}
+				
+				
+				
+			})
+	}
+	return number, value, ""	
 }
 
 //Returns a Statement that ends an iteration over List
 func (l *implementation) EndForEach() language.Statement {
-	panic("Error in "+Name+".EndForEach(): Unimplemented")
-	return ""		
+	var Block = l.loadBlock()
+	var Pointer = Block.PopPointer()
+	
+	var Break = len(Block.Instructions)+1
+	
+	if Block.Instructions[Pointer] != nil {
+		panic("Error in EndForEach(), Invalid loop")
+	}
+	
+	Block.Instructions[Pointer] = func() {
+		l.BreakPoint = Break
+	}
+	
+	Block.AddInstruction(func() {
+		l.InstructionPointer = Pointer
+	})
+	return ""
 }

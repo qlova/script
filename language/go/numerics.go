@@ -83,14 +83,25 @@ func (l *implementation) Mul(a, b language.Number) language.Number {
 	}
 	
 	l.Import("math/big")
-	l.AddHelper(`func Mul(a, b *big.Int) *big.Int {
-	var z = big.NewInt(0)
-	z.Mul(a, b)
-	return &z
+	l.AddHelper(`func (a Number) Mul(b Number) Number {
+	if ca, cb := a.Large == nil, b.Large == nil; ca || cb {
+		if ca && cb {
+			var z = Number{Small:a.Small*b.Small}
+			if (a.Small != 0 && z.Small / a.Small != b.Small) {
+				return Number{Large:new(big.Int).Mul(big.NewInt(a.Small), big.NewInt(b.Small))}
+			}
+			return z
+		} else if !ca {
+			return Number{Large: new(big.Int).Mul(a.Large, big.NewInt(b.Small))}
+		} else if !cb {
+			return Number{Large: new(big.Int).Mul(big.NewInt(a.Small), b.Large)}
+		}
+	}
+	return Number{Large: new(big.Int).Mul(a.Large, b.Large)}
 }
 `)
 	
-	return Number{Expression: "Mul("+l.GetExpression(A)+","+l.GetExpression(B)+")"}
+	return Number{Expression: l.GetExpression(A)+".Mul("+l.GetExpression(B)+")"}
 }
 
 //Returns a Number that is the quotient of 'a' and 'b'.

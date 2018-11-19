@@ -78,13 +78,29 @@ func (l *implementation) EndForRange() language.Statement {
 }
 
 //Returns a Statement that begins an iteration over List 'list', setting 'i' to the index and 'v' to the value at that index.
-func (l *implementation) ForEach(i string, v string, list language.List) language.Statement {
-	panic("Error in "+Name+".ForEach("+i+", "+v+", List): Unimplemented")
-	return ""		
+func (l *implementation) ForEach(i string, v string, list language.Type) (language.Number, language.Type, language.Statement) {
+
+	var value language.Type
+	
+	switch l := list.(type) {
+		case language.Array:
+			value = GetVariable(v, l.SubType())
+		case language.List:
+			value = GetVariable(v, l.SubType())
+		default:
+			panic("Error in "+Name+".ForEach("+i+", "+v+", "+list.Name()+"): Unimplemented")
+	}
+	
+	l.AddHelper(`func use(int) {}
+`)
+	
+	var iexp Number
+	iexp.Expression = "Number{Small:int64(i)}"
+	
+	return iexp, value, language.Statement("for "+i+", "+v+" := range "+l.GetExpression(list)+" { use(i)\n")
 }
 
 //Returns a Statement that ends an iteration over List
 func (l *implementation) EndForEach() language.Statement {
-	panic("Error in "+Name+".EndForEach(): Unimplemented")
-	return ""		
+	return language.Statement("}\n")
 }

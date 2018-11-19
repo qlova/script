@@ -46,6 +46,28 @@ func (l *implementation) Literal(value interface{}) language.Type {
 			result.BlockPointer = block
 
 			return result
+			
+		case []Number:
+			var Address = block.CreateValue()
+			var SliceType = reflect.SliceOf(reflect.TypeOf(big.NewInt(0)))
+			var length = len(v)
+			block.AddInstruction(func() {
+				var Slice = reflect.MakeSlice(SliceType, length, length)
+				
+				for i := 0; i < length; i++ {
+					BlockPointer := v[i].BlockPointer
+					Address := v[i].Address
+					Slice.Index(i).Set(reflect.ValueOf(BlockPointer.GetNumber(Address)))
+				}
+				
+				block.SetValue(Address, Slice)
+			})
+			
+			var result List
+			result.Subtype = Number{}
+			result.Address = Address
+			result.BlockPointer = block
+			return result
 	}
 	
 	var T = reflect.TypeOf(value)
@@ -187,8 +209,21 @@ func (l *implementation) Define(name string, value language.Type) (language.Type
 			
 			return a, ""
 			
+		case language.List:
+			list := value.(List)
+			
+			var Address = block.CreateValue()
+			
+			a := List{}
+			a.BlockPointer = block
+			a.Address = Address
+			a.Size = list.Size
+			a.Subtype = list.Subtype
+			
+			return a, ""
+			
 		case language.Symbol,
-			language.Custom, language.Stream, language.List,
+			language.Custom, language.Stream,
 			language.Table, language.Error, language.Float, language.Pointer, 
 			language.Dynamic,language.Metatype:
 		
@@ -396,3 +431,6 @@ func (l *implementation) Modify(T language.Type, index language.Type, value lang
 	return ""
 }
  
+func (l *implementation) GetVariable(T language.Type) language.Type {
+	
+}

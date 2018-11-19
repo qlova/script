@@ -13,7 +13,7 @@ func (String) SameAs(i interface{}) bool { _, ok := i.(String); return ok }
 func (String) Joinable() {}
 
 //Converts a Go string to a language.String.
-func (q *Script) String(s ...string) String {
+func (q Script) String(s ...string) String {
 	str := ""
 	if len(s) > 0 {
 		str = s[0]

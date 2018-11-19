@@ -9,25 +9,25 @@ import (
 	"os"
 )
 
-import "github.com/qlova/script/interpreter"
+//import "github.com/qlova/script/interpreter"
 import "github.com/qlova/script/language"
 
 type Program struct {
-	program func(*Script)
+	program func(Script)
 	language language.Interface
 }
 
-func NewProgram(program func(*Script)) Program {
+func NewProgram(program func(Script)) Program {
 	return Program{program:program}
 }
 
 //Starts the program and waits for it to complete.
 func (p Program) Run() (err error) {
-	script := NewScript()
+	//script := NewScript()
 	
-	interpreter := Interpreter.New()
+	//interpreter := Interpreter.New()
 
-	script.lang = interpreter
+	//script.lang = interpreter
 
 	//Catch errors.
 	/*defer func() {
@@ -40,9 +40,9 @@ func (p Program) Run() (err error) {
 		}
 	}()*/
 	
-	p.program(script)
+	//p.program(script)
 	
-	interpreter.Start()
+	//interpreter.Start()
 
 	return
 }
@@ -118,6 +118,10 @@ func (p Program) WriteToFile(path string, language language.Interface) (err erro
 }
 
 type Script struct {
+	*script
+}
+
+type script struct {
 	depth int
 	
 	lang language.Interface
@@ -133,29 +137,35 @@ type Script struct {
 	Optimise bool
 }
 
-func NewScript() *Script {
-	return new(Script)
+func NewScript() Script {
+	return Script{script: new(script)}
 }
 
-func (q *Script) Init() {
+func (q Script) Init() {
 	q.lang.Init()
 }
 
-func (q *Script) Last() {
+func (q Script) Last() {
 	q.lang.Last()
 }
 
-func (q *Script) indent() {
+func (q Script) indent() {
 	for i := 0; i < q.depth; i++ {
 		q.body.WriteByte('\t')
 	}
 }
 
-func (q *Script) write(s language.Statement) {
+func (q Script) write(s language.Statement) {
 	q.body.WriteString(string(s))
 }
 
-func (q *Script) Main(f func(*Script)) {
+func (q Script) Raw(language string, statement language.Statement) {
+	if q.lang.Name() == language {
+		q.write(statement)
+	}
+}
+
+func (q Script) Main(f func(Script)) {
 	q.write(q.lang.Main())
 	q.depth++
 		f(q)

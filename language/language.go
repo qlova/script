@@ -11,6 +11,10 @@ type Type interface{
 	SameAs(interface{}) bool
 }
 
+type Rawable interface{
+	Raw() string
+}
+
 type Number interface {
 	Type
 	Number()
@@ -33,6 +37,8 @@ type Symbol interface {
 
 type String interface {
 	Type
+	Rawable
+
 	String()
 }
 

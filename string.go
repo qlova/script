@@ -12,6 +12,15 @@ func (String) SameAs(i interface{}) bool { _, ok := i.(String); return ok }
 
 func (String) Joinable() {}
 
+//Return the raw reference to this string.
+func (s String) Raw() string {
+	if s.Literal != nil {
+		return `"`+*s.Literal+`"`
+	} else {
+		return s.String.Raw()
+	}
+}
+
 //Converts a Go string to a language.String.
 func (q Script) String(s ...string) String {
 	str := ""

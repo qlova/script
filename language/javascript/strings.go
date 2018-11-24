@@ -19,6 +19,10 @@ func (String) SameAs(i interface{}) bool {
 	return ok
 }
 
+func (s String) Raw() string {
+	return string(s)
+}
+
 func (String) String() {}
 
 type Symbol string

@@ -23,19 +23,19 @@ func (q Script) Boolean(b ...bool) Boolean {
 }
 
 func (q Script) Equals(a, b Type) Boolean {
-	return q.wrap(q.lang.Equals(convert(a), convert(b))).(Boolean)
+	return q.wrap(q.lang.Equals(q.convert(a), q.convert(b))).(Boolean)
 }
 
 func (q Script) And(a, b Boolean) Boolean {
-	return q.wrap(q.lang.And(convert(a).(language.Boolean), convert(b).(language.Boolean))).(Boolean)
+	return q.wrap(q.lang.And(q.convert(a).(language.Boolean), q.convert(b).(language.Boolean))).(Boolean)
 }
 
 func (q Script) Or(a, b Boolean) Boolean {
-	return q.wrap(q.lang.Or(convert(a).(language.Boolean), convert(b).(language.Boolean))).(Boolean)
+	return q.wrap(q.lang.Or(q.convert(a).(language.Boolean), q.convert(b).(language.Boolean))).(Boolean)
 }
 
 func (q Script) Not(a Boolean) Boolean {
-	return q.wrap(q.lang.Not(convert(a).(language.Boolean))).(Boolean)
+	return q.wrap(q.lang.Not(q.convert(a).(language.Boolean))).(Boolean)
 }
 
 func (q Script) Xor(a, b Boolean) Boolean {

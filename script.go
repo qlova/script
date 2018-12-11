@@ -30,10 +30,9 @@ func (code SourceCode) String() Go.String {
 
 type Program func(Script)
 
-//Return the programs SourceCode in Go.
-func (program Program) Go() (code SourceCode) {
+func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
 	script := NewScript()
-	script.lang = Golang.Language()
+	script.lang = lang
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -60,6 +59,10 @@ func (program Program) Go() (code SourceCode) {
 	code.Data = buffer.Bytes()
 
 	return
+}
+//Return the programs SourceCode in Go.
+func (program Program) Go() (code SourceCode) {
+	return program.SourceCode(Golang.Language())
 }
 
 //Starts the program and waits for it to complete.

@@ -14,6 +14,14 @@ func String(s Go.String) string {
 	return string{literal: &s}
 }
 
+func (s string) Raw() Go.String {
+	if s.literal != nil {
+		return `"`+*s.literal+`"`
+	} else {
+		return s.String.Raw()
+	}
+}
+
 /*func (String) SameAs(i interface{}) bool { _, ok := i.(string); return ok }
 
 func (String) Joinable() {}

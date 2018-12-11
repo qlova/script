@@ -4,13 +4,14 @@ import "fmt"
 import "math/big"
 import "reflect"
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/go"
 
 type Array struct {
 	language.Array
 	EmbeddedScript
 	
 	Literal []Type
-	msg string //debug?
+	msg Go.String //debug?
 }
 
 func (a Array) SubType() Type {

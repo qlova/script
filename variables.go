@@ -1,7 +1,8 @@
 package script
 
+import "github.com/qlova/script/go"
 
-func (q Script) Define(name string, value Type) Type {
+func (q Script) Define(name Go.String, value Type) Type {
 	q.indent()
 	t, statement := q.lang.Define(name, convert(value))
 	q.write(statement)

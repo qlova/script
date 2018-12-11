@@ -19,7 +19,7 @@ func (q Script) Wrap(t language.Type) Type {
 func (q Script) wrap(t language.Type) Type {
 	switch value := t.(type) {
 		case language.String:
-			return String{String: value, EmbeddedScript:EmbeddedScript{q:q}}
+			return string{String: value, EmbeddedScript:EmbeddedScript{q:q}}
 			
 		case language.Number:
 			return Number{Number: value, EmbeddedScript:EmbeddedScript{q:q}}
@@ -44,14 +44,18 @@ func (q Script) wrap(t language.Type) Type {
 }
 
 func convert(l Type) language.Type {
+	return NewScript().convert(l)
+}
+
+func (q Script) convert(l Type) language.Type {
 	
 	if t, ok := l.(Type); ok {
 		switch value := t.(type) {
-			case String:
-				if value.Literal == nil {
+			case string:
+				if value.literal == nil {
 					return value.String
 				} else {
-					return value.q.lang.Literal(*value.Literal)
+					return q.lang.Literal(*value.literal)
 				}
 			case Symbol:
 				if value.Literal == nil {

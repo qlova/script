@@ -1,24 +1,65 @@
 package script
 
 import (
-	//"fmt"
+	"fmt"
 	"bytes"
 	//"errors"
 	//"io"
 	
-	"os"
+	//"os"
+	"runtime/debug"
 )
 
 //import "github.com/qlova/script/interpreter"
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/go"
 
-type Program struct {
-	program func(Script)
-	language language.Interface
+import (
+	Golang "github.com/qlova/script/language/go"
+)
+
+type SourceCode struct {
+	Error bool
+	ErrorMessage Go.String
+	Data []byte
 }
 
-func NewProgram(program func(Script)) Program {
-	return Program{program:program}
+func (code SourceCode) String() Go.String {
+	return Go.String(code.Data)
+}
+
+type Program func(Script)
+
+//Return the programs SourceCode in Go.
+func (program Program) Go() (code SourceCode) {
+	script := NewScript()
+	script.lang = Golang.Language()
+
+	defer func() {
+		if r := recover(); r != nil {
+			code.Error = true
+			code.ErrorMessage = fmt.Sprint(r, "\n", Go.String(debug.Stack()))
+		}
+	}()
+
+	program(script)
+	
+	var buffer bytes.Buffer
+	buffer.WriteString(Go.String(script.lang.Head()))
+	buffer.WriteString(Go.String(script.lang.Neck()))
+	buffer.WriteString(Go.String(script.lang.Body()))
+	buffer.WriteString(Go.String(script.lang.Tail()))
+	buffer.WriteString(Go.String(script.lang.Last()))
+
+	buffer.Write(script.head.Bytes())
+	buffer.Write(script.neck.Bytes())
+	buffer.Write(script.body.Bytes())
+	buffer.Write(script.tail.Bytes())
+	buffer.Write(script.last.Bytes())
+
+	code.Data = buffer.Bytes()
+
+	return
 }
 
 //Starts the program and waits for it to complete.
@@ -47,7 +88,7 @@ func (p Program) Run() (err error) {
 	return
 }
 
-func (p Program) Source(language language.Interface) (source string, err error) {
+/*func (p Program) Source(language language.Interface) (source string, err error) {
 	script := NewScript()
 
 	script.lang = language
@@ -64,7 +105,7 @@ func (p Program) Source(language language.Interface) (source string, err error) 
 		}
 	}()*/
 	
-	p.program(script)
+	/*p(script)
 	
 	script.head.WriteString(string(script.lang.Head()))
 	script.neck.WriteString(string(script.lang.Neck()))
@@ -100,7 +141,7 @@ func (p Program) WriteToFile(path string, language language.Interface) (err erro
 		}
 	}()*/
 	
-	p.program(script)
+/*	p(script)
 	
 	script.head.WriteString(string(script.lang.Head()))
 	script.neck.WriteString(string(script.lang.Neck()))
@@ -115,7 +156,7 @@ func (p Program) WriteToFile(path string, language language.Interface) (err erro
 	file.Write(script.last.Bytes())
 	
 	return
-}
+}*/
 
 type Script struct {
 	*script
@@ -156,19 +197,22 @@ func (q Script) indent() {
 }
 
 func (q Script) write(s language.Statement) {
-	q.body.WriteString(string(s))
+	q.body.WriteString(Go.String(s))
 }
 
-func (q Script) Raw(language string, statement language.Statement) {
+/*func (q Script) Raw(language string, statement language.Statement) {
 	if q.lang.Name() == language {
 		q.write(statement)
 	}
-}
+}*/
 
-func (q Script) Main(f func(Script)) {
+/*
+	Main is the entry point of the program, this will be called when the program is executed.
+*/
+func (q Script) Main(f func()) {
 	q.write(q.lang.Main())
 	q.depth++
-		f(q)
+		f()
 	q.depth--
 	q.write(q.lang.EndMain())
 }

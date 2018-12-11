@@ -1,14 +1,20 @@
 package script
 
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/go"
 
-type String struct {
-	language.String
+type string struct {
+	literal *Go.String
+
 	EmbeddedScript
-
-	Literal *string
+	language.String
 }
-func (String) SameAs(i interface{}) bool { _, ok := i.(String); return ok }
+
+func String(s Go.String) string {
+	return string{literal: &s}
+}
+
+/*func (String) SameAs(i interface{}) bool { _, ok := i.(string); return ok }
 
 func (String) Joinable() {}
 
@@ -38,3 +44,4 @@ type Joinable interface {
 func (q Script) Join(a, b Joinable) Type {
 	return q.wrap(q.lang.Join(convert(a), convert(b)))
 }
+*/

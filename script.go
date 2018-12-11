@@ -200,11 +200,11 @@ func (q Script) write(s language.Statement) {
 	q.body.WriteString(Go.String(s))
 }
 
-/*func (q Script) Raw(language string, statement language.Statement) {
+func (q Script) Raw(language Go.String, statement language.Statement) {
 	if q.lang.Name() == language {
 		q.write(statement)
 	}
-}*/
+}
 
 /*
 	Main is the entry point of the program, this will be called when the program is executed.

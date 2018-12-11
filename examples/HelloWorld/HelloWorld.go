@@ -1,29 +1,36 @@
 package main
 
-import qlova "github.com/qlova/script"
-import "github.com/qlova/script/language/go"
+import . "github.com/qlova/script"
 
 import "fmt"
 
 func main() {
-	var HelloWorld = qlova.NewProgram(func (q qlova.Script) {
+	//Create a simple Hello World program.
+	var HelloWorld = Program(func (q Script) {
 
-		q.Main(func(q qlova.Script) {
-			q.Print(q.String("Hello World"))
+		q.Main(func() {
+			q.Print(String("Hello World"))
 		})
+
+		a := q.Array(Number)
+		a.
+
+		q.Number.Array().Array().Array()
 
 	})
 
-	Source, err := HelloWorld.Source(Go.Language())
-	if err != nil {
-		fmt.Println(err)
+	//Print out the source code of the program in Go.
+	code := HelloWorld.Go()
+	if code.Error {
+		fmt.Println(code.ErrorMessage)
 		return
 	}
-	fmt.Println(Source)
-	
+	fmt.Println(code)
+
+	//Run the program and get the output.	
 	fmt.Println("\nOutput:")
-	
-	err = HelloWorld.Run()
+
+	err := HelloWorld.Run()
 	if err != nil {
 		fmt.Println(err)
 	}

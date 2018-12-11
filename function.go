@@ -3,16 +3,17 @@ package script
 import "reflect"
 import "bytes"
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/go"
 
 type Function struct {
 	language.Function
 	EmbeddedScript
 
 	Literal interface{}
-	Names []string
+	Names []Go.String
 }
 
-func (q Script) External(name String) Function {
+func (q Script) External(name string) Function {
 	return q.wrap(q.lang.External(convert(name).(language.String))).(Function)
 }
 
@@ -56,12 +57,12 @@ func (f Function) Run(arguments ...Type) {
 }
 
 
-func (function *Function) NameArguments(names []string) {
+func (function *Function) NameArguments(names []Go.String) {
 	function.Names = names
 }
 
 //Like Define but instead of being defined now, it is promoted to the Top-level of the script.
-func (function *Function) Promote(name string) {
+func (function *Function) Promote(name Go.String) {
 	if function.Literal == nil {
 		panic("Function.Promote(): Cannot promote dynamic functions!")
 	}
@@ -121,9 +122,9 @@ func (function *Function) Promote(name string) {
 		}
 	}
 	
-	q.neck.WriteString(string(statement))
+	q.neck.WriteString(Go.String(statement))
 	q.neck.Write(q.body.Bytes())
-	q.neck.WriteString(string(q.lang.EndFunction()))
+	q.neck.WriteString(Go.String(q.lang.EndFunction()))
 
 	q.depth = 0
 	

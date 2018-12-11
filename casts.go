@@ -1,19 +1,19 @@
 package script
 
-func (q Script) ToString(T Type) String {
+func (q Script) ToString(T Type) string {
 	
 	switch value := T.(type) {
-		case String:
+		case string:
 			return value
 		
 		case Number:
 			if value.Literal != nil {
 				var cast = value.Literal.String()
-				return String{EmbeddedScript: EmbeddedScript{q:q}, Literal: &cast}
+				return string{EmbeddedScript: EmbeddedScript{q:q}, literal: &cast}
 			}
 	}
 	
-	return q.wrap(q.lang.ToString(convert(T))).(String)
+	return q.wrap(q.lang.ToString(convert(T))).(string)
 }
 
 func (q Script) ToNumber(T Type) Number {

@@ -1,8 +1,8 @@
  package script
  
- import "github.com/qlova/script/language"
+// import "github.com/qlova/script/language"
  
- func (q Script) ForRange(i string, from Number, to Number, block func(Number, Script)) {
+ /*func (q Script) ForRange(i string, from Number, to Number, block func(Number, Script)) {
 	variable, statement := q.lang.ForRange(i, convert(from).(language.Number), convert(to).(language.Number))
 	
 	q.indent()
@@ -24,4 +24,4 @@
 	q.depth--
 	q.indent()
 	q.write(q.lang.EndForEach())
- }
+ }*/

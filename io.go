@@ -2,39 +2,13 @@ package script
 
 import "github.com/qlova/script/language"
 
-//Prints 'values' to Stdout with a trailing newline.
-func (q Script) Print(value ...Type) {
+func (q Script) Print(values ...Type) {
 	
-	var values = make([]language.Type, len(value))
-	for i := range value {
-		values[i] = q.convert(value[i])
+	var converted = make([]language.Type, len(values))
+	for i := range values {
+		converted[i] = values[i].convert(q)
 	}
 	
 	q.indent()
-	q.write(q.lang.Print(values...))
-}
-
-//Prints 'values' to Stdout with a trailing newline.
-func (q Script) Write(value ...Type) {
-	
-	var values = make([]language.Type, len(value))
-	for i := range value {
-		values[i] = convert(value[i])
-	}
-	
-	q.indent()
-	q.write(q.lang.Write(nil, values...))
-}
-
-//Prints 'values' to Stdout with a trailing newline.
-func (q Script) Read(value Type) Type {	
-	switch value.(type) {
-		case Symbol:
-			
-			return q.wrap(q.lang.Read(nil, convert(value)))
-			
-		default:
-			panic("Script.Read("+value.Name()+"): Unimplemented")
-			return nil
-	}
+	q.write(q.lang.Print(converted...))
 }

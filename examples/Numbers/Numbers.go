@@ -2,19 +2,18 @@ package main
 
 import "fmt"
 import . "github.com/qlova/script"
-import "github.com/qlova/script/language/go"
 
 const X, Y = 100, 7
 
 func main() {
 	
-	var software = script.NewProgram(func(q script.Script) {
+	var software = Program(func(q Script) {
 		q.Main(func() {
 			
-			q.Print(q.String("My Favourite Number:"), q.Int(22))
+			q.Print(String("My Favourite Number:"), Int(22))
 			q.Print()
 
-			x, y := q.Int(), q.Int()
+			x, y := q.Int(Int(X)), q.Int(Int(X))
 
 			q.Print(String("Operations on"), x, String("&"), y)
 			q.Print(String("======================"))
@@ -29,16 +28,18 @@ func main() {
 		})
 	})
 	
-	Source, err := software.Source(Go.Language())
-	if err != nil {
-		fmt.Println(err)
+	//Print out the source code of the program in Go.
+	code := software.Go()
+	if code.Error {
+		fmt.Println(code.ErrorMessage)
 		return
 	}
-	fmt.Println(Source)
-	
+	fmt.Println(code)
+
+	//Run the program and get the output.	
 	fmt.Println("\nOutput:")
-	
-	err = software.Run()
+
+	err := software.Run()
 	if err != nil {
 		fmt.Println(err)
 	}

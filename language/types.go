@@ -1,77 +1,171 @@
 package language
-
-import "math/big"
-
-type BooleanType struct {
-	Expression string
-	Literal *bool
-}
-	func (BooleanType) Name() string { return "boolean" }
-	func (BooleanType) SameAs(i interface{}) bool { _, ok := i.(BooleanType); return ok }
-	func (BooleanType) Boolean() {}
-
-type NumberType struct {
-	Expression string
-	Literal *big.Int
-}
-	func (NumberType) Name() string { return "number" }
-	func (NumberType) SameAs(i interface{}) bool { _, ok := i.(NumberType); return ok }
-	func (NumberType) Number() {}
-	func (NumberType) Numeric() {}
-
-type StringType struct {
-	Expression string
-	Literal string
-}
-	func (StringType) Name() string { return "string" }
-	func (StringType) SameAs(i interface{}) bool { _, ok := i.(StringType); return ok }
-	func (StringType) String() {}
-	func (StringType) Numeric() {}
-
-type ArrayType struct {
-	Expression string
-
+	
+type NewType struct {
 	Subtype Type
-	Size int
-	
-	Full bool
+	Expression Statement
+	Literal interface{}
 }
-	func (ArrayType) Name() string { return "array" }
-	func (ArrayType) SameAs(i interface{}) bool { _, ok := i.(ArrayType); return ok }
-	func (ArrayType) Array() {}
-	func (a ArrayType) Length() int { return a.Size }
-	func (a ArrayType) SubType() Type { return a.Subtype }
-	
-type ListType struct {
-	Expression string
 
-	Subtype Type
-	Size int
-}
-	func (ListType) Name() string { return "list" }
-	func (ListType) SameAs(i interface{}) bool { _, ok := i.(ListType); return ok }
-	func (ListType) List() {}
-	func (a ListType) Length() int { return a.Size }
-	func (a ListType) SubType() Type { return a.Subtype }
-	
-type FunctionType struct {
-	Expression string
+type Statement string
 
-	Args []Type
-	Rets Type
+type Type interface { 
+	Name() string
+	Is(Type) bool
 }
-	func (FunctionType) Name() string { return "function" }
-	func (FunctionType) SameAs(i interface{}) bool { _, ok := i.(FunctionType); return ok }
-	func (FunctionType) Function() {}
-	func (a FunctionType) Arguments() []Type { return a.Args }
-	func (a FunctionType) Returns() Type { return a.Rets }
-	
-type ErrorType struct {
-	Expression string
 
-	Message string
-	Code int
+type Number interface {
+	Type
+	Number()
 }
-	func (ErrorType) Name() string { return "error" }
-	func (ErrorType) SameAs(i interface{}) bool { _, ok := i.(ErrorType); return ok }
-	func (ErrorType) Error() {}
+
+type Dynamic interface {
+	Type
+	Dynamic()
+}
+
+type Metatype interface {
+	Type
+	Metatype()
+}
+
+type Quaternion interface {
+	Type
+	Number()
+	Quaternion()
+}
+type Octonion interface {
+	Type
+	Number()
+	Octonion()
+}
+type Real interface {
+	Type
+	Number()
+	Real()
+}
+type Rational interface {
+	Type
+	Number()
+	Rational()
+}
+type Natural interface {
+	Type
+	Number()
+	Natural()
+}
+type Complex interface {
+	Type
+	Number()
+	Complex()
+}
+type Integer interface {
+	Type
+	Number()
+	Integer()
+}
+type Duplex interface {
+	Type
+	Number()
+	Duplex()
+}
+type Sedenion interface {
+	Type
+	Number()
+	Sedenion()
+}
+type String interface {
+	Type
+	String()
+}
+type Sound interface {
+	Type
+	Sound()
+}
+type Video interface {
+	Type
+	Video()
+}
+type Time interface {
+	Type
+	Time()
+}
+type Symbol interface {
+	Type
+	Symbol()
+}
+type Bit interface {
+	Type
+	Bit()
+}
+type Byte interface {
+	Type
+	Byte()
+}
+type Color interface {
+	Type
+	Color()
+}
+type Image interface {
+	Type
+	Image()
+}
+type Stream interface {
+	Type
+	Stream()
+}
+type Graph interface {
+	Type
+	Graph()
+}
+type Matrix interface {
+	Type
+	Matrix()
+}
+type Pointer interface {
+	Type
+	Pointer()
+}
+type Vector interface {
+	Type
+	Vector()
+}
+type Tree interface {
+	Type
+	Tree()
+}
+type Table interface {
+	Type
+	Table()
+}
+type Tensor interface {
+	Type
+	Tensor()
+}
+type List interface {
+	Type
+	List()
+}
+type Set interface {
+	Type
+	Set()
+}
+type Error interface {
+	Type
+	Error()
+}
+type Array interface {
+	Type
+	Array()
+}
+type Function interface {
+	Type
+	Function()
+}
+type Queue interface {
+	Type
+	Queue()
+}
+type Ring interface {
+	Type
+	Ring()
+}

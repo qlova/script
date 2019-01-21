@@ -1,41 +1,34 @@
 package script
 
-import "github.com/qlova/script/go"
 import "github.com/qlova/script/language"
 
-type string struct {
-	internal language.String
+//A String is an ordered sequence of symbols, often used to denote words, sentences and text.
+type String struct {
 	script Script
-	
-	literal *Go.String
-	
-	symbol *Go.String
+	internal language.String
+
+	literal *string
 }
 
-func (s string) convert(q Script) language.Type {
+//Return a new String type with the value s.
+func (q Script) String(s ...string) String {
+	var literal = ""
+
+	if len(s) > 0 {
+		literal = s[0]
+	}
+
+	return String{
+		script: q,
+		literal: &literal,
+	}
+}
+
+//Cast a String to a language.Type ready to be passed to the method of a Language.
+func (s String) LanguageType() language.Type {
 	if s.literal != nil {
-		return q.lang.String(*s.literal)
+		return s.script.lang.String(*s.literal)
 	} else {
 		return s.internal
 	}
-}
-
-func (s string) String() string {
-	return s
-}
-
-func (s string) Int() int {
-	panic("Cannot cast String to Int")
-	return int{}
-}
-
-
-func String(s ...Go.String) string {
-	var result string
-	if len(s) > 0 {
-		result.literal = &(s[0])
-	} else {
-		result.literal = new(Go.String)
-	}
-	return result
 }

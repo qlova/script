@@ -257,6 +257,7 @@ func GenerateLanguageTemplate(name string) {
 		fmt.Fprintln(file, "func (t "+title+") "+title+"() {}")
 		fmt.Fprintln(file, "func (t "+title+") Name() string { return \""+t+"\" }")
 		fmt.Fprintln(file, "func (t "+title+") Is(b language.Type) bool { _, ok := b.("+title+"); return ok }")
+		fmt.Fprintln(file, "func (t "+title+") Register(name string) language.Type { return "+title+"{Expression: language.Statement(name)} }")
 		fmt.Fprintln(file)
 	}
 	for t := range HumanTypes {
@@ -266,6 +267,7 @@ func GenerateLanguageTemplate(name string) {
 		fmt.Fprintln(file, "func (t "+title+") "+title+"() {}")
 		fmt.Fprintln(file, "func (t "+title+") Name() string { return \""+t+"\" }")
 		fmt.Fprintln(file, "func (t "+title+") Is(b language.Type) bool { _, ok := b.("+title+"); return ok }")
+		fmt.Fprintln(file, "func (t "+title+") Register(name string) language.Type { return "+title+"{Expression: language.Statement(name)} }")
 		fmt.Fprintln(file)
 	}
 	for t := range StructureTypes {
@@ -275,6 +277,7 @@ func GenerateLanguageTemplate(name string) {
 		fmt.Fprintln(file, "func (t "+title+") "+title+"() {}")
 		fmt.Fprintln(file, "func (t "+title+") Name() string { return \""+t+"\" }")
 		fmt.Fprintln(file, "func (t "+title+") Is(b language.Type) bool { _, ok := b.("+title+"); return ok }")
+		fmt.Fprintln(file, "func (t "+title+") Register(name string) language.Type { return "+title+"{Expression: language.Statement(name)} }")
 		fmt.Fprintln(file)
 	}
 }

@@ -1,14 +1,14 @@
 package main
 
-import . "github.com/qlova/script"
+import "github.com/qlova/script"
 
 import "fmt"
 
 func main() {
 	//Create a simple Hello World program.
-	var HelloWorld = Program(func (q Script) {
+	var HelloWorld = script.Program(func (q script.Script) {
 		q.Main(func() {
-			q.Print(String("Hello World"))
+			q.Print(q.String("Hello World"))
 		})
 	})
 

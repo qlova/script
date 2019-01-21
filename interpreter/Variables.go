@@ -1,11 +1,11 @@
 package interpreter
 
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/interpreter/dynamic"
+//import "github.com/qlova/script/interpreter/dynamic"
 
-func (implementation Implementation) Register(register string, value language.Type) language.Statement {
+func (implementation Implementation) Register(register string, value language.Type) (language.Statement, language.Type) {
 	
-	if literal := implementation.Literal(value); literal != nil {
+	/*if literal := implementation.Literal(value); literal != nil {
 		implementation.ReserveRegister()
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
 			dynamic.Thread.
@@ -14,9 +14,9 @@ func (implementation Implementation) Register(register string, value language.Ty
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
 			
 		})
-	}
+	}*/
 	
-	return language.Statement("")
+	return language.Statement(""), nil
 }
 
 func (implementation Implementation) Set(register string, value language.Type) language.Statement {

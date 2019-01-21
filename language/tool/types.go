@@ -79,6 +79,7 @@ type Statement string
 type Type interface { 
 	Name() string
 	Is(Type) bool
+	Register(name string) Type
 }
 
 type Number interface {

@@ -1,142 +1,131 @@
 package script
 
-import "github.com/qlova/script/go"
 import "github.com/qlova/script/language"
-import "math"
+import "math/big"
 
-type int struct {
-	internal language.Integer
+//An Int is a numeric integer value consisting of a magnitude and a sign.
+type Int struct {
 	script Script
-	
-	literal *Go.Int
+	internal language.Integer
 
-	symbol *Go.String
+	literal *big.Int
 }
 
-func (*int) wrap(T interface{}) int {
-	if i, ok := T.(language.Integer); ok {
-		return int{internal: i}
+//Wrap a language.Type to an Integer.
+func (Int) FromLanguageType(T language.Type) Int {
+	if internal, ok := T.(language.Integer); ok {
+		return Int{
+			internal: internal,
+		}
 	}
 	panic("Invalid wrap!")
-	return int{}
+	return Int{}
 }
 
-func (i int) convert(q Script) language.Type {
-	if i.symbol != nil {
-		return q.lang.Get(*i.symbol, i.internal)
-	} else if i.literal != nil {
-		return q.lang.Integer(*i.literal)
+//Return this Integer as a variable (optionally named).
+func (i Int) Var(name ...string) Int {
+	var register string
+	if len(name) > 0 {
+		register = name[0]
+	} else {
+		register = Unique()
+	}
+	
+	i.script.indent()
+	statement, variable := i.script.lang.Register(register, i.LanguageType())
+	i.script.write(statement)
+	
+	return Int{
+		script: i.script,
+		internal: variable.(language.Integer),
+	}
+}
+
+//Cast an Int to a language.Type ready to be passed to the method of a Language.
+func (i Int) LanguageType() language.Type {
+	if i.literal != nil {
+		return i.script.lang.Integer(int(i.literal.Int64()))
 	} else {
 		return i.internal
 	}
 }
 
-func (i int) Int() int {
-	return i
-}
+//Return a new String type with the value s.
+func (q Script) Int(i ...int) Int {
+	var literal = big.NewInt(0)
 
-func (i int) String() string {
-	panic("Cannot cast Int to String")
-	return string{}
-}
-
-
-func Int(s ...Go.Int) int {
-	var result int
-	if len(s) > 0 {
-		result.literal = &(s[0])
-	} else {
-		result.literal = new(Go.Int)
-	}
-	return result
-}
-
-func (q Script) Int(i ...int) int {
-	
-	var unique = Unique()
-	var value = Int()
 	if len(i) > 0 {
-		value = i[0]
+		literal = big.NewInt(int64(i[0]))
 	}
-	
-	q.indent()
-	q.write(q.lang.Register(unique, value.convert(q)))
-	
-	return int{
-		internal: value.convert(q).(language.Integer),
-		symbol: &unique,
+
+	return Int{
 		script: q,
+		literal: literal,
 	}
 }
 
-func (i int) Add(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var sum = (*i.literal + *b.literal)
-			return int{ literal: &sum }
+func (a Int) Add(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var sum = big.NewInt(0).Add(a.literal, b.literal)
+		return Int{
+			script: a.script,
+			literal: sum,
 		}
 	}
-	return new(int).wrap(q.lang.Add(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Add(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
-func (i int) Mul(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var product = (*i.literal * *b.literal)
-			return int{ literal: &product }
+func (a Int) Sub(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var difference = big.NewInt(0).Sub(a.literal, b.literal)
+		return Int{
+			script: a.script,
+			literal: difference,
 		}
 	}
-	return new(int).wrap(q.lang.Mul(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Sub(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
-func (i int) Sub(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var difference = (*i.literal - *b.literal)
-			return int{ literal: &difference }
+func (a Int) Mul(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var product = big.NewInt(0).Mul(a.literal, b.literal)
+		return Int{
+			script: a.script,
+			literal: product,
 		}
 	}
-	return new(int).wrap(q.lang.Sub(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Mul(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
-func (i int) Div(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var quotient = (*i.literal / *b.literal)
-			return int{ literal: &quotient }
+func (a Int) Div(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var quotient = big.NewInt(0).Div(a.literal, b.literal)
+		return Int{
+			script: a.script,
+			literal: quotient,
 		}
 	}
-	return new(int).wrap(q.lang.Div(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Div(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
-func (i int) Mod(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var modulus = (*i.literal % *b.literal)
-			return int{ literal: &modulus }
+func (a Int) Mod(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var modulus = big.NewInt(0).Mod(a.literal, b.literal)
+		return Int{
+			script: a.script,
+			literal: modulus,
 		}
 	}
-	return new(int).wrap(q.lang.Sub(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Mod(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
-func (i int) Pow(b int) int {
-	var q = i.script
-	if q.script == nil {
-		q = b.script
-		if q.script == nil {
-			var exponent = Go.Int(math.Pow(float64(*i.literal), float64(*b.literal)))
-			return int{ literal: &exponent }
+func (a Int) Pow(b Int) Int {
+	if a.literal != nil && b.literal != nil {
+		var exponent = big.NewInt(0).Exp(a.literal, b.literal, nil)
+		return Int{
+			script: a.script,
+			literal: exponent,
 		}
 	}
-	return new(int).wrap(q.lang.Sub(i.convert(q).(language.Number), b.convert(q).(language.Number)))
+	return Int{}.FromLanguageType(a.script.lang.Pow(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }

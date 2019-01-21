@@ -11,6 +11,7 @@ type Statement string
 type Type interface { 
 	Name() string
 	Is(Type) bool
+	Register(name string) Type
 }
 
 type Number interface {
@@ -38,6 +39,16 @@ type Octonion interface {
 	Number()
 	Octonion()
 }
+type Complex interface {
+	Type
+	Number()
+	Complex()
+}
+type Sedenion interface {
+	Type
+	Number()
+	Sedenion()
+}
 type Real interface {
 	Type
 	Number()
@@ -53,11 +64,6 @@ type Natural interface {
 	Number()
 	Natural()
 }
-type Complex interface {
-	Type
-	Number()
-	Complex()
-}
 type Integer interface {
 	Type
 	Number()
@@ -68,18 +74,37 @@ type Duplex interface {
 	Number()
 	Duplex()
 }
-type Sedenion interface {
-	Type
-	Number()
-	Sedenion()
-}
 type String interface {
 	Type
 	String()
 }
+type Bit interface {
+	Type
+	Bit()
+}
+type Color interface {
+	Type
+	Color()
+}
 type Sound interface {
 	Type
 	Sound()
+}
+type Stream interface {
+	Type
+	Stream()
+}
+type Symbol interface {
+	Type
+	Symbol()
+}
+type Byte interface {
+	Type
+	Byte()
+}
+type Image interface {
+	Type
+	Image()
 }
 type Video interface {
 	Type
@@ -89,58 +114,6 @@ type Time interface {
 	Type
 	Time()
 }
-type Symbol interface {
-	Type
-	Symbol()
-}
-type Bit interface {
-	Type
-	Bit()
-}
-type Byte interface {
-	Type
-	Byte()
-}
-type Color interface {
-	Type
-	Color()
-}
-type Image interface {
-	Type
-	Image()
-}
-type Stream interface {
-	Type
-	Stream()
-}
-type Graph interface {
-	Type
-	Graph()
-}
-type Matrix interface {
-	Type
-	Matrix()
-}
-type Pointer interface {
-	Type
-	Pointer()
-}
-type Vector interface {
-	Type
-	Vector()
-}
-type Tree interface {
-	Type
-	Tree()
-}
-type Table interface {
-	Type
-	Table()
-}
-type Tensor interface {
-	Type
-	Tensor()
-}
 type List interface {
 	Type
 	List()
@@ -148,6 +121,22 @@ type List interface {
 type Set interface {
 	Type
 	Set()
+}
+type Vector interface {
+	Type
+	Vector()
+}
+type Queue interface {
+	Type
+	Queue()
+}
+type Tensor interface {
+	Type
+	Tensor()
+}
+type Matrix interface {
+	Type
+	Matrix()
 }
 type Error interface {
 	Type
@@ -157,15 +146,27 @@ type Array interface {
 	Type
 	Array()
 }
-type Function interface {
-	Type
-	Function()
-}
-type Queue interface {
-	Type
-	Queue()
-}
 type Ring interface {
 	Type
 	Ring()
+}
+type Tree interface {
+	Type
+	Tree()
+}
+type Table interface {
+	Type
+	Table()
+}
+type Pointer interface {
+	Type
+	Pointer()
+}
+type Graph interface {
+	Type
+	Graph()
+}
+type Function interface {
+	Type
+	Function()
 }

@@ -6,7 +6,7 @@ func (q Script) Print(values ...Type) {
 	
 	var converted = make([]language.Type, len(values))
 	for i := range values {
-		converted[i] = values[i].convert(q)
+		converted[i] = values[i].LanguageType()
 	}
 	
 	q.indent()

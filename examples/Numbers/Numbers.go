@@ -1,30 +1,30 @@
 package main
 
 import "fmt"
-import . "github.com/qlova/script"
+import "github.com/qlova/script"
 
 const X, Y = 100, 7
 
 func main() {
 	
-	var software = Program(func(q Script) {
+	var software = script.Program(func(q script.Script) {
 		q.Main(func() {
 			
-			q.Print(String("My Favourite Number:"), Int(22))
+			q.Print(q.String("My Favourite Number:"), q.Int(22))
 			q.Print()
 
-			x, y := q.Int(Int(X)), q.Int(Int(X))
+			x, y := q.Int(X).Var(), q.Int(X).Var()
 
-			q.Print(String("Operations on"), x, String("&"), y)
-			q.Print(String("======================"))
+			q.Print(q.String("Operations on"), x, q.String("&"), y)
+			q.Print(q.String("======================"))
 			
-			q.Print(String("Double:"), x.Mul(Int(2)), Int(2).Mul(y))
-			q.Print(String("Add:"), x.Add(y))
-			q.Print(String("Sub:"), x.Sub(y))
-			q.Print(String("Mul:"), x.Mul(y))
-			q.Print(String("Div:"), x.Div(y))
-			q.Print(String("Mod:"), x.Mod(y))
-			q.Print(String("Pow:"), x.Pow(y))
+			q.Print(q.String("Double:"), x.Mul(q.Int(2)), q.Int(2).Mul(y))
+			q.Print(q.String("Add:"), x.Add(y))
+			q.Print(q.String("Sub:"), x.Sub(y))
+			q.Print(q.String("Mul:"), x.Mul(y))
+			q.Print(q.String("Div:"), x.Div(y))
+			q.Print(q.String("Mod:"), x.Mod(y))
+			q.Print(q.String("Pow:"), x.Pow(y))
 		})
 	})
 	

@@ -168,11 +168,12 @@ type Script struct {
 	*script
 }
 
+type Value struct {
+	Type
+}
+
 type Type interface {
-	convert(Script) language.Type
-	
-	String() string
-	Int() int
+	LanguageType() language.Type
 }
 
 type script struct {

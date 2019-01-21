@@ -15,12 +15,15 @@ func (implementation Implementation) Print(values ...language.Type) language.Sta
 				fmt.Print(literal)
 			})
 		} else {
-			//var register = implementation.RegisterOf(value)
+			var register = implementation.RegisterOf(value)
 			implementation.AddInstruction(func(thread *dynamic.Thread) {
-				
+				fmt.Print(thread.Get(register))
 			})
-			panic(implementation.Name()+".Print() Unimplemented")
 		}
+		
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			fmt.Print(" ")
+		})
 	}
 	
 	implementation.AddInstruction(func(thread *dynamic.Thread) {

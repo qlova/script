@@ -1,22 +1,27 @@
 package interpreter
 
+import "strconv"
 import "github.com/qlova/script/language"
-//import "github.com/qlova/script/interpreter/dynamic"
+import "github.com/qlova/script/interpreter/dynamic"
 
-func (implementation Implementation) Register(register string, value language.Type) (language.Statement, language.Type) {
+func (implementation Implementation) Register(name string, value language.Type) (language.Statement, language.Type) {
 	
-	/*if literal := implementation.Literal(value); literal != nil {
-		implementation.ReserveRegister()
+	var register int
+	
+	if literal := implementation.Literal(value); literal != nil {
+		register = implementation.ReserveRegister()
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			dynamic.Thread.
+			thread.Set(register, literal)
 		})
 	} else {
+		var other = implementation.RegisterOf(value)
+		register = implementation.ReserveRegister()
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			
+			thread.Set(register, thread.Get(other))
 		})
-	}*/
+	}
 	
-	return language.Statement(""), nil
+	return language.Statement(""), value.Register(strconv.Itoa(register))
 }
 
 func (implementation Implementation) Set(register string, value language.Type) language.Statement {

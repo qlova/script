@@ -10,6 +10,14 @@ type Thread struct {
 	Registers [][]interface{}
 }
 
+func (thread Thread) Set(location int, value interface{}) {
+	thread.Registers[len(thread.Registers)-1][location] = value
+}
+
+func (thread Thread) Get(location int) interface{} {
+	return thread.Registers[len(thread.Registers)-1][location]
+}
+
 type Instruction func(thread *Thread)
 type Block struct {
 	Instructions []Instruction
@@ -27,12 +35,17 @@ func (program *Program) WriteTo(block BlockPointer, instruction Instruction) {
 	(*program)[block].Instructions = append((*program)[block].Instructions, instruction)
 }
 
+func (program *Program) ReserveRegister(block BlockPointer) int {
+	(*program)[block].Registers++
+	return (*program)[block].Registers-1
+}
+
 func (program Program) Run() {
 	var thread Thread
 	thread.Program = program
 	thread.Block = BlockPointer(len(program)-1)
 	thread.Caller = -1
-	thread.Registers = append(thread.Registers, make([]interface{}, 0))
+	thread.Registers = append(thread.Registers, make([]interface{}, program[thread.Block].Registers))
 	
 	for {
 		program[thread.Block].Instructions[thread.InstructionCounter](&thread)

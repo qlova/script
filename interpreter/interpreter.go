@@ -63,21 +63,23 @@ func (implementation Implementation) Build(path string) func() {
 	return nil
 }
 
-func (implementation Implementation) RegisterOf(t language.Type) int {
-	var expression = string(reflect.ValueOf(t).Convert(reflect.TypeOf(language.NewType{})).Interface().(language.NewType).Expression)
-	
-	register, err := strconv.Atoi(expression)
-	if err != nil {
-		panic("Invalid type passed to interpreter!")
-	}
-	
-	return register
-}
-
 func (implementation Implementation) Literal(t language.Type) interface{} {
 	return reflect.ValueOf(t).Convert(reflect.TypeOf(language.NewType{})).Interface().(language.NewType).Literal
 }
 
 func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) { 
 	implementation.program.WriteTo(*implementation.active, instruction)
+}
+
+func (implementation Implementation) ReserveRegister() int {
+	return implementation.program.ReserveRegister(*implementation.active)
+}
+
+func (implementation Implementation) RegisterOf(value language.Type) int {
+	i, _ := strconv.Atoi(string(implementation.ExpressionOf(value)))
+	return i
+}
+
+func (implementation Implementation) ExpressionOf(t language.Type) language.Statement {
+	return reflect.ValueOf(t).Convert(reflect.TypeOf(language.NewType{})).Interface().(language.NewType).Expression
 }

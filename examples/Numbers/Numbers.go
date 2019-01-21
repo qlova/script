@@ -13,7 +13,7 @@ func main() {
 			q.Print(q.String("My Favourite Number:"), q.Int(22))
 			q.Print()
 
-			x, y := q.Int(X).Var(), q.Int(X).Var()
+			x, y := q.Int(X).Var("x"), q.Int(Y).Var("y")
 
 			q.Print(q.String("Operations on"), x, q.String("&"), y)
 			q.Print(q.String("======================"))

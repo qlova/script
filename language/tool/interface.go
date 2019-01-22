@@ -167,7 +167,7 @@ func GenerateLanguageTemplate(name string) {
 	}
 	fmt.Fprintln(file, "package", name)
 	fmt.Fprintln(file)
-	fmt.Fprintln(file, `import _ "github.com/qlova/script/language"`)
+	fmt.Fprintln(file, `import "github.com/qlova/script/language"`)
 	fmt.Fprintln(file)
 	fmt.Fprintln(file, "type Implementation struct {}")
 	fmt.Fprintln(file)
@@ -216,9 +216,11 @@ func GenerateLanguageTemplate(name string) {
 		
 		fmt.Fprintln(file, "\t"+`panic(implementation.Name()+".`+fname+`() Unimplemented")`)
 		
+		if fname == "Register" {
+			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
+		}
+		
 		switch kind {
-			case "(language.Statement, language.Type)":
-				fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
 			
 			case "language.Statement":
 				fmt.Fprintln(file, "\t"+`return language.Statement("")`)

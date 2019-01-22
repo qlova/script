@@ -29,31 +29,6 @@ type Metatype interface {
 	Metatype()
 }
 
-type Quaternion interface {
-	Type
-	Number()
-	Quaternion()
-}
-type Octonion interface {
-	Type
-	Number()
-	Octonion()
-}
-type Complex interface {
-	Type
-	Number()
-	Complex()
-}
-type Sedenion interface {
-	Type
-	Number()
-	Sedenion()
-}
-type Real interface {
-	Type
-	Number()
-	Real()
-}
 type Rational interface {
 	Type
 	Number()
@@ -63,6 +38,21 @@ type Natural interface {
 	Type
 	Number()
 	Natural()
+}
+type Complex interface {
+	Type
+	Number()
+	Complex()
+}
+type Quaternion interface {
+	Type
+	Number()
+	Quaternion()
+}
+type Real interface {
+	Type
+	Number()
+	Real()
 }
 type Integer interface {
 	Type
@@ -74,21 +64,31 @@ type Duplex interface {
 	Number()
 	Duplex()
 }
-type String interface {
+type Octonion interface {
 	Type
-	String()
+	Number()
+	Octonion()
+}
+type Sedenion interface {
+	Type
+	Number()
+	Sedenion()
 }
 type Bit interface {
 	Type
 	Bit()
 }
-type Color interface {
+type Byte interface {
 	Type
-	Color()
+	Byte()
 }
 type Sound interface {
 	Type
 	Sound()
+}
+type Time interface {
+	Type
+	Time()
 }
 type Stream interface {
 	Type
@@ -98,9 +98,13 @@ type Symbol interface {
 	Type
 	Symbol()
 }
-type Byte interface {
+type String interface {
 	Type
-	Byte()
+	String()
+}
+type Color interface {
+	Type
+	Color()
 }
 type Image interface {
 	Type
@@ -110,25 +114,17 @@ type Video interface {
 	Type
 	Video()
 }
-type Time interface {
+type Array interface {
 	Type
-	Time()
-}
-type List interface {
-	Type
-	List()
-}
-type Set interface {
-	Type
-	Set()
+	Array()
 }
 type Vector interface {
 	Type
 	Vector()
 }
-type Queue interface {
+type Table interface {
 	Type
-	Queue()
+	Table()
 }
 type Tensor interface {
 	Type
@@ -138,14 +134,6 @@ type Matrix interface {
 	Type
 	Matrix()
 }
-type Error interface {
-	Type
-	Error()
-}
-type Array interface {
-	Type
-	Array()
-}
 type Ring interface {
 	Type
 	Ring()
@@ -154,9 +142,25 @@ type Tree interface {
 	Type
 	Tree()
 }
-type Table interface {
+type Function interface {
 	Type
-	Table()
+	Function()
+}
+type Error interface {
+	Type
+	Error()
+}
+type List interface {
+	Type
+	List()
+}
+type Set interface {
+	Type
+	Set()
+}
+type Queue interface {
+	Type
+	Queue()
 }
 type Pointer interface {
 	Type
@@ -165,8 +169,4 @@ type Pointer interface {
 type Graph interface {
 	Type
 	Graph()
-}
-type Function interface {
-	Type
-	Function()
 }

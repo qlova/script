@@ -12,10 +12,11 @@ type Int struct {
 }
 
 //Wrap a language.Type to an Integer.
-func (Int) FromLanguageType(T language.Type) Int {
+func (q Script) IntFromLanguageType(T language.Type) Int {
 	if internal, ok := T.(language.Integer); ok {
 		return Int{
 			internal: internal,
+			script: q,
 		}
 	}
 	panic("Invalid wrap!")
@@ -72,7 +73,7 @@ func (a Int) Add(b Int) Int {
 			literal: sum,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Add(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Add(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
 func (a Int) Sub(b Int) Int {
@@ -83,7 +84,7 @@ func (a Int) Sub(b Int) Int {
 			literal: difference,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Sub(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Sub(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
 func (a Int) Mul(b Int) Int {
@@ -94,7 +95,7 @@ func (a Int) Mul(b Int) Int {
 			literal: product,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Mul(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Mul(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
 func (a Int) Div(b Int) Int {
@@ -105,7 +106,7 @@ func (a Int) Div(b Int) Int {
 			literal: quotient,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Div(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Div(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
 func (a Int) Mod(b Int) Int {
@@ -116,7 +117,7 @@ func (a Int) Mod(b Int) Int {
 			literal: modulus,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Mod(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Mod(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }
 
 func (a Int) Pow(b Int) Int {
@@ -127,5 +128,5 @@ func (a Int) Pow(b Int) Int {
 			literal: exponent,
 		}
 	}
-	return Int{}.FromLanguageType(a.script.lang.Pow(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+	return a.script.IntFromLanguageType(a.script.lang.Pow(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
 }

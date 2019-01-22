@@ -1,44 +1,45 @@
 package main
 
 import "fmt"
-import . "github.com/qlova/script"
-import "github.com/qlova/script/language/go"
+import "github.com/qlova/script"
 
 const X, Y = 100, 7
 
 func main() {
 	
-	var software = script.NewProgram(func(q script.Script) {
+	var software = script.Program(func(q script.Script) {
 		q.Main(func() {
 			
 			q.Print(q.String("My Favourite Number:"), q.Int(22))
 			q.Print()
 
-			x, y := q.Int(), q.Int()
+			x, y := q.Int(X).Var("x"), q.Int(Y).Var("y")
 
-			q.Print(String("Operations on"), x, String("&"), y)
-			q.Print(String("======================"))
+			q.Print(q.String("Operations on"), x, q.String("&"), y)
+			q.Print(q.String("======================"))
 			
-			q.Print(String("Double:"), x.Mul(Int(2)), Int(2).Mul(y))
-			q.Print(String("Add:"), x.Add(y))
-			q.Print(String("Sub:"), x.Sub(y))
-			q.Print(String("Mul:"), x.Mul(y))
-			q.Print(String("Div:"), x.Div(y))
-			q.Print(String("Mod:"), x.Mod(y))
-			q.Print(String("Pow:"), x.Pow(y))
+			q.Print(q.String("Double:"), x.Mul(q.Int(2)), q.Int(2).Mul(y))
+			q.Print(q.String("Add:"), x.Add(y))
+			q.Print(q.String("Sub:"), x.Sub(y))
+			q.Print(q.String("Mul:"), x.Mul(y))
+			q.Print(q.String("Div:"), x.Div(y))
+			q.Print(q.String("Mod:"), x.Mod(y))
+			q.Print(q.String("Pow:"), x.Pow(y))
 		})
 	})
 	
-	Source, err := software.Source(Go.Language())
-	if err != nil {
-		fmt.Println(err)
+	//Print out the source code of the program in Go.
+	code := software.Go()
+	if code.Error {
+		fmt.Println(code.ErrorMessage)
 		return
 	}
-	fmt.Println(Source)
-	
+	fmt.Println(code)
+
+	//Run the program and get the output.	
 	fmt.Println("\nOutput:")
-	
-	err = software.Run()
+
+	err := software.Run()
 	if err != nil {
 		fmt.Println(err)
 	}

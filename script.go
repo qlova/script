@@ -3,20 +3,29 @@ package script
 import (
 	"fmt"
 	"bytes"
-	//"errors"
+	"errors"
 	//"io"
 	
 	//"os"
 	"runtime/debug"
+	
+	"math/big"
+	"encoding/base64"
 )
 
-//import "github.com/qlova/script/interpreter"
+import "github.com/qlova/script/interpreter"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/go"
 
 import (
 	Golang "github.com/qlova/script/language/go"
 )
+
+var id int64 = 0;
+func Unique() Go.String {
+	id++
+	return base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+}
 
 type SourceCode struct {
 	Error bool
@@ -66,27 +75,21 @@ func (program Program) Go() (code SourceCode) {
 }
 
 //Starts the program and waits for it to complete.
-func (p Program) Run() (err error) {
-	//script := NewScript()
-	
-	//interpreter := Interpreter.New()
+func (program Program) Run() (err error) {
+	script := NewScript()
 
-	//script.lang = interpreter
+	script.lang = interpreter.New()
 
 	//Catch errors.
-	/*defer func() {
+	defer func() {
 		if r := recover(); r != nil {
-			if message, ok := r.(string); ok {
-				err = errors.New(message)
-			} else {
-				err = errors.New(fmt.Sprint(r))
-			}
+			err = errors.New(fmt.Sprint(r, "\n", Go.String(debug.Stack())))
 		}
-	}()*/
+	}()
 	
-	//p.program(script)
+	program(script)
 	
-	//interpreter.Start()
+	script.lang.(interpreter.Implementation).Start()
 
 	return
 }
@@ -165,8 +168,16 @@ type Script struct {
 	*script
 }
 
+type Value struct {
+	Type
+}
+
+type Type interface {
+	LanguageType() language.Type
+}
+
 type script struct {
-	depth int
+	depth Go.Int
 	
 	lang language.Interface
 	
@@ -178,7 +189,7 @@ type script struct {
 	
 	returns []Type
 	
-	Optimise bool
+	Optimise Go.Bool
 }
 
 func NewScript() Script {

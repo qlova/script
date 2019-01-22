@@ -7,23 +7,19 @@ Example:
 	
 	---
 
-	var HelloWorld = qlova.NewProgram(func (q *qlova.Script) {
-
-		q.Main(func(q *qlova.Script) {
+	var HelloWorld = qlova.Program(func (q qlova.Script) {
+		q.Main(func() {
 			q.Print(q.String("Hello World"))
 		})
-
 	})
 	
 	HelloWorld.Run()
 ```
 Qlovascript has a more powerful feature, it can output the Go source code of a program.
 ```
-	import "github.com/qlova/script/language/go"
-	
 	---
 
-	Source, _ := HelloWorld.Source(Go.Language())
+	Source := HelloWorld.Go()
 	fmt.Println(Source)
 	/*
 		package main

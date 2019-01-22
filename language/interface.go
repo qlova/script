@@ -1,25 +1,25 @@
 package language
 
 type Interface interface {
-	Complex() Complex
-	Sedenion() Sedenion
 	Real(r float64) Real
-	Rational() Rational
-	Natural(n uint) Natural
 	Integer(i int) Integer
 	Duplex() Duplex
-	Quaternion() Quaternion
 	Octonion() Octonion
-	Sound() Sound
-	Stream() Stream
-	String(s string) String
-	Bit(b bool) Bit
-	Color() Color
-	Video() Video
-	Time() Time
+	Sedenion() Sedenion
+	Rational() Rational
+	Natural(n uint) Natural
+	Complex() Complex
+	Quaternion() Quaternion
 	Symbol(r rune) Symbol
-	Byte(b byte) Byte
+	String(s string) String
+	Color() Color
 	Image() Image
+	Video() Video
+	Bit(b bool) Bit
+	Byte(b byte) Byte
+	Sound() Sound
+	Time() Time
+	Stream() Stream
 	Name() string
 	Init()
 	Build(path string) func()

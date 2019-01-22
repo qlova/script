@@ -32,3 +32,19 @@ func (s String) LanguageType() language.Type {
 		return s.internal
 	}
 }
+
+//Wrap a language.Type to an Integer.
+func (q Script) StringFromLanguageType(T language.Type) String {
+	if internal, ok := T.(language.String); ok {
+		return String{
+			internal: internal,
+			script: q,
+		}
+	}
+	panic("Invalid wrap!")
+	return String{}
+}
+
+func (a String) Equals(b String) Bool {
+	return a.script.BoolFromLanguageType(a.script.lang.Equals(a.LanguageType(), b.LanguageType()))
+}

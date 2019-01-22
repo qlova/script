@@ -19,8 +19,7 @@ var LanguageInterface = [...]string{
 
 	"//Variables",
 	"Register(register string, value language.Type) (language.Statement, language.Type)",
-	"Set(register string, value language.Type) language.Statement",
-	"Get(register string, value language.Type) language.Type",
+	"Set(variable, value language.Type) language.Statement",
 
 	"//Structures",
 	"Index(structure, index language.Type) language.Type",

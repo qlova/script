@@ -28,7 +28,7 @@ func (c *Compiler) Shunt(t Type, precedence int) Type {
 		}
 		
 		c.RaiseError(Translatable{
-			English: "Operator "+op.Symbol+" does not apply to "+t.Name(), 
+			English: "Operator "+op.Symbol+" does not apply to "+t.LanguageType().Name(), 
 		})
 	}
 	return t

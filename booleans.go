@@ -8,6 +8,13 @@ type Bool struct {
 	literal *bool
 }
 
+func (b Bool) Value() Value {
+	return Value{
+		script: b.script,
+		internal: b.LanguageType(),
+	}
+}
+
 func (q Script) Not(b Bool) Bool {
 	return q.BoolFromLanguageType(q.lang.Not(b.LanguageType().(language.Bit)))
 }

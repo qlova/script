@@ -27,8 +27,20 @@ func (implementation Implementation) String(s string) language.String {
 	return String{Literal: s}
 }
 
-func (implementation Implementation) Integer(i int) language.Integer { 
-	return Integer{Literal: i}
+func (implementation Implementation) Integer(i int) language.Integer {
+	var register = implementation.ReserveRegister()
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, i)
+	})
+	return Integer{Expression:language.Statement(strconv.Itoa(register))}
+}
+
+func (implementation Implementation) Symbol(r rune) language.Symbol {
+	var register = implementation.ReserveRegister()
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, r)
+	})
+	return Symbol{Expression:language.Statement(strconv.Itoa(register))}
 }
 
 func (implementation Implementation) Rational() language.Rational { panic("Not implemented"); return nil }
@@ -47,7 +59,7 @@ func (implementation Implementation) Video() language.Video { panic("Not impleme
 func (implementation Implementation) Time() language.Time { panic("Not implemented"); return nil }
 func (implementation Implementation) Stream() language.Stream { panic("Not implemented"); return nil }
 func (implementation Implementation) Bit(b bool) language.Bit { panic("Not implemented"); return nil }
-func (implementation Implementation) Symbol(r rune) language.Symbol { panic("Not implemented"); return nil }
+
 func (implementation Implementation) Color() language.Color { panic("Not implemented"); return nil }
 
 func (implementation Implementation) Name() string {
@@ -55,7 +67,7 @@ func (implementation Implementation) Name() string {
 }
 
 func (implementation Implementation) Init() {
-	panic(implementation.Name()+".Init() Unimplemented")
+
 }
 
 func (implementation Implementation) Build(path string) func() {

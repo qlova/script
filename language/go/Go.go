@@ -21,6 +21,12 @@ func (implementation Implementation) Integer(i int) language.Integer {
 	}
 }
 
+func (implementation Implementation) Symbol(r rune) language.Symbol {
+	return Symbol {
+		Expression: language.Statement(strconv.QuoteRune(r)),
+	}
+}
+
 func (implementation Implementation) Real(r float64) language.Real { return nil }
 func (implementation Implementation) Rational() language.Rational { return nil }
 func (implementation Implementation) Natural(n uint) language.Natural { return nil }
@@ -33,7 +39,7 @@ func (implementation Implementation) Octonion() language.Octonion { return nil }
 func (implementation Implementation) Color() language.Color { return nil }
 func (implementation Implementation) Video() language.Video { return nil }
 func (implementation Implementation) Stream() language.Stream { return nil }
-func (implementation Implementation) Symbol(r rune) language.Symbol { return nil }
+
 func (implementation Implementation) Byte(b byte) language.Byte { return nil }
 func (implementation Implementation) Image() language.Image { return nil }
 func (implementation Implementation) Sound() language.Sound { return nil }
@@ -51,7 +57,7 @@ func Language() Implementation {
 }
 
 func (implementation Implementation) Init() {
-	panic(implementation.Name()+".Init() Unimplemented")
+
 }
 
 func (implementation Implementation) Build(path string) func() {

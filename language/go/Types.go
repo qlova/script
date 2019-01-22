@@ -83,7 +83,7 @@ type String language.NewType
 func (t String) Number() {}
 func (t String) String() {}
 func (t String) Name() string { return "string" }
-func (t String) Is(b language.Type) bool { _, ok := b.(String); return ok }
+func (t String) Is(b language.Type) bool { _, ok := b.(String); return ok; }
 func (t String) Register(name string) language.Type { return String{Expression: language.Statement(name)} }
 
 type Bit language.NewType

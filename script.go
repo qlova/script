@@ -168,12 +168,9 @@ type Script struct {
 	*script
 }
 
-type Value struct {
-	Type
-}
-
 type Type interface {
 	LanguageType() language.Type
+	Value() Value
 }
 
 type script struct {

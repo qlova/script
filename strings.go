@@ -33,6 +33,25 @@ func (s String) LanguageType() language.Type {
 	}
 }
 
+func (s String) Value() Value {
+	return Value{
+		script: s.script,
+		internal: s.LanguageType(),
+	}
+}
+
+//Get this value as a string or cast to a string.
+func (v Value) String() String {
+	if s, ok := v.internal.(language.String); ok {
+		return String{
+			script: v.script,
+			internal: s,
+		}
+	}
+
+	return v.script.StringFromLanguageType(v.script.lang.Cast(v.internal, v.script.String().LanguageType()))
+}
+
 //Wrap a language.Type to an Integer.
 func (q Script) StringFromLanguageType(T language.Type) String {
 	if internal, ok := T.(language.String); ok {

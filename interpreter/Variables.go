@@ -24,12 +24,20 @@ func (implementation Implementation) Register(name string, value language.Type) 
 	return language.Statement(""), value.Register(strconv.Itoa(register))
 }
 
-func (implementation Implementation) Set(register string, value language.Type) language.Statement {
-	panic(implementation.Name()+".Set() Unimplemented")
-	return language.Statement("")
-}
+func (implementation Implementation) Set(variable, value language.Type) language.Statement {
 
-func (implementation Implementation) Get(register string, value language.Type) language.Type {
-	panic(implementation.Name()+".Get() Unimplemented")
-	return nil
+	var register = implementation.RegisterOf(value)
+	
+	if literal := implementation.Literal(value); literal != nil {
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			thread.Set(register, literal)
+		})
+	} else {
+		var other = implementation.RegisterOf(value)
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			thread.Set(register, thread.Get(other))
+		})
+	}
+	
+	return language.Statement("")
 }

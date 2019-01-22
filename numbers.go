@@ -11,6 +11,26 @@ type Int struct {
 	literal *big.Int
 }
 
+func (i Int) Value() Value {
+	return Value{
+		script: i.script,
+		internal: i.LanguageType(),
+	}
+}
+
+//Get this value as a string or cast to a string.
+func (v Value) Int() Int {
+	if i, ok := v.internal.(language.Integer); ok {
+		return Int{
+			script: v.script,
+			internal: i,
+		}
+	}
+
+	return v.script.IntFromLanguageType(v.script.lang.Cast(v.internal, v.script.Int().LanguageType()))
+}
+
+
 //Wrap a language.Type to an Integer.
 func (q Script) IntFromLanguageType(T language.Type) Int {
 	if internal, ok := T.(language.Integer); ok {
@@ -62,6 +82,14 @@ func (q Script) Int(i ...int) Int {
 	return Int{
 		script: q,
 		literal: literal,
+	}
+}
+
+//Return a new String type with the value s.
+func (q Script) BigInt(i *big.Int) Int {
+	return Int{
+		script: q,
+		literal: i,
 	}
 }
 

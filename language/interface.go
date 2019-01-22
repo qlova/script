@@ -31,8 +31,7 @@ type Interface interface {
 	Last() Statement
 	//Variables
 	Register(register string, value Type) (Statement, Type)
-	Set(register string, value Type) Statement
-	Get(register string, value Type) Type
+	Set(variable, value Type) Statement
 	//Structures
 	Index(structure, index Type) Type
 	Modify(structure, index, value Type) Statement

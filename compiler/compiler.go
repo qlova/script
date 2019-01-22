@@ -13,7 +13,7 @@ type Type = qlova.Type
 
 type Compiler struct {
 	Syntax
-	*qlova.Script
+	qlova.Script
 	
 	CurrentFunction *Function
 	
@@ -137,10 +137,8 @@ func (c *Compiler) ScanLine() string {
 func (c *Compiler) ScanType(T Type) Type {
 	var expression = c.ScanExpression()
 	
-	if !expression.SameAs(T) {
-		
-		fmt.Println(reflect.TypeOf(T), reflect.TypeOf(expression))
-		c.ExpectingTypeName(T.Name(), expression.Name())
+	if !expression.LanguageType().Is(T.LanguageType()) {
+		c.ExpectingTypeName(T.LanguageType().Name(), expression.LanguageType().Name())
 	}
 	
 	return expression
@@ -186,7 +184,7 @@ func (c *Compiler) CompileBlock(first, last string) {
 
 func (c *Compiler) GetProgram() qlova.Program {
 	
-	return qlova.NewProgram(func(q *qlova.Script) {
+	return qlova.Program(func(q qlova.Script) {
 		c.Script = q
 		
 		c.Script.Init()

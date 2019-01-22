@@ -14,7 +14,7 @@ type Variable struct {
 }
 
 func (c *Compiler) Define(name string, t script.Type) {
-	c.SetVariable(name, c.Script.Define(name, t))
+	c.SetVariable(name, t.Value().Var(name))
 }
 
 func (c *Compiler) Variable(name string) Type {

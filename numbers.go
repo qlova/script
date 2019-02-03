@@ -55,11 +55,11 @@ func (i Int) Var(name ...string) Int {
 	} else {
 		register = Unique()
 	}
-	
+
 	i.script.indent()
 	statement, variable := i.script.lang.Register(register, i.LanguageType())
 	i.script.write(statement)
-	
+
 	return Int{
 		script: i.script,
 		internal: variable.(language.Integer),

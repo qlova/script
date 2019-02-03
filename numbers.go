@@ -30,6 +30,10 @@ func (v Value) Int() Int {
 	return v.script.IntFromLanguageType(v.script.lang.Cast(v.internal, v.script.Int().LanguageType()))
 }
 
+//Returns a Bool of whether or not a is equal to b.
+func (a Int) Equals(b Int) Bool {
+	return a.script.BoolFromLanguageType(a.script.lang.Equals(a.LanguageType(), b.LanguageType()))
+}
 
 //Wrap a language.Type to an Integer.
 func (q Script) IntFromLanguageType(T language.Type) Int {

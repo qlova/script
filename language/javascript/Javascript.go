@@ -3,6 +3,7 @@ package Javascript
 import (
 	"strconv"
 	"reflect"
+	"fmt"
 )
 import "github.com/qlova/script/language"
 
@@ -14,6 +15,12 @@ func (implementation Implementation) String(s string) language.String {
 	}
 }
 
+func (implementation Implementation) Integer(i int) language.Integer {
+	return Integer {
+		Expression: language.Statement(fmt.Sprint(i)),
+	}
+}
+
 func (implementation Implementation) Complex() language.Complex { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Quaternion() language.Quaternion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Rational() language.Rational { panic(`Unimplemented`); return nil }
@@ -22,7 +29,6 @@ func (implementation Implementation) Duplex() language.Duplex { panic(`Unimpleme
 func (implementation Implementation) Octonion() language.Octonion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Sedenion() language.Sedenion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Real(r float64) language.Real { panic(`Unimplemented`); return nil }
-func (implementation Implementation) Integer(i int) language.Integer { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Video() language.Video { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Symbol(r rune) language.Symbol { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Color() language.Color { panic(`Unimplemented`); return nil }

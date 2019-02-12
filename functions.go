@@ -12,9 +12,13 @@ type Func struct {
 }
 
 //Return a new String type with the value s.
-func (q Script) Return(value Type) {
+func (q Script) Return(value ...Type) {
 	q.indent()
-	q.write(q.script.lang.Return(value.LanguageType()))
+	if len(value) >  0 {
+		q.write(q.script.lang.Return(value[0].LanguageType()))
+	} else {
+		q.write(q.script.lang.Return(nil))
+	}
 }
 
 //Return a new Function based on the contents of the provided function.

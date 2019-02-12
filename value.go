@@ -5,10 +5,25 @@ import "github.com/qlova/script/language"
 type Value struct {
 	script Script
 	internal language.Type
+	
+	//Array info
+	subtype Type
+	length int
+	
+	arguments []Type
 }
 
 func (v Value) LanguageType() language.Type {
 	return v.internal
+}
+
+func (v Value) Is(t Type) bool {
+	return v.LanguageType().Is(t.LanguageType())
+}
+
+func (v Value) IsArray() bool {
+	_, ok := v.LanguageType().(language.Array)
+	return ok
 }
 
 func (v Value) Value() Value {
@@ -21,7 +36,7 @@ func (v Value) Set(value Type) {
 	q.write(q.lang.Set(v.internal, value.LanguageType()))
 }
 
-func (v Value) Var(name ...string) Type {
+func (v Value) Var(name ...string) Value {
 	var register string
 	if len(name) > 0 {
 		register = name[0]
@@ -33,8 +48,7 @@ func (v Value) Var(name ...string) Type {
 	statement, variable := v.script.lang.Register(register, v.LanguageType())
 	v.script.write(statement)
 	
-	return Value{
-		script: v.script,
-		internal: variable,
-	}
+	var result = v
+	result.internal = variable
+	return result
 }

@@ -173,24 +173,52 @@ type Type interface {
 	Value() Value
 }
 
-type script struct {
-	depth Go.Int
-	
-	lang language.Interface
-	
+type context struct {
 	head bytes.Buffer
 	neck bytes.Buffer
 	body bytes.Buffer
 	tail bytes.Buffer
 	last bytes.Buffer
 	
-	returns []Type
-	
 	Optimise Go.Bool
+	
+	//function stuff
+	global string
+	arguments []Type
+	registers []string
+	returns Type
+}
+
+type script struct {
+	depth Go.Int
+	
+	lang language.Interface
+	
+	*context
+	
+	stack []*context
+}
+
+func (s Script) push() {
+	s.stack = append(s.stack, s.context)
+	s.context = &context{}
+}
+
+func (s Script) pop() *context {
+	var context = s.context
+	
+	var old = s.stack[len(s.stack)-1]
+	s.stack = s.stack[:len(s.stack)-1]
+	
+	s.context = old
+	
+	return context
 }
 
 func NewScript() Script {
-	return Script{script: new(script)}
+	var script = Script{script: new(script)}
+		script.context = new(context)
+	return script
 }
 
 func (q Script) Init() {

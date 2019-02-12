@@ -18,5 +18,5 @@ func main() {
 	GenerateLanguageInterface()
 	GenerateLanguageTypes()
 	
-	GenerateLanguageTemplate("Javascript")
+	GenerateLanguageTemplate("example")
 }

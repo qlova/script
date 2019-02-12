@@ -67,3 +67,14 @@ func (q Script) StringFromLanguageType(T language.Type) String {
 func (a String) Equals(b String) Bool {
 	return a.script.BoolFromLanguageType(a.script.lang.Equals(a.LanguageType(), b.LanguageType()))
 }
+
+func (a String) Add(b String) String {
+	if a.literal != nil && b.literal != nil {
+		var sum = *a.literal + *b.literal
+		return String{
+			script: a.script,
+			literal: &sum,
+		}
+	}
+	return a.script.StringFromLanguageType(a.script.lang.Join(a.LanguageType().(language.Number), b.LanguageType().(language.Number)))
+}

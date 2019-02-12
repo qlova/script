@@ -24,7 +24,11 @@ func New() Implementation {
 }
 
 func (implementation Implementation) String(s string) language.String {
-	return String{Literal: s}
+	var register = implementation.ReserveRegister()
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, s)
+	})
+	return String{Expression:language.Statement(strconv.Itoa(register))}
 }
 
 func (implementation Implementation) Integer(i int) language.Integer {

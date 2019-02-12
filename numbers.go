@@ -11,6 +11,10 @@ type Int struct {
 	literal *big.Int
 }
 
+func (i Int) Literal() *big.Int {
+	return i.literal
+}
+
 func (i Int) Value() Value {
 	return Value{
 		script: i.script,
@@ -18,7 +22,7 @@ func (i Int) Value() Value {
 	}
 }
 
-//Get this value as a string or cast to a string.
+//Get this value as an int or cast to an int.
 func (v Value) Int() Int {
 	if i, ok := v.internal.(language.Integer); ok {
 		return Int{

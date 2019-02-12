@@ -1,4 +1,4 @@
-package Example
+package example
 
 import "github.com/qlova/script/language"
 

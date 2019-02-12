@@ -13,15 +13,9 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 			switch b.(type) {
 				case String:
 					var result = implementation.ReserveRegister()
-					if literal := implementation.Literal(a); literal != nil {
-						implementation.AddInstruction(func(thread *dynamic.Thread) {
-							thread.Set(result, fmt.Sprint(literal))
-						})
-					} else {
-						implementation.AddInstruction(func(thread *dynamic.Thread) {
-							thread.Set(result, fmt.Sprint(thread.Get(register)))
-						})
-					}
+					implementation.AddInstruction(func(thread *dynamic.Thread) {
+						thread.Set(result, fmt.Sprint(thread.Get(register)))
+					})
 					return b.Register(strconv.Itoa(result))
 					
 					
@@ -51,7 +45,7 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 			}
 	}
 	
-	panic(implementation.Name()+".Cast() Unimplemented")
+	panic(implementation.Name()+".Cast("+a.Name()+", "+b.Name()+") Unimplemented")
 	return nil
 }
 

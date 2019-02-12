@@ -1,25 +1,25 @@
 package language
 
 type Interface interface {
-	Real(r float64) Real
-	Integer(i int) Integer
-	Duplex() Duplex
-	Octonion() Octonion
-	Sedenion() Sedenion
-	Rational() Rational
 	Natural(n uint) Natural
+	Duplex() Duplex
 	Complex() Complex
 	Quaternion() Quaternion
-	Symbol(r rune) Symbol
+	Octonion() Octonion
+	Real(r float64) Real
+	Rational() Rational
+	Integer(i int) Integer
+	Sedenion() Sedenion
+	Stream() Stream
 	String(s string) String
+	Byte(b byte) Byte
 	Color() Color
 	Image() Image
-	Video() Video
-	Bit(b bool) Bit
-	Byte(b byte) Byte
-	Sound() Sound
 	Time() Time
-	Stream() Stream
+	Symbol(r rune) Symbol
+	Bit(b bool) Bit
+	Sound() Sound
+	Video() Video
 	Name() string
 	Init()
 	Build(path string) func()
@@ -64,10 +64,10 @@ type Interface interface {
 	EndMain() Statement
 	Exit() Statement
 	//Function
-	Function(name string, registers []string, arguments []Type, returns Type) Statement
+	Function(name string, registers []string, arguments []Type, returns Type) (Statement, Function)
 	EndFunction() Statement
-	Call(name string, arguments []Type) Type
-	Run(name string, arguments []Type) Statement
+	Call(f Function, arguments []Type) Type
+	Run(f Function, arguments []Type) Statement
 	Return(value Type) Statement
 	//Threading
 	Thread(name string, distance int, arguments []Type) Stream

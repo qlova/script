@@ -15,6 +15,20 @@ func (b Bool) Value() Value {
 	}
 }
 
+func (q Script) Bool(b bool) Bool {
+	return q.BoolFromLanguageType(q.lang.Bit(b))
+}
+
+func (b Bool) True() {
+	b.script.indent()
+	b.script.write(b.script.lang.Set(b.LanguageType(), b.script.lang.Bit(true)))
+}
+
+func (b Bool) False() {
+	b.script.indent()
+	b.script.write(b.script.lang.Set(b.LanguageType(), b.script.lang.Bit(false)))
+}
+
 func (q Script) Not(b Bool) Bool {
 	return q.BoolFromLanguageType(q.lang.Not(b.LanguageType().(language.Bit)))
 }

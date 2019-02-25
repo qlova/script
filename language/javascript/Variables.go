@@ -8,6 +8,5 @@ func (implementation Implementation) Register(register string, value language.Ty
 }
 
 func (implementation Implementation) Set(variable, value language.Type) language.Statement {
-	panic(implementation.Name()+".Set() Unimplemented")
-	return language.Statement("")
+	return language.Statement(variable.Raw()+" = "+value.Raw()+";")
 }

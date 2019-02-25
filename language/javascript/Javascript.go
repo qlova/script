@@ -21,6 +21,12 @@ func (implementation Implementation) Integer(i int) language.Integer {
 	}
 }
 
+func (implementation Implementation) Bit(b bool) language.Bit { 
+	return Bit {
+		Expression: language.Statement(fmt.Sprint(b)),
+	} 
+}
+
 func (implementation Implementation) Complex() language.Complex { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Quaternion() language.Quaternion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Rational() language.Rational { panic(`Unimplemented`); return nil }
@@ -34,7 +40,6 @@ func (implementation Implementation) Symbol(r rune) language.Symbol { panic(`Uni
 func (implementation Implementation) Color() language.Color { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Image() language.Image { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Stream() language.Stream { panic(`Unimplemented`); return nil }
-func (implementation Implementation) Bit(b bool) language.Bit { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Byte(b byte) language.Byte { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Sound() language.Sound { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Time() language.Time { panic(`Unimplemented`); return nil }

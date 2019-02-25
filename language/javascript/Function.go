@@ -23,6 +23,11 @@ func (implementation Implementation) Run(f language.Function, arguments []langua
 }
 
 func (implementation Implementation) Return(value language.Type) language.Statement {
+
+	if value == nil {
+		return language.Statement("return;")
+	}
+
 	panic(implementation.Name()+".Return() Unimplemented")
 	return language.Statement("")
 }

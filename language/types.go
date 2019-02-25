@@ -1,5 +1,9 @@
 package language
-	
+
+type Buffer interface {
+	Buffer()
+}
+
 type NewType struct {
 	Custom string
 	Subtype Type
@@ -37,25 +41,25 @@ type Metatype interface {
 	Metatype()
 }
 
-type Integer interface {
-	Type
-	Number()
-	Integer()
-}
-type Sedenion interface {
-	Type
-	Number()
-	Sedenion()
-}
 type Real interface {
 	Type
 	Number()
 	Real()
 }
-type Rational interface {
+type Natural interface {
 	Type
 	Number()
-	Rational()
+	Natural()
+}
+type Integer interface {
+	Type
+	Number()
+	Integer()
+}
+type Duplex interface {
+	Type
+	Number()
+	Duplex()
 }
 type Complex interface {
 	Type
@@ -72,27 +76,19 @@ type Octonion interface {
 	Number()
 	Octonion()
 }
-type Natural interface {
+type Sedenion interface {
 	Type
 	Number()
-	Natural()
+	Sedenion()
 }
-type Duplex interface {
+type Rational interface {
 	Type
 	Number()
-	Duplex()
+	Rational()
 }
-type Byte interface {
+type Video interface {
 	Type
-	Byte()
-}
-type Color interface {
-	Type
-	Color()
-}
-type Image interface {
-	Type
-	Image()
+	Video()
 }
 type Time interface {
 	Type
@@ -110,57 +106,33 @@ type Bit interface {
 	Type
 	Bit()
 }
+type Byte interface {
+	Type
+	Byte()
+}
 type Sound interface {
 	Type
 	Sound()
-}
-type Video interface {
-	Type
-	Video()
 }
 type Symbol interface {
 	Type
 	Symbol()
 }
-type Queue interface {
+type Color interface {
 	Type
-	Queue()
+	Color()
+}
+type Image interface {
+	Type
+	Image()
 }
 type Tensor interface {
 	Type
 	Tensor()
 }
-type Tree interface {
-	Type
-	Tree()
-}
-type Error interface {
-	Type
-	Error()
-}
-type Array interface {
-	Type
-	Array()
-}
-type List interface {
-	Type
-	List()
-}
-type Table interface {
-	Type
-	Table()
-}
-type Vector interface {
-	Type
-	Vector()
-}
 type Matrix interface {
 	Type
 	Matrix()
-}
-type Set interface {
-	Type
-	Set()
 }
 type Ring interface {
 	Type
@@ -170,11 +142,43 @@ type Function interface {
 	Type
 	Function()
 }
-type Pointer interface {
+type Array interface {
 	Type
-	Pointer()
+	Array()
+}
+type Table interface {
+	Type
+	Table()
+}
+type Vector interface {
+	Type
+	Vector()
 }
 type Graph interface {
 	Type
 	Graph()
+}
+type Error interface {
+	Type
+	Error()
+}
+type Set interface {
+	Type
+	Set()
+}
+type Pointer interface {
+	Type
+	Pointer()
+}
+type Tree interface {
+	Type
+	Tree()
+}
+type List interface {
+	Type
+	List()
+}
+type Queue interface {
+	Type
+	Queue()
 }

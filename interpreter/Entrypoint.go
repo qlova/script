@@ -3,7 +3,9 @@ package interpreter
 import "github.com/qlova/script/language"
 
 func (implementation Implementation) Main() language.Statement {
-	*implementation.active = implementation.program.CreateBlock()
+	implementation.CreateBlock()
+	var block = implementation.Active()
+		block.Main = true
 	return language.Statement("")
 }
 

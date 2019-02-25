@@ -6,10 +6,21 @@ import "reflect"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
 
-type Implementation struct {
+type implementation struct {
 	symbols map[string]dynamic.BlockPointer
-	program *dynamic.Program
-	active *dynamic.BlockPointer
+	
+	program dynamic.Program
+
+	//Trackers for program blocks.
+	active dynamic.BlockPointer 		//This is the code block we are writing to.
+	inactive []dynamic.BlockPointer	   //These are the code blocks we were writing to.
+	
+	//In order to support out-of order function definitions, we need to use Buffers.
+	buffers []Buffer
+}
+
+type Implementation struct {
+	*implementation
 }
 
 func (implementation Implementation) Start() {
@@ -17,10 +28,13 @@ func (implementation Implementation) Start() {
 }
 
 func New() Implementation {
-	var implementation Implementation
-	implementation.program = new(dynamic.Program)
-	implementation.active = new(dynamic.BlockPointer)
-	return implementation
+	var implementation implementation
+	implementation.program = make(dynamic.Program, 0)
+
+	implementation.inactive = make([]dynamic.BlockPointer, 0)
+	implementation.buffers = make([]Buffer, 0)
+	
+	return Implementation{&implementation}
 }
 
 func (implementation Implementation) String(s string) language.String {
@@ -83,12 +97,39 @@ func (implementation Implementation) Literal(t language.Type) interface{} {
 	return reflect.ValueOf(t).Convert(reflect.TypeOf(language.NewType{})).Interface().(language.NewType).Literal
 }
 
-func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) { 
-	implementation.program.WriteTo(*implementation.active, instruction)
+func (implementation Implementation) Active() *dynamic.Block {
+	return &implementation.program[implementation.active]
+}
+
+func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) {
+	if len(implementation.buffers) > 0 {
+		var buffer = implementation.buffers[len(implementation.buffers)-1]
+		
+		if buffer.sister == implementation.active {
+			buffer.block.Instructions = append(buffer.block.Instructions, instruction)
+			return
+		}
+	}
+
+	var active = implementation.Active()
+	active.Instructions = append(active.Instructions, instruction)
+
 }
 
 func (implementation Implementation) ReserveRegister() int {
-	return implementation.program.ReserveRegister(*implementation.active)
+	if len(implementation.buffers) > 0 {
+		var buffer = implementation.buffers[len(implementation.buffers)-1]
+		
+		if buffer.sister == implementation.active {
+			//TODO add sister registers?
+			buffer.block.Registers++
+			return buffer.block.Registers-1
+		}
+	}
+
+	var block = implementation.Active()
+	block.Registers++
+	return block.Registers-1
 }
 
 func (implementation Implementation) RegisterOf(value language.Type) int {
@@ -96,6 +137,27 @@ func (implementation Implementation) RegisterOf(value language.Type) int {
 	return i
 }
 
+func (implementation Implementation) BlockOf(value language.Type) dynamic.BlockPointer {
+	i, _ := strconv.Atoi(string(implementation.ExpressionOf(value)))
+	return dynamic.BlockPointer(i)
+}
+
 func (implementation Implementation) ExpressionOf(t language.Type) language.Statement {
 	return reflect.ValueOf(t).Convert(reflect.TypeOf(language.NewType{})).Interface().(language.NewType).Expression
+}
+
+func (implementation Implementation) CreateBlock() dynamic.BlockPointer {
+	var pointer = implementation.program.CreateBlock()
+	implementation.active = pointer
+	return pointer
+}
+
+func (implementation Implementation) Activate(pointer dynamic.BlockPointer) {
+	implementation.inactive = append(implementation.inactive, implementation.active)
+	implementation.active = pointer
+}
+
+func (implementation Implementation) Deactivate() {
+	implementation.active = implementation.inactive[len(implementation.inactive)-1]
+	implementation.inactive = implementation.inactive[:len(implementation.inactive)-1]
 }

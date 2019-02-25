@@ -16,6 +16,10 @@ var LanguageInterface = [...]string{
 	"Body() language.Statement",
 	"Tail() language.Statement",
 	"Last() language.Statement",
+	
+	"//Context",
+	"Buffer() language.Buffer",
+	"Flush(buffer language.Buffer)",
 
 	"//Variables",
 	"Register(register string, value language.Type) (language.Statement, language.Type)",

@@ -25,6 +25,7 @@ func (q Script) Func(f func(), names ...string) Func {
 		name = names[0]
 	}
 	
+	var buffer = q.lang.Buffer()
 	q.push()
 	f()
 	var context = q.pop()
@@ -40,12 +41,13 @@ func (q Script) Func(f func(), names ...string) Func {
 	if context.returns != nil {
 		returns = context.returns.LanguageType()
 	}
-	
+
 	statement, function := q.script.lang.Function(name, context.registers, Converted, returns)
-	
+
 	//If we are creating a global scope function.
 	if name != "" {
 		q.head.WriteString(string(statement))
+		q.lang.Flush(buffer)
 		q.head.Write(context.body.Bytes())
 		q.head.WriteString(string(q.script.lang.EndFunction()))
 		
@@ -59,6 +61,7 @@ func (q Script) Func(f func(), names ...string) Func {
 	} else {
 		var expression bytes.Buffer
 		expression.WriteString(string(statement))
+		q.lang.Flush(buffer)
 		expression.Write(context.body.Bytes())
 		expression.WriteString(string(q.script.lang.EndFunction()))
 		return Func{

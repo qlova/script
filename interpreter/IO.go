@@ -6,16 +6,18 @@ import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
 
 func (implementation Implementation) Print(values ...language.Type) language.Statement {
-	for _, value := range values {
+	for i, value := range values {
 
 		var register = implementation.RegisterOf(value)
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
 			fmt.Print(thread.Get(register))
 		})
 	
-		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			fmt.Print(" ")
-		})
+		if i < len(values)-1 {
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				fmt.Print(" ")
+			})
+		}
 	}
 	
 	implementation.AddInstruction(func(thread *dynamic.Thread) {

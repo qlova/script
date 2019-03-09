@@ -98,6 +98,9 @@ func (implementation Implementation) Literal(t language.Type) interface{} {
 }
 
 func (implementation Implementation) Active() *dynamic.Block {
+	if len(implementation.buffers) > 0 {
+		return implementation.buffers[len(implementation.buffers)-1].block
+	}
 	return &implementation.program[implementation.active]
 }
 
@@ -133,7 +136,26 @@ func (implementation Implementation) ReserveRegister() int {
 }
 
 func (implementation Implementation) RegisterOf(value language.Type) int {
-	i, _ := strconv.Atoi(string(implementation.ExpressionOf(value)))
+	var expression = string(implementation.ExpressionOf(value))
+	
+	i, err := strconv.Atoi(expression)
+	if err != nil && implementation.ExpressionOf(value)[0] == '$' {
+
+		//This is a function variable.
+		i, _ = strconv.Atoi(expression[1:])
+		
+	} else if err != nil {
+		
+		//This must be an argument, has it been defined yet?
+		var arguments = implementation.Active().Arguments
+		if table, ok := arguments[expression]; ok {
+			return table[1]
+		} else {
+			//The argument register is not defined yet, so we will create a mapping for it.
+			arguments[expression] = [2]int{-1, len(arguments)}
+			return len(arguments)-1
+		}
+	}
 	return i
 }
 

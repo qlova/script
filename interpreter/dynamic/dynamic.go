@@ -14,6 +14,7 @@ func (pointer BlockPointer) String() string {
 type Caller struct {
 	Block BlockPointer
 	InstructionCounter int
+	Returns int
 }
 
 //A thread is capable of running a program.
@@ -25,6 +26,8 @@ type Thread struct {
 	Registers [][]interface{}
 	
 	Callers []Caller
+	
+	Returns int
 }
 
 //Write a value in the thread at the specified location.
@@ -39,12 +42,16 @@ func (thread Thread) Get(location int) interface{} {
 
 //Read a value from the thread at the specified location.
 func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
-	
 	//Update callers.
 	thread.Callers = append(thread.Callers, Caller{
 		Block: thread.Block,
 		InstructionCounter: thread.InstructionCounter,
+		Returns:  thread.Returns,
 	})
+	
+	if Debug {
+		println("jumping from block (", thread.Block,", #",thread.InstructionCounter,") to a new block (", block,", #0) with")
+	}
 	
 	//Initialise registers.
 	thread.Registers = append(thread.Registers, make([]interface{}, thread.Program[block].Registers))
@@ -59,7 +66,7 @@ func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
 	thread.InstructionCounter = -1
 	
 	if Debug {
-		println("jumping to a new block (", block,") with")
+		
 		println(len(thread.Program[thread.Block].Instructions))
 		println("instructions &")
 		println(thread.Program[thread.Block].Registers)
@@ -69,7 +76,7 @@ func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
 
 
 //Return to the caller.
-func (thread *Thread) Return() {
+func (thread *Thread) Return(returns ...interface{}) {
 
 	//Return to the caller.
 	var Caller = thread.Callers[len(thread.Callers)-1]
@@ -78,6 +85,10 @@ func (thread *Thread) Return() {
 	thread.Callers = thread.Callers[:len(thread.Callers)-1]
 
 	thread.Registers = thread.Registers[:len(thread.Registers)-1]
+	
+	if len(returns) > 0 {
+		thread.Registers[len(thread.Registers)-1][Caller.Returns] = returns[0]
+	}
 	
 	if Debug {
 		println("jumping back to block (", Caller.Block,") with")
@@ -91,7 +102,10 @@ type Instruction func(thread *Thread)
 
 //A block consists of a number of 'instructions' and a number of registers.
 type Block struct {
+	Name string
+	
 	Instructions []Instruction
+	Arguments map[string][2]int //Argument mapping for out of order function defintions.
 	
 	Main bool
 	Registers int
@@ -107,7 +121,7 @@ func (program Program) Dump() {
 		if block.Main {
 			fmt.Print("\tmain\t")
 		} else {
-			fmt.Print("\t\t")
+			fmt.Print("\t"+block.Name+"\t")
 		}
 		fmt.Println("block - ", i, " has ", len(block.Instructions), " instructions & ", block.Registers, "registers")
 	}
@@ -115,7 +129,7 @@ func (program Program) Dump() {
 }
 
 func (program *Program) CreateBlock() BlockPointer {
-	*program = append(*program, Block{})
+	*program = append(*program, Block{Arguments: make(map[string][2]int)})
 	return BlockPointer(len(*program)-1)
 }
 
@@ -142,6 +156,10 @@ func (program Program) Run() {
 	
 	//Initisalise the registers.
 	thread.Registers = append(thread.Registers, make([]interface{}, program[thread.Block].Registers))
+	
+	if Debug {
+		program.Dump()
+	}
 	
 	for {
 		if int(thread.Block) >= len(program) {

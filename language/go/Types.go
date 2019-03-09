@@ -61,7 +61,7 @@ func (t Natural) Raw() language.Statement { return t.Expression }
 type Integer language.NewType
 func (t Integer) Number() {}
 func (t Integer) Integer() {}
-func (t Integer) Name() string { return "integer" }
+func (t Integer) Name() string { return "int" }
 func (t Integer) Is(b language.Type) bool { _, ok := b.(Integer); return ok }
 func (t Integer) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Integer) Raw() language.Statement { return t.Expression }
@@ -261,7 +261,7 @@ func (t Set) Raw() language.Statement { return t.Expression }
 type Function language.NewType
 func (t Function) Number() {}
 func (t Function) Function() {}
-func (t Function) Name() string { return "function" }
+func (t Function) Name() string { return "func()" }
 func (t Function) Is(b language.Type) bool { _, ok := b.(Function); return ok }
 func (t Function) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Function) Raw() language.Statement { return t.Expression }

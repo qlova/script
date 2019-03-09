@@ -89,6 +89,11 @@ func (c *Compiler) scan() string {
 		c.NextToken = ""
 		c.DoneToken = false
 	}
+
+	//TODO hangs on single-line program.
+	if len(c.Scanners) == 0 {
+		return ""
+	}
 	
 	tok := c.Scanners[len(c.Scanners)-1].Scan()
 	

@@ -25,12 +25,12 @@ func (implementation Implementation) Register(name string, value language.Type) 
 	
 	
 	
-	return language.Statement(""), value.Register(strconv.Itoa(register))
+	return language.Statement(""), value.Register("$"+strconv.Itoa(register))
 }
 
 func (implementation Implementation) Set(variable, value language.Type) language.Statement {
 
-	var register = implementation.RegisterOf(value)
+	var register = implementation.RegisterOf(variable)
 	var other = implementation.RegisterOf(value)
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, thread.Get(other))

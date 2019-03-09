@@ -70,6 +70,10 @@ func (i Int) Var(name ...string) Int {
 	}
 }
 
+func (i Int) Set(value Int) {
+	i.Value().Set(value)
+}
+
 //Cast an Int to a language.Type ready to be passed to the method of a Language.
 func (i Int) LanguageType() language.Type {
 	if i.literal != nil {

@@ -14,6 +14,7 @@ func (implementation Implementation) Buffer() language.Buffer {
 	var buffer Buffer
 		buffer.sister = implementation.active
 		buffer.block = new(dynamic.Block)
+		buffer.block.Arguments = make(map[string][2]int)
 		
 	implementation.buffers = append(implementation.buffers, buffer)
 
@@ -28,9 +29,9 @@ func (implementation Implementation) Flush(b language.Buffer) {
 		implementation.AddInstruction(instruction)
 	}
 	
+	implementation.Active().Arguments = buffer.block.Arguments
+	
 	for i:=0; i < buffer.block.Registers; i++ {
 		implementation.ReserveRegister()
 	}
 }
-
-

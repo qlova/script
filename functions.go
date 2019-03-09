@@ -16,8 +16,27 @@ func (q Script) Return(value ...Type) {
 	q.indent()
 	if len(value) >  0 {
 		q.write(q.script.lang.Return(value[0].LanguageType()))
+		q.returns = value[0]
 	} else {
 		q.write(q.script.lang.Return(nil))
+	}
+}
+
+func (v Value) Arg(name ...string) Type {
+	v.script.arguments = append(v.script.arguments, v)
+	
+	var unique string
+	if len(name) > 0 {
+		unique = name[0]
+	} else {
+		unique = Unique()
+	}
+	
+	v.script.registers = append(v.script.registers, unique)
+	
+	return Value{
+		script: v.script,
+		internal: v.internal.Register(name[0]), 
 	}
 }
 
@@ -78,6 +97,10 @@ func (q Script) Func(f func(), names ...string) Func {
 	
 }
 
+func (f Func) HasReturnValue() bool {
+	return f.returns != nil
+}
+
 func (f Func) LanguageType() language.Type {
 	return f.internal
 }
@@ -121,11 +144,11 @@ func (f Func) Call(arguments ...Type) Value {
 	for i := range arguments {
 		Converted[i] = arguments[i].LanguageType()
 	}
-	
-	f.script.indent()
-	f.script.lang.Run(f.LanguageType().(language.Function), Converted)
-	
-	return Value{}
+
+	return Value{
+		script: f.script,
+		internal: f.script.lang.Call(f.LanguageType().(language.Function), Converted),
+	}
 }
 
 func (f Func) Run(arguments ...Type) Value {

@@ -1,25 +1,25 @@
 package language
 
 type Interface interface {
-	Real(r float64) Real
 	Sedenion() Sedenion
+	Real(r float64) Real
+	Duplex() Duplex
+	Complex() Complex
+	Octonion() Octonion
 	Rational() Rational
 	Natural(n uint) Natural
 	Integer(i int) Integer
-	Duplex() Duplex
-	Complex() Complex
 	Quaternion() Quaternion
-	Octonion() Octonion
-	Byte(b byte) Byte
-	Sound() Sound
-	Video() Video
-	Time() Time
-	Stream() Stream
-	String(s string) String
+	Symbol(r rune) Symbol
 	Bit(b bool) Bit
 	Image() Image
-	Symbol(r rune) Symbol
+	Time() Time
+	String(s string) String
+	Byte(b byte) Byte
 	Color() Color
+	Sound() Sound
+	Video() Video
+	Stream() Stream
 	Name() string
 	Init()
 	Build(path string) func()
@@ -80,6 +80,7 @@ type Interface interface {
 	//Streams
 	Open(protocol string, path String) Type
 	Load(protocol string, path String) Type
+	Read(stream Stream, mode Type) Type
 	Stop(stream Stream) Statement
 	Seek(stream Stream, amount Integer) Statement
 	Info(stream Stream, query String) String
@@ -104,6 +105,9 @@ type Interface interface {
 	Pop(list Type) Type
 	TableOf(t Type) Table
 	ListOf(t Type) List
+	List(t ...Type) List
+	Array(t ...Type) Array
+	Table(index String, value Type) Table
 	//Pointers
 	PointerOf(t Type) Pointer
 	Dereference(p Pointer) Type

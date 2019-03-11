@@ -1,9 +1,5 @@
 package language
-
-type Buffer interface {
-	Buffer()
-}
-
+	
 type NewType struct {
 	Custom string
 	Subtype Type
@@ -18,6 +14,10 @@ func (t NewType) Register(name string) Type { return NewType{Expression: Stateme
 func (t NewType) Raw() Statement { return t.Expression }
 
 type Statement string
+
+type Buffer interface {
+	Buffer()
+}
 
 type Type interface { 
 	Name() string
@@ -46,16 +46,6 @@ type Real interface {
 	Number()
 	Real()
 }
-type Natural interface {
-	Type
-	Number()
-	Natural()
-}
-type Integer interface {
-	Type
-	Number()
-	Integer()
-}
 type Duplex interface {
 	Type
 	Number()
@@ -65,11 +55,6 @@ type Complex interface {
 	Type
 	Number()
 	Complex()
-}
-type Quaternion interface {
-	Type
-	Number()
-	Quaternion()
 }
 type Octonion interface {
 	Type
@@ -86,13 +71,36 @@ type Rational interface {
 	Number()
 	Rational()
 }
+type Natural interface {
+	Type
+	Number()
+	Natural()
+}
+type Integer interface {
+	Type
+	Number()
+	Integer()
+}
+type Quaternion interface {
+	Type
+	Number()
+	Quaternion()
+}
+type Byte interface {
+	Type
+	Byte()
+}
+type Color interface {
+	Type
+	Color()
+}
+type Sound interface {
+	Type
+	Sound()
+}
 type Video interface {
 	Type
 	Video()
-}
-type Time interface {
-	Type
-	Time()
 }
 type Stream interface {
 	Type
@@ -106,37 +114,57 @@ type Bit interface {
 	Type
 	Bit()
 }
-type Byte interface {
+type Image interface {
 	Type
-	Byte()
+	Image()
 }
-type Sound interface {
+type Time interface {
 	Type
-	Sound()
+	Time()
 }
 type Symbol interface {
 	Type
 	Symbol()
 }
-type Color interface {
+type Set interface {
 	Type
-	Color()
-}
-type Image interface {
-	Type
-	Image()
+	Set()
 }
 type Tensor interface {
 	Type
 	Tensor()
 }
+type Vector interface {
+	Type
+	Vector()
+}
 type Matrix interface {
 	Type
 	Matrix()
 }
+type Pointer interface {
+	Type
+	Pointer()
+}
+type List interface {
+	Type
+	List()
+}
 type Ring interface {
 	Type
 	Ring()
+}
+type Graph interface {
+	Type
+	Graph()
+}
+type Queue interface {
+	Type
+	Queue()
+}
+type Tree interface {
+	Type
+	Tree()
 }
 type Function interface {
 	Type
@@ -150,35 +178,7 @@ type Table interface {
 	Type
 	Table()
 }
-type Vector interface {
-	Type
-	Vector()
-}
-type Graph interface {
-	Type
-	Graph()
-}
 type Error interface {
 	Type
 	Error()
-}
-type Set interface {
-	Type
-	Set()
-}
-type Pointer interface {
-	Type
-	Pointer()
-}
-type Tree interface {
-	Type
-	Tree()
-}
-type List interface {
-	Type
-	List()
-}
-type Queue interface {
-	Type
-	Queue()
 }

@@ -8,6 +8,15 @@ func (implementation Implementation) ArrayOf(t language.Type, length int) langua
 }
 
 func (implementation Implementation) Join(a, b language.Type) language.Type {
+	
+	switch a.(type) {
+		case String:
+			switch b.(type) {
+				case String:
+					return String{Expression: "("+a.Raw()+"+"+b.Raw()+")"}
+			}
+	}
+	
 	panic(implementation.Name()+".Join() Unimplemented")
 	return nil
 }
@@ -37,3 +46,18 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 	return nil
 }
 
+
+func (implementation Implementation) List(t ...language.Type) language.List {
+	panic(implementation.Name()+".List() Unimplemented")
+	return nil
+}
+
+func (implementation Implementation) Array(t ...language.Type) language.Array {
+	panic(implementation.Name()+".Array() Unimplemented")
+	return nil
+}
+
+func (implementation Implementation) Table(index language.String, value language.Type) language.Table {
+	panic(implementation.Name()+".Table() Unimplemented")
+	return nil
+}

@@ -15,7 +15,7 @@ func (implementation Implementation) Head() language.Statement {
 }
 
 func (implementation Implementation) Neck() language.Statement {
-	return language.Statement("")
+	return language.Statement(implementation.neck.String())
 }
 
 func (implementation Implementation) Body() language.Statement {

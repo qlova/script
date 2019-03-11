@@ -56,3 +56,44 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 	}
 }
 
+
+func (implementation Implementation) List(t ...language.Type) language.List {
+	
+	var list string
+	
+	for i, element := range t {
+		list += string(element.Raw())
+		if i < len(t)-1 {
+			list += ","
+		}
+	}
+	
+	return List{
+		Subtype: t[0],
+		Expression: language.Statement(`[]`+t[0].Name()+"{"+list+"}"),
+	}
+}
+
+func (implementation Implementation) Array(t ...language.Type) language.Array {
+	
+	var array string
+	
+	for i, element := range t {
+		array += string(element.Raw())
+		if i < len(t)-1 {
+			array += ","
+		}
+	}
+	
+	return Array{
+		Subtype: t[0],
+		Expression: language.Statement(`[...]`+t[0].Name()+"{"+array+"}"),
+		Length: len(t),
+	}
+}
+
+func (implementation Implementation) Table(index language.String, value language.Type) language.Table {
+	panic(implementation.Name()+".Table() Unimplemented")
+	return nil
+}
+

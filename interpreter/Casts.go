@@ -5,6 +5,11 @@ import "fmt"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
 
+func atoi(text string) int {
+	i, _ := strconv.Atoi(text)
+	return i
+}
+
 func (implementation Implementation) Cast(a, b language.Type) language.Type {
 	
 	var register = implementation.RegisterOf(a)
@@ -40,6 +45,16 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 					var result = implementation.ReserveRegister()
 					implementation.AddInstruction(func(thread *dynamic.Thread) {
 						thread.Set(result, int(thread.Get(register).(rune)))
+					})
+					return b.Register(strconv.Itoa(result))
+			}
+			
+		case String:
+			switch b.(type) {
+				case Integer:
+					var result = implementation.ReserveRegister()
+					implementation.AddInstruction(func(thread *dynamic.Thread) {
+						thread.Set(result, atoi(thread.Get(register).(string)))
 					})
 					return b.Register(strconv.Itoa(result))
 			}

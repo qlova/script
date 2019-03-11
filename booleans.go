@@ -15,8 +15,11 @@ func (b Bool) Value() Value {
 	}
 }
 
-func (q Script) Bool(b bool) Bool {
-	return q.BoolFromLanguageType(q.lang.Bit(b))
+func (q Script) Bool(b ...bool) Bool {
+	if len(b) > 0 {
+		return q.BoolFromLanguageType(q.lang.Bit(b[0]))
+	}
+	return q.BoolFromLanguageType(q.lang.Bit(false))
 }
 
 func (b Bool) True() {
@@ -31,6 +34,18 @@ func (b Bool) False() {
 
 func (q Script) Not(b Bool) Bool {
 	return q.BoolFromLanguageType(q.lang.Not(b.LanguageType().(language.Bit)))
+}
+
+//Get this value as a string or cast to a string.
+func (v Value) Bool() Bool {
+	if b, ok := v.internal.(language.Bit); ok {
+		return Bool{
+			script: v.script,
+			internal: b,
+		}
+	}
+
+	return v.script.BoolFromLanguageType(v.script.lang.Cast(v.internal, v.script.Bool().LanguageType()))
 }
 
 func (*Bool) wrap(T interface{}) Bool {

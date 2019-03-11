@@ -83,6 +83,10 @@ func (t NewType) Raw() Statement { return t.Expression }
 
 type Statement string
 
+type Buffer interface {
+	Buffer()
+}
+
 type Type interface { 
 	Name() string
 	Is(Type) bool

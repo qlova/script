@@ -23,6 +23,16 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 				case Integer:
 					return Integer{Expression: "int("+implementation.ExpressionOf(a)+")"}
 			}
+			
+		case String:
+			switch b.(type) {
+				case Integer:
+					implementation.Import("strconv")
+					if implementation.Flag("atoi") {
+						implementation.neck.WriteString("func atoi(text string) int {\n\ti, _ := strconv.Atoi(text)\n\treturn i\n}\n\n")
+					}
+					return Integer{Expression: "atoi("+implementation.ExpressionOf(a)+")"}
+			}
 	}
 	
 	panic(implementation.Name()+".Cast("+a.Name()+", "+b.Name()+") Unimplemented")

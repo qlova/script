@@ -1,5 +1,6 @@
 package interpreter
 
+import "reflect"
 import "strconv"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
@@ -46,6 +47,19 @@ func (implementation Implementation) Join(a, b language.Type) language.Type {
 }
 
 func (implementation Implementation) Length(t language.Type) language.Integer {
+	
+	switch v := t.(type) {
+		case Array:
+			var length = v.Length
+			var register = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(register, length)
+			})
+			return Integer{
+				Expression: language.Statement(strconv.Itoa(register)),
+			}
+	}
+	
 	panic(implementation.Name()+".Length() Unimplemented")
 	return nil
 }
@@ -70,3 +84,32 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 	return nil
 }
 
+
+func (implementation Implementation) List(t ...language.Type) language.List {
+	panic(implementation.Name()+".List() Unimplemented")
+	return nil
+}
+
+func (implementation Implementation) Array(t ...language.Type) language.Array {
+	
+	var Type = GoTypeOf(t[0])
+
+	var register = implementation.ReserveRegister()
+	
+	var ArrayType = reflect.ArrayOf(len(t), Type)
+	
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, reflect.Zero(ArrayType).Interface())
+	})
+	
+	return Array{
+		Length: len(t),
+		Subtype: t[0],
+		Expression: language.Statement(strconv.Itoa(register)),
+	}
+}
+
+func (implementation Implementation) Table(index language.String, value language.Type) language.Table {
+	panic(implementation.Name()+".Table() Unimplemented")
+	return nil
+}

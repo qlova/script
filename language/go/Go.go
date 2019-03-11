@@ -4,9 +4,12 @@ import "fmt"
 import "strconv"
 import "reflect"
 import "github.com/qlova/script/language"
+import "bytes"
 
 type Implementation struct {
 	Imports map[language.Statement]struct{}
+	Flags map[string]bool
+	neck *bytes.Buffer
 }
 
 func (implementation Implementation) String(s string) language.String {
@@ -53,6 +56,8 @@ func (implementation Implementation) Name() string {
 func Language() Implementation {
 	var implementation Implementation
 	implementation.Imports = make(map[language.Statement]struct{})
+	implementation.Flags = make(map[string]bool)
+	implementation.neck = bytes.NewBuffer(nil)
 	return implementation
 }
 
@@ -67,6 +72,15 @@ func (implementation Implementation) Build(path string) func() {
 
 func (implementation Implementation) Import(path language.Statement) {
 	implementation.Imports[path] = struct{}{}
+}
+
+func (implementation Implementation) Flag(name string) bool {
+	if implementation.Flags[name] {
+		return false
+	}
+	
+	implementation.Flags[name] = true;
+	return true
 }
 
 func (implementation Implementation) ExpressionOf(t language.Type) language.Statement {

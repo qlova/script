@@ -37,3 +37,18 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 	return nil
 }
 
+func (implementation Implementation) List(t ...language.Type) language.List {
+	panic(implementation.Name()+".List() Unimplemented")
+	return nil
+}
+
+func (implementation Implementation) Array(t ...language.Type) language.Array {
+	panic(implementation.Name()+".Array() Unimplemented")
+	return nil
+}
+
+func (implementation Implementation) Table(index language.String, value language.Type) language.Table {
+	panic(implementation.Name()+".Table() Unimplemented")
+	return nil
+}
+

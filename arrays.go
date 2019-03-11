@@ -11,6 +11,17 @@ type Array struct {
 	length int
 }
 
+func (q Script) Array(elements ...Type) Array {
+	var Converted = make([]language.Type, len(elements))
+	for i := range elements {
+		Converted[i] = elements[i].LanguageType()
+	}
+	return Array {
+		script: q,
+		internal: q.lang.Array(Converted...),
+	}
+}
+
 func (a Array) Value() Value {	
 	return Value{
 		script: a.script,

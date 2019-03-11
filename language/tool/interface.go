@@ -78,6 +78,8 @@ var LanguageInterface = [...]string{
 	"//Streams",
 	"Open(protocol string, path language.String) language.Type",
 	"Load(protocol string, path language.String) language.Type",
+	
+	"Read(stream language.Stream, mode language.Type) language.Type",
 	"Stop(stream language.Stream) language.Statement",
 	"Seek(stream language.Stream, amount language.Integer) language.Statement",
 	"Info(stream language.Stream, query language.String) language.String",
@@ -105,6 +107,10 @@ var LanguageInterface = [...]string{
 	"Pop(list language.Type) language.Type",
 	"TableOf(t language.Type) language.Table",
 	"ListOf(t language.Type) language.List",
+	
+	"List(t ...language.Type) language.List",
+	"Array(t ...language.Type) language.Array",
+	"Table(index language.String, value language.Type) language.Table",
 	
 	"//Pointers",
 	"PointerOf(t language.Type) language.Pointer",

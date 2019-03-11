@@ -12,6 +12,11 @@ func (implementation Implementation) Load(protocol string, path language.String)
 	return nil
 }
 
+func (implementation Implementation) Read(stream language.Stream, mode language.Type) language.Type {
+	panic(implementation.Name()+".Read() Unimplemented")
+	return nil
+}
+
 func (implementation Implementation) Stop(stream language.Stream) language.Statement {
 	panic(implementation.Name()+".Stop() Unimplemented")
 	return language.Statement("")

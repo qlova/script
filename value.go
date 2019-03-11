@@ -17,6 +17,15 @@ func (v Value) LanguageType() language.Type {
 	return v.internal
 }
 
+
+//Wrap a language.Type to an Integer.
+func (q Script) ValueFromLanguageType(T language.Type) Value {
+	return Value{
+		internal: T,
+		script: q,
+	}
+}
+
 func (v Value) Is(t Type) bool {
 	return v.LanguageType().Is(t.LanguageType())
 }

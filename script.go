@@ -54,15 +54,19 @@ func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
 	
 	var buffer bytes.Buffer
 	buffer.WriteString(Go.String(script.lang.Head()))
-	buffer.WriteString(Go.String(script.lang.Neck()))
-	buffer.WriteString(Go.String(script.lang.Body()))
-	buffer.WriteString(Go.String(script.lang.Tail()))
-	buffer.WriteString(Go.String(script.lang.Last()))
-
 	buffer.Write(script.head.Bytes())
+	
+	buffer.WriteString(Go.String(script.lang.Neck()))
 	buffer.Write(script.neck.Bytes())
+	
+	buffer.WriteString(Go.String(script.lang.Body()))
 	buffer.Write(script.body.Bytes())
+	
+	
 	buffer.Write(script.tail.Bytes())
+	buffer.WriteString(Go.String(script.lang.Tail()))
+	
+	buffer.WriteString(Go.String(script.lang.Last()))
 	buffer.Write(script.last.Bytes())
 
 	code.Data = buffer.Bytes()

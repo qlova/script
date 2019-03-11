@@ -12,3 +12,7 @@ func (q Script) Print(values ...Type) {
 	q.indent()
 	q.write(q.lang.Print(converted...))
 }
+
+func (q Script) Read(mode Type) Value {
+	return q.ValueFromLanguageType(q.lang.Read(nil, mode.LanguageType()))
+}

@@ -183,3 +183,13 @@ func (implementation Implementation) Deactivate() {
 	implementation.active = implementation.inactive[len(implementation.inactive)-1]
 	implementation.inactive = implementation.inactive[:len(implementation.inactive)-1]
 }
+
+func GoTypeOf(t interface{}) reflect.Type {
+	switch t.(type) {
+		case String:
+			 return reflect.TypeOf("")
+		default:
+			panic("Unimplemented")
+	}
+	return nil
+}

@@ -1,7 +1,6 @@
 package interpreter
 
 import "strconv"
-
 import "github.com/qlova/script/interpreter/dynamic"
 import "github.com/qlova/script/language"
 
@@ -61,6 +60,7 @@ func (implementation Implementation) Call(f language.Function, arguments []langu
 			for i := range addresses {
 				Converted[i] = thread.Get(addresses[i])
 			}
+			
 			
 			thread.Returns = returnRegister
 			thread.JumpTo(dynamic.BlockPointer(thread.Get(register).(int)), Converted...)

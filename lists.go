@@ -73,3 +73,7 @@ func (l List) Modify(index Int, value Type) {
 func (l List) Subtype() Type {
 	return l.subtype
 }
+
+func (l List) ForEach(f func(), names ...string) {
+	l.script.foreach(l, f, names...)
+}

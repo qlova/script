@@ -15,26 +15,25 @@ import (
 
 import "github.com/qlova/script/interpreter"
 import "github.com/qlova/script/language"
-import "github.com/qlova/script/go"
 
 import (
 	Golang "github.com/qlova/script/language/go"
 )
 
 var id int64 = 0;
-func Unique() Go.String {
+func Unique() string {
 	id++
 	return base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 }
 
 type SourceCode struct {
 	Error bool
-	ErrorMessage Go.String
+	ErrorMessage string
 	Data []byte
 }
 
-func (code SourceCode) String() Go.String {
-	return Go.String(code.Data)
+func (code SourceCode) String() string {
+	return string(code.Data)
 }
 
 type Program func(Script)
@@ -46,27 +45,27 @@ func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
 	defer func() {
 		if r := recover(); r != nil {
 			code.Error = true
-			code.ErrorMessage = fmt.Sprint(r, "\n", Go.String(debug.Stack()))
+			code.ErrorMessage = fmt.Sprint(r, "\n", string(debug.Stack()))
 		}
 	}()
 
 	program(script)
 	
 	var buffer bytes.Buffer
-	buffer.WriteString(Go.String(script.lang.Head()))
+	buffer.WriteString(string(script.lang.Head()))
 	buffer.Write(script.head.Bytes())
 	
-	buffer.WriteString(Go.String(script.lang.Neck()))
+	buffer.WriteString(string(script.lang.Neck()))
 	buffer.Write(script.neck.Bytes())
 	
-	buffer.WriteString(Go.String(script.lang.Body()))
+	buffer.WriteString(string(script.lang.Body()))
 	buffer.Write(script.body.Bytes())
 	
 	
 	buffer.Write(script.tail.Bytes())
-	buffer.WriteString(Go.String(script.lang.Tail()))
+	buffer.WriteString(string(script.lang.Tail()))
 	
-	buffer.WriteString(Go.String(script.lang.Last()))
+	buffer.WriteString(string(script.lang.Last()))
 	buffer.Write(script.last.Bytes())
 
 	code.Data = buffer.Bytes()
@@ -87,7 +86,7 @@ func (program Program) Run() (err error) {
 	//Catch errors.
 	defer func() {
 		if r := recover(); r != nil {
-			err = errors.New(fmt.Sprint(r, "\n", Go.String(debug.Stack())))
+			err = errors.New(fmt.Sprint(r, "\n", string(debug.Stack())))
 		}
 	}()
 	
@@ -184,17 +183,20 @@ type context struct {
 	tail bytes.Buffer
 	last bytes.Buffer
 	
-	Optimise Go.Bool
+	Optimise bool
 	
 	//function stuff
 	global string
 	arguments []Type
 	registers []string
 	returns Type
+	
+	index Int
+	value Value
 }
 
 type script struct {
-	depth Go.Int
+	depth int
 	
 	lang language.Interface
 	
@@ -240,10 +242,10 @@ func (q Script) indent() {
 }
 
 func (q Script) write(s language.Statement) {
-	q.body.WriteString(Go.String(s))
+	q.body.WriteString(string(s))
 }
 
-func (q Script) Raw(language Go.String, statement language.Statement) {
+func (q Script) Raw(language string, statement language.Statement) {
 	if q.lang.Name() == language {
 		q.write(statement)
 	}

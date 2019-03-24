@@ -17,6 +17,9 @@ type implementation struct {
 	
 	//In order to support out-of order function definitions, we need to use Buffers.
 	buffers []Buffer
+	
+	//Stores instruction-count positions of loops.
+	loops []int
 }
 
 type Implementation struct {
@@ -39,6 +42,7 @@ func New() Implementation {
 
 func (implementation Implementation) String(s string) language.String {
 	var register = implementation.ReserveRegister()
+	
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, s)
 	})
@@ -99,37 +103,34 @@ func (implementation Implementation) Literal(t language.Type) interface{} {
 
 func (implementation Implementation) Active() *dynamic.Block {
 	if len(implementation.buffers) > 0 {
-		return implementation.buffers[len(implementation.buffers)-1].block
+		var buffer = implementation.buffers[len(implementation.buffers)-1]
+		
+		if buffer.sister == implementation.active {
+			return implementation.buffers[len(implementation.buffers)-1].block
+		}
 	}
 	return &implementation.program[implementation.active]
 }
 
-func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) {
-	if len(implementation.buffers) > 0 {
-		var buffer = implementation.buffers[len(implementation.buffers)-1]
-		
-		if buffer.sister == implementation.active {
-			buffer.block.Instructions = append(buffer.block.Instructions, instruction)
-			return
-		}
-	}
+//Return the current instruction index.
+func (implementation Implementation) Instruction() int {
+	var active = implementation.Active()
+	return len(active.Instructions)
+}
 
+func (implementation Implementation) SetInstruction(index int, instruction dynamic.Instruction) {
+	var active = implementation.Active()
+	active.Instructions[index] = instruction
+}
+
+
+func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) {
 	var active = implementation.Active()
 	active.Instructions = append(active.Instructions, instruction)
 
 }
 
 func (implementation Implementation) ReserveRegister() int {
-	if len(implementation.buffers) > 0 {
-		var buffer = implementation.buffers[len(implementation.buffers)-1]
-		
-		if buffer.sister == implementation.active {
-			//TODO add sister registers?
-			buffer.block.Registers++
-			return buffer.block.Registers-1
-		}
-	}
-
 	var block = implementation.Active()
 	block.Registers++
 	return block.Registers-1
@@ -148,6 +149,7 @@ func (implementation Implementation) RegisterOf(value language.Type) int {
 		
 		//This must be an argument, has it been defined yet?
 		var arguments = implementation.Active().Arguments
+		
 		if table, ok := arguments[expression]; ok {
 			return table[1]
 		} else {
@@ -188,6 +190,8 @@ func GoTypeOf(t interface{}) reflect.Type {
 	switch t.(type) {
 		case String:
 			 return reflect.TypeOf("")
+		case Integer:
+			 return reflect.TypeOf(0)
 		default:
 			panic("Unimplemented")
 	}

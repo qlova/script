@@ -86,8 +86,29 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 
 
 func (implementation Implementation) List(t ...language.Type) language.List {
-	panic(implementation.Name()+".List() Unimplemented")
-	return nil
+	
+	var Type = GoTypeOf(t[0])
+	
+	var register = implementation.ReserveRegister()
+	
+	var SliceType = reflect.SliceOf(Type)
+	
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, reflect.MakeSlice(SliceType, len(t), len(t)).Interface())
+	})
+	
+	for i, value := range t {
+		var other = implementation.RegisterOf(value)
+		var i = i //Because rescope!
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			reflect.ValueOf(thread.Get(register)).Index(i).Set(reflect.ValueOf(thread.Get(other)))
+		})
+	}
+	
+	return List{
+		Subtype: t[0],
+		Expression: language.Statement(strconv.Itoa(register)),
+	}
 }
 
 func (implementation Implementation) Array(t ...language.Type) language.Array {
@@ -98,6 +119,7 @@ func (implementation Implementation) Array(t ...language.Type) language.Array {
 	
 	var ArrayType = reflect.ArrayOf(len(t), Type)
 	
+	//TODO actually fill array?
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, reflect.Zero(ArrayType).Interface())
 	})

@@ -27,9 +27,9 @@ func (implementation Implementation) EndWhile() language.Statement {
 	return language.Statement("")
 }
 
-func (implementation Implementation) ForRange(i string, a, b language.Number) language.Statement {
+func (implementation Implementation) ForRange(i string, a, b language.Number) (language.Statement, language.Type) {
 	panic(implementation.Name()+".ForRange() Unimplemented")
-	return language.Statement("")
+	return language.Statement(""), nil
 }
 
 func (implementation Implementation) EndForRange() language.Statement {
@@ -37,19 +37,22 @@ func (implementation Implementation) EndForRange() language.Statement {
 	return language.Statement("")
 }
 
-func (implementation Implementation) ForEach(i, v string, list language.Type) language.Statement {
-	panic(implementation.Name()+".ForEach() Unimplemented")
-	return language.Statement("")
+func (implementation Implementation) ForEach(i, v string, list language.Type) (language.Statement, language.Type, language.Type) {
+	
+	if implementation.Flag("use") {
+		implementation.neck.WriteString("func use(variable interface{}) {}\n\n")
+	}
+	
+	return language.Statement("for "+i+", "+v+" := range "+string(list.Raw())+" { use("+i+"); use("+v+");\n"), Integer{Expression:language.Statement(i)}, list.(List).Subtype.Register(v)
 }
 
 func (implementation Implementation) EndForEach() language.Statement {
-	panic(implementation.Name()+".EndForEach() Unimplemented")
-	return language.Statement("")
+	return language.Statement("}\n")
 }
 
-func (implementation Implementation) For(i string, condition language.Bit, action language.Statement) language.Statement {
+func (implementation Implementation) For(i string, condition language.Bit, action language.Statement) (language.Statement, language.Type) {
 	panic(implementation.Name()+".For() Unimplemented")
-	return language.Statement("")
+	return language.Statement(""), nil
 }
 
 func (implementation Implementation) EndFor() language.Statement {

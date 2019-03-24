@@ -28,6 +28,20 @@ func (implementation Implementation) Print(values ...language.Type) language.Sta
 }
 
 func (implementation Implementation) Write(stream language.Stream, values ...language.Type) language.Statement {
+	
+	if stream == nil {
+		for _, value := range values {
+
+			var register = implementation.RegisterOf(value)
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				fmt.Print(thread.Get(register))
+			})
+
+		}
+
+		return language.Statement("")
+	}
+	
 	panic(implementation.Name()+".Write() Unimplemented")
 	return language.Statement("")
 }

@@ -35,6 +35,11 @@ func (v Value) IsArray() bool {
 	return ok
 }
 
+func (v Value) IsList() bool {
+	_, ok := v.LanguageType().(language.List)
+	return ok
+}
+
 func (v Value) Value() Value {
 	return v
 }

@@ -1,12 +1,7 @@
 package script
 
 func (q Script) Var(T Type, name ...string) Value {
-	var register string
-	if len(name) > 0 {
-		register = name[0]
-	} else {
-		register = Unique()
-	}
+	var register = unique(name)
 	
 	q.indent()
 	statement, variable := q.lang.Register(register, T.LanguageType())

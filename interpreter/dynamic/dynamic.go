@@ -2,8 +2,11 @@ package dynamic
 
 import "strconv"
 import "fmt"
+import "reflect"
+import "runtime/debug"
 
 const Debug = false
+const ExtremeDebug = false
 
 type BlockPointer int 
 func (pointer BlockPointer) String() string {
@@ -30,8 +33,25 @@ type Thread struct {
 	Returns int
 }
 
+func Trace() {
+	fmt.Println(string(debug.Stack()))
+}
+
+//Debug method, dumps all registers in the current block.
+func (thread *Thread) DumpRegisters() {
+	fmt.Println("Register Dump")
+	for i, value := range thread.Registers[len(thread.Registers)-1] {
+		fmt.Println("\t", i, "\t", "[", reflect.TypeOf(value), "]", value)
+	}
+}
+
 //Write a value in the thread at the specified location.
 func (thread Thread) Set(location int, value interface{}) {
+	
+	if ExtremeDebug {
+		Trace()
+	}
+	
 	thread.Registers[len(thread.Registers)-1][location] = value
 }
 

@@ -1,25 +1,25 @@
 package language
 
 type Interface interface {
+	Quaternion() Quaternion
 	Sedenion() Sedenion
 	Real(r float64) Real
+	Rational() Rational
+	Integer(i int) Integer
 	Duplex() Duplex
+	Natural(n uint) Natural
 	Complex() Complex
 	Octonion() Octonion
-	Rational() Rational
-	Natural(n uint) Natural
-	Integer(i int) Integer
-	Quaternion() Quaternion
-	Symbol(r rune) Symbol
-	Bit(b bool) Bit
 	Image() Image
-	Time() Time
-	String(s string) String
-	Byte(b byte) Byte
-	Color() Color
-	Sound() Sound
 	Video() Video
 	Stream() Stream
+	Byte(b byte) Byte
+	Color() Color
+	Bit(b bool) Bit
+	Sound() Sound
+	Time() Time
+	Symbol(r rune) Symbol
+	String(s string) String
 	Name() string
 	Init()
 	Build(path string) func()
@@ -56,11 +56,11 @@ type Interface interface {
 	Break() Statement
 	While(condition Bit) Statement
 	EndWhile() Statement
-	ForRange(i string, a, b Number) Statement
+	ForRange(i string, a, b Number) (Statement, Type)
 	EndForRange() Statement
-	ForEach(i, v string, list Type) Statement
+	ForEach(i, v string, list Type) (Statement, Type, Type)
 	EndForEach() Statement
-	For(i string, condition Bit, action Statement) Statement
+	For(i string, condition Bit, action Statement) (Statement, Type)
 	EndFor() Statement
 	//Entrypoint
 	Main() Statement

@@ -27,9 +27,9 @@ func (implementation Implementation) EndWhile() language.Statement {
 	return language.Statement("")
 }
 
-func (implementation Implementation) ForRange(i string, a, b language.Number) language.Statement {
+func (implementation Implementation) ForRange(i string, a, b language.Number) (language.Statement, language.Type) {
 	panic(implementation.Name()+".ForRange() Unimplemented")
-	return language.Statement("")
+	return language.Statement(""), nil
 }
 
 func (implementation Implementation) EndForRange() language.Statement {
@@ -37,9 +37,9 @@ func (implementation Implementation) EndForRange() language.Statement {
 	return language.Statement("")
 }
 
-func (implementation Implementation) ForEach(i, v string, list language.Type) language.Statement {
+func (implementation Implementation) ForEach(i, v string, list language.Type) (language.Statement, language.Type, language.Type) {
 	panic(implementation.Name()+".ForEach() Unimplemented")
-	return language.Statement("")
+	return language.Statement(""), nil, nil
 }
 
 func (implementation Implementation) EndForEach() language.Statement {
@@ -47,9 +47,9 @@ func (implementation Implementation) EndForEach() language.Statement {
 	return language.Statement("")
 }
 
-func (implementation Implementation) For(i string, condition language.Bit, action language.Statement) language.Statement {
+func (implementation Implementation) For(i string, condition language.Bit, action language.Statement) (language.Statement, language.Type) {
 	panic(implementation.Name()+".For() Unimplemented")
-	return language.Statement("")
+	return language.Statement(""), nil
 }
 
 func (implementation Implementation) EndFor() language.Statement {

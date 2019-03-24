@@ -9,6 +9,7 @@ func (implementation Implementation) Add(a, b language.Number) language.Number {
 	
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
+
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, thread.Get(RA).(int) + thread.Get(RB).(int))
 	})

@@ -2,6 +2,7 @@ package script
 
 import "bytes"
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/interpreter"
 
 type Func struct {
 	script Script
@@ -30,6 +31,11 @@ func (v Value) Arg(name ...string) Type {
 		unique = name[0]
 	} else {
 		unique = Unique()
+	}
+	
+	//Dirty ugly hack, to make sure that the interpreter reserves the register for this argument.
+	if impl, ok := v.script.lang.(interpreter.Implementation); ok {
+		impl.ReserveRegister()
 	}
 	
 	v.script.registers = append(v.script.registers, unique)

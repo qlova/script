@@ -49,11 +49,11 @@ var LanguageInterface = [...]string{
 	"Break() language.Statement",
 	"While(condition language.Bit) language.Statement",
 	"EndWhile() language.Statement",
-	"ForRange(i string, a, b language.Number) language.Statement",
+	"ForRange(i string, a, b language.Number) (language.Statement, language.Type)",
 	"EndForRange() language.Statement",
-	"ForEach(i, v string, list language.Type) language.Statement",
+	"ForEach(i, v string, list language.Type) (language.Statement, language.Type, language.Type)",
 	"EndForEach() language.Statement",
-	"For(i string, condition language.Bit, action language.Statement) language.Statement",
+	"For(i string, condition language.Bit, action language.Statement) (language.Statement, language.Type)",
 	"EndFor() language.Statement",
 	
 	"//Entrypoint",
@@ -228,6 +228,12 @@ func GenerateLanguageTemplate(name string) {
 		if fname == "Register" {
 			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
 		} else if fname == "Function" {
+			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
+		} else if fname == "ForRange" {
+			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
+		} else if fname == "ForEach" {
+			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil, nil`)
+		} else if fname == "For" {
 			fmt.Fprintln(file, "\t"+`return language.Statement(""), nil`)
 		} else {
 		

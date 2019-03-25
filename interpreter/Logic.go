@@ -1,6 +1,8 @@
 package interpreter
 
+import "strconv"
 import "github.com/qlova/script/language"
+import "github.com/qlova/script/interpreter/dynamic"
 
 func (implementation Implementation) And(a, b language.Bit) language.Bit {
 	panic(implementation.Name()+".And() Unimplemented")
@@ -18,8 +20,18 @@ func (implementation Implementation) Not(b language.Bit) language.Bit {
 }
 
 func (implementation Implementation) Equals(a, b language.Type) language.Bit {
-	panic(implementation.Name()+".Equals() Unimplemented")
-	return nil
+	
+	var register = implementation.ReserveRegister()
+	
+	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
+	
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, thread.Get(RA) == thread.Get(RB))
+	})
+
+	return Bit{
+		Expression: language.Statement(strconv.Itoa(register)),
+	}
 }
 
 func (implementation Implementation) Smaller(a, b language.Type) language.Bit {

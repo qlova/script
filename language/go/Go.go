@@ -30,6 +30,12 @@ func (implementation Implementation) Symbol(r rune) language.Symbol {
 	}
 }
 
+func (implementation Implementation) Bit(b bool) language.Bit { 
+	return Bit {
+		Expression: language.Statement(fmt.Sprint(b)),
+	}
+}
+
 func (implementation Implementation) Real(r float64) language.Real { return nil }
 func (implementation Implementation) Rational() language.Rational { return nil }
 func (implementation Implementation) Natural(n uint) language.Natural { return nil }
@@ -47,7 +53,7 @@ func (implementation Implementation) Byte(b byte) language.Byte { return nil }
 func (implementation Implementation) Image() language.Image { return nil }
 func (implementation Implementation) Sound() language.Sound { return nil }
 func (implementation Implementation) Time() language.Time { return nil }
-func (implementation Implementation) Bit(b bool) language.Bit { return nil }
+
 
 func (implementation Implementation) Name() string {
 	return "Go"

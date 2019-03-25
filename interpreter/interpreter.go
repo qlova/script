@@ -20,6 +20,7 @@ type implementation struct {
 	
 	//Stores instruction-count positions of loops.
 	loops []int
+	ifstates []IfState
 }
 
 type Implementation struct {
@@ -65,6 +66,14 @@ func (implementation Implementation) Symbol(r rune) language.Symbol {
 	return Symbol{Expression:language.Statement(strconv.Itoa(register))}
 }
 
+func (implementation Implementation) Bit(b bool) language.Bit {
+	var register = implementation.ReserveRegister()
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		thread.Set(register, b)
+	})
+	return Bit{Expression:language.Statement(strconv.Itoa(register))}
+}
+
 func (implementation Implementation) Rational() language.Rational { panic("Not implemented"); return nil }
 func (implementation Implementation) Natural(n uint) language.Natural { panic("Not implemented"); return nil }
 func (implementation Implementation) Complex() language.Complex { panic("Not implemented"); return nil }
@@ -80,7 +89,7 @@ func (implementation Implementation) Sound() language.Sound { panic("Not impleme
 func (implementation Implementation) Video() language.Video { panic("Not implemented"); return nil }
 func (implementation Implementation) Time() language.Time { panic("Not implemented"); return nil }
 func (implementation Implementation) Stream() language.Stream { panic("Not implemented"); return nil }
-func (implementation Implementation) Bit(b bool) language.Bit { panic("Not implemented"); return nil }
+
 
 func (implementation Implementation) Color() language.Color { panic("Not implemented"); return nil }
 

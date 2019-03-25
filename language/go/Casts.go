@@ -13,6 +13,9 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 					
 				case Symbol:
 					return Symbol{Expression: "rune("+implementation.ExpressionOf(a)+")"}
+					
+				case Bit:
+					return Bit{Expression: "("+implementation.ExpressionOf(a)+" != 0)"}
 			}
 
 		case Symbol:

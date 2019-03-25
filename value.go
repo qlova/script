@@ -35,6 +35,21 @@ func (v Value) IsArray() bool {
 	return ok
 }
 
+func (v Value) IsBool() bool {
+	_, ok := v.LanguageType().(language.Bit)
+	return ok
+}
+
+func (v Value) IsString() bool {
+	_, ok := v.LanguageType().(language.String)
+	return ok
+}
+
+func (v Value) IsInt() bool {
+	_, ok := v.LanguageType().(language.Integer)
+	return ok
+}
+
 func (v Value) IsList() bool {
 	_, ok := v.LanguageType().(language.List)
 	return ok

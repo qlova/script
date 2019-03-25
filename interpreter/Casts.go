@@ -30,6 +30,13 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 						thread.Set(result, rune(thread.Get(register).(int)))
 					})
 					return b.Register(strconv.Itoa(result))
+					
+				case Bit:
+					var result = implementation.ReserveRegister()
+					implementation.AddInstruction(func(thread *dynamic.Thread) {
+						thread.Set(result, thread.Get(register).(int) != 0)
+					})
+					return b.Register(strconv.Itoa(result))
 			}
 			
 		case Symbol:

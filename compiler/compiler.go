@@ -165,24 +165,26 @@ func (c *Compiler) AddInput(input io.Reader) {
 	c.CurrentLines = append(c.CurrentLines, "")
 }
 
-func (c *Compiler) CompileBlock(first, last string) {	
+func (c *Compiler) CompileBlock(first string, matches ...string) string {	
 	if first != "" {
 		c.Expecting(first)
 	}
 	
 	if len(c.Scanners) == 0 {
-		return
+		return ""
 	}
 	
 	for {
-		if c.Peek() == last {
-			c.Scan()
-			return
+		for _, match := range matches {
+			if c.Peek() == match {
+				return c.Scan()
+			}
 		}
+		
 		
 		c.ScanStatement()
 		if len(c.Scanners) == 0 {
-			return
+			return ""
 		}
 	}
 }

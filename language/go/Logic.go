@@ -18,8 +18,7 @@ func (implementation Implementation) Not(b language.Bit) language.Bit {
 }
 
 func (implementation Implementation) Equals(a, b language.Type) language.Bit {
-	panic(implementation.Name()+".Equals() Unimplemented")
-	return nil
+	return Bit{Expression: language.Statement("("+a.Raw()+"=="+b.Raw()+")")}
 }
 
 func (implementation Implementation) Smaller(a, b language.Type) language.Bit {

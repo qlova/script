@@ -27,6 +27,12 @@ func (implementation Implementation) Bit(b bool) language.Bit {
 	} 
 }
 
+func (implementation Implementation) Real(r float64) language.Real { 
+	return Real {
+		Expression: language.Statement(fmt.Sprint(r)),
+	} 
+}
+
 func (implementation Implementation) Complex() language.Complex { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Quaternion() language.Quaternion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Rational() language.Rational { panic(`Unimplemented`); return nil }
@@ -34,7 +40,6 @@ func (implementation Implementation) Natural(n uint) language.Natural { panic(`U
 func (implementation Implementation) Duplex() language.Duplex { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Octonion() language.Octonion { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Sedenion() language.Sedenion { panic(`Unimplemented`); return nil }
-func (implementation Implementation) Real(r float64) language.Real { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Video() language.Video { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Symbol(r rune) language.Symbol { panic(`Unimplemented`); return nil }
 func (implementation Implementation) Color() language.Color { panic(`Unimplemented`); return nil }

@@ -18,6 +18,7 @@ func (q Script) List(elements ...Type) List {
 	return List {
 		script: q,
 		internal: q.lang.List(Converted...),
+		subtype: elements[0],
 	}
 }
 

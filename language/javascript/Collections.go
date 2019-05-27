@@ -48,8 +48,22 @@ func (implementation Implementation) ListOf(t language.Type) language.List {
 
 
 func (implementation Implementation) List(t ...language.Type) language.List {
-	panic(implementation.Name()+".List() Unimplemented")
-	return nil
+
+	var expression = "["
+
+	for i, element := range t {
+		expression += element.Raw()
+		if i < len(t)-1 {
+			expression += ","
+		} 
+	}
+
+	expression += "]"
+
+	return List{
+		Expression: expression,
+		Subtype: t[0],
+	}
 }
 
 func (implementation Implementation) Array(t ...language.Type) language.Array {

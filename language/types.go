@@ -13,7 +13,7 @@ func (t NewType) Is(b Type) bool { c, ok := b.(NewType); return ok && c.Custom =
 func (t NewType) Register(name string) Type { return NewType{Expression: Statement(name)} }
 func (t NewType) Raw() Statement { return t.Expression }
 
-type Statement string
+type Statement = string
 
 type Buffer interface {
 	Buffer()
@@ -181,4 +181,8 @@ type Tree interface {
 type Graph interface {
 	Type
 	Graph()
+}
+type Native interface {
+	Type
+	Native()
 }

@@ -6,7 +6,7 @@ import "github.com/qlova/script/language"
 //An Int is a numeric integer value consisting of a magnitude and a sign.
 type Float struct {
 	script Script
-	internal language.Integer
+	internal language.Real
 
 	literal *float64
 }
@@ -25,6 +25,30 @@ func (f Float) Value() Value {
 		script: f.script,
 		internal: f.LanguageType(),
 	}
+}
+
+//Get this value as an int or cast to an int.
+func (v Value) Float() Float {
+	if i, ok := v.internal.(language.Real); ok {
+		return Float{
+			script: v.script,
+			internal: i,
+		}
+	}
+
+	return v.script.FloatFromLanguageType(v.script.lang.Cast(v.internal, v.script.Float().LanguageType()))
+}
+
+//Wrap a language.Type to an Integer.
+func (q Script) FloatFromLanguageType(T language.Type) Float {
+	if internal, ok := T.(language.Real); ok {
+		return Float{
+			internal: internal,
+			script: q,
+		}
+	}
+	panic("Invalid wrap!")
+	return Float{}
 }
 
 //Return a new String type with the value s.

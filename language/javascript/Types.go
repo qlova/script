@@ -266,3 +266,9 @@ func (t Pointer) Is(b language.Type) bool { _, ok := b.(Pointer); return ok }
 func (t Pointer) Register(name string) language.Type { return Pointer{Expression: language.Statement(name)} }
 func (t Pointer) Raw() language.Statement { return t.Expression }
 
+type Native language.NewType
+func (t Native) Native() {}
+func (t Native) Name() string { return "native" }
+func (t Native) Is(b language.Type) bool { _, ok := b.(Native); return ok }
+func (t Native) Register(name string) language.Type { return Native{Expression: language.Statement(name)} }
+func (t Native) Raw() language.Statement { return t.Expression }

@@ -32,8 +32,16 @@ func (b Bool) False() {
 	b.script.write(b.script.lang.Set(b.LanguageType(), b.script.lang.Bit(false)))
 }
 
+func (b Bool) And(a Bool) Bool {
+	return b.script.BoolFromLanguageType(b.script.lang.And(b.internal, a.internal))
+}
+
+func (b Bool) Or(a Bool) Bool {
+	return b.script.BoolFromLanguageType(b.script.lang.Or(b.internal, a.internal))
+}
+
 func (q Script) Not(b Bool) Bool {
-	return q.BoolFromLanguageType(q.lang.Not(b.LanguageType().(language.Bit)))
+	return q.BoolFromLanguageType(q.lang.Not(b.internal))
 }
 
 //Get this value as a string or cast to a string.

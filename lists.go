@@ -18,7 +18,21 @@ func (q Script) List(elements ...Type) List {
 	return List {
 		script: q,
 		internal: q.lang.List(Converted...),
+		subtype: elements[0],
 	}
+}
+
+//Wrap a language.Type to a List.
+func (q Script) ListFromLanguageType(T language.Type) List {
+	if internal, ok := T.(language.List); ok {
+		return List{
+			internal: internal,
+			script: q,
+			//subtype is nil
+		}
+	}
+	panic("Invalid wrap!")
+	return List{}
 }
 
 func (l List) Value() Value {	
@@ -51,7 +65,7 @@ func (v Value) List() List {
 		}
 	}
 	
-	panic("Cannot cast to Array")
+	panic("Cannot cast to List")
 	return List{}
 }
 
@@ -69,6 +83,13 @@ func (l List) Modify(index Int, value Type) {
 	l.script.write(l.script.lang.Modify(l.LanguageType(), index.LanguageType(), value.LanguageType()))
 }
 
+func (l List) Length() Int {
+	return Int{
+		script: l.script,
+		internal: l.script.lang.Length(l.LanguageType()),
+	}	
+}
+
 //Return the value at index of the Array.
 func (l List) Subtype() Type {
 	return l.subtype
@@ -76,4 +97,8 @@ func (l List) Subtype() Type {
 
 func (l List) ForEach(f func(), names ...string) {
 	l.script.foreach(l, f, names...)
+}
+
+func (l List) Copy() List {
+	return l.script.ValueFromLanguageType(l.script.lang.Copy(l.LanguageType())).Value().List()
 }

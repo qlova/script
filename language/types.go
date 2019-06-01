@@ -13,7 +13,7 @@ func (t NewType) Is(b Type) bool { c, ok := b.(NewType); return ok && c.Custom =
 func (t NewType) Register(name string) Type { return NewType{Expression: Statement(name)} }
 func (t NewType) Raw() Statement { return t.Expression }
 
-type Statement string
+type Statement = string
 
 type Buffer interface {
 	Buffer()
@@ -41,26 +41,6 @@ type Metatype interface {
 	Metatype()
 }
 
-type Natural interface {
-	Type
-	Number()
-	Natural()
-}
-type Complex interface {
-	Type
-	Number()
-	Complex()
-}
-type Octonion interface {
-	Type
-	Number()
-	Octonion()
-}
-type Sedenion interface {
-	Type
-	Number()
-	Sedenion()
-}
 type Real interface {
 	Type
 	Number()
@@ -70,6 +50,16 @@ type Rational interface {
 	Type
 	Number()
 	Rational()
+}
+type Natural interface {
+	Type
+	Number()
+	Natural()
+}
+type Octonion interface {
+	Type
+	Number()
+	Octonion()
 }
 type Integer interface {
 	Type
@@ -81,42 +71,20 @@ type Duplex interface {
 	Number()
 	Duplex()
 }
+type Complex interface {
+	Type
+	Number()
+	Complex()
+}
 type Quaternion interface {
 	Type
 	Number()
 	Quaternion()
 }
-type Color interface {
+type Sedenion interface {
 	Type
-	Color()
-}
-type Image interface {
-	Type
-	Image()
-}
-type Video interface {
-	Type
-	Video()
-}
-type Stream interface {
-	Type
-	Stream()
-}
-type Byte interface {
-	Type
-	Byte()
-}
-type String interface {
-	Type
-	String()
-}
-type Bit interface {
-	Type
-	Bit()
-}
-type Sound interface {
-	Type
-	Sound()
+	Number()
+	Sedenion()
 }
 type Time interface {
 	Type
@@ -126,9 +94,49 @@ type Symbol interface {
 	Type
 	Symbol()
 }
-type Tensor interface {
+type String interface {
 	Type
-	Tensor()
+	String()
+}
+type Bit interface {
+	Type
+	Bit()
+}
+type Byte interface {
+	Type
+	Byte()
+}
+type Image interface {
+	Type
+	Image()
+}
+type Video interface {
+	Type
+	Video()
+}
+type Color interface {
+	Type
+	Color()
+}
+type Sound interface {
+	Type
+	Sound()
+}
+type Stream interface {
+	Type
+	Stream()
+}
+type Graph interface {
+	Type
+	Graph()
+}
+type Function interface {
+	Type
+	Function()
+}
+type Error interface {
+	Type
+	Error()
 }
 type List interface {
 	Type
@@ -138,47 +146,43 @@ type Queue interface {
 	Type
 	Queue()
 }
-type Error interface {
+type Tensor interface {
 	Type
-	Error()
-}
-type Array interface {
-	Type
-	Array()
-}
-type Set interface {
-	Type
-	Set()
+	Tensor()
 }
 type Matrix interface {
 	Type
 	Matrix()
 }
-type Ring interface {
+type Pointer interface {
 	Type
-	Ring()
+	Pointer()
 }
-type Function interface {
+type Set interface {
 	Type
-	Function()
+	Set()
 }
 type Table interface {
 	Type
 	Table()
 }
-type Vector interface {
-	Type
-	Vector()
-}
-type Pointer interface {
-	Type
-	Pointer()
-}
 type Tree interface {
 	Type
 	Tree()
 }
-type Graph interface {
+type Vector interface {
 	Type
-	Graph()
+	Vector()
+}
+type Array interface {
+	Type
+	Array()
+}
+type Ring interface {
+	Type
+	Ring()
+}
+type Native interface {
+	Type
+	Native()
 }

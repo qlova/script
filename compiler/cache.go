@@ -13,37 +13,25 @@ type Cache struct {
 	Match string
 }
 
-//Create a new cache within open and matching close characters such that they should match.
-// eg. NewCache("{", "}") will scan a single code block including any children blocks.
-func (c *Compiler) NewCache(open string, matches ...string) Cache {
-	
+func (c *Compiler) NewCustomCache(begin, end  func(*Compiler) bool) Cache {
 	var cache Cache
 	
 	cache.filename = c.Scanners[len(c.Scanners)-1].Filename
 	cache.line = c.Scanners[len(c.Scanners)-1].Line-1
 	
-	match := func(token string) bool {
-		for _, match := range matches {
-			if token == match {
-				return true
-			}
-		}
-		return false
-	}
-	
 	var depth = 1
 	for {
 		c.Scanners[len(c.Scanners)-1].Scan()
 		tok := c.Scanners[len(c.Scanners)-1].TokenText()
-		
-		
-		if match(tok) {
+		c.token = tok
+
+		if end(c) || tok == "" {
 			depth--
 			if depth == 0 {
 				cache.Match = tok
 				break
 			}
-		} else if tok == open {
+		} else if begin(c) {
 			depth++
 		}
 		
@@ -53,6 +41,21 @@ func (c *Compiler) NewCache(open string, matches ...string) Cache {
 	cache.Write([]byte("\n"))
 	
 	return cache
+}
+
+//Create a new cache within open and matching close characters such that they should match.
+// eg. NewCache("{", "}") will scan a single code block including any children blocks.
+func (c *Compiler) NewCache(open string, matches ...string) Cache {
+	return c.NewCustomCache(func(c *Compiler) bool {
+		return c.Token() == open
+	}, func(c *Compiler) bool {
+		for _, match := range matches {
+			if c.Token() == match {
+				return true
+			}
+		}
+		return false
+	})
 }
 
 //Compile the given cache, pretending the filename is name and the line number is line.

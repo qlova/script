@@ -4,6 +4,16 @@ import "strconv"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
 
+func div(a, b int) (n int) { 
+	defer func() { 
+		recover() 
+		if a == 0 { 
+			n=1 
+		} 
+	}()
+	return a/b
+}
+
 func (implementation Implementation) Add(a, b language.Number) language.Number {
 	var register int
 	
@@ -47,8 +57,9 @@ func (implementation Implementation) Div(a, b language.Number) language.Number {
 	
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
+	
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Set(register, thread.Get(RA).(int) / thread.Get(RB).(int))
+		thread.Set(register, div(thread.Get(RA).(int), thread.Get(RB).(int)))
 	})
 
 	return a.Register(strconv.Itoa(register)).(language.Number)

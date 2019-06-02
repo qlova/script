@@ -10,6 +10,14 @@ func atoi(text string) int {
 	return i
 }
 
+func btoi(bit bool) int {
+	if bit{
+		return 1
+	} else {
+		return 0
+	}
+}
+
 func (implementation Implementation) Cast(a, b language.Type) language.Type {
 	
 	var register = implementation.RegisterOf(a)
@@ -62,6 +70,22 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 					var result = implementation.ReserveRegister()
 					implementation.AddInstruction(func(thread *dynamic.Thread) {
 						thread.Set(result, atoi(thread.Get(register).(string)))
+					})
+					return b.Register(strconv.Itoa(result))
+			}
+		
+		case Bit:
+			switch b.(type) {
+				case Integer:
+					var result = implementation.ReserveRegister()
+					implementation.AddInstruction(func(thread *dynamic.Thread) {
+						thread.Set(result, btoi(thread.Get(register).(bool)))
+					})
+					return b.Register(strconv.Itoa(result))
+				case String:
+					var result = implementation.ReserveRegister()
+					implementation.AddInstruction(func(thread *dynamic.Thread) {
+						thread.Set(result, fmt.Sprint(thread.Get(register).(bool)))
 					})
 					return b.Register(strconv.Itoa(result))
 			}

@@ -65,6 +65,9 @@ func (implementation Implementation) Run(f language.Function, arguments []langua
 }
 
 func (implementation Implementation) Return(value language.Type) language.Statement {
+	if value == nil {
+		return language.Statement("return\n")
+	}
 	return language.Statement("return "+value.Raw()+"\n")
 }
 

@@ -7,6 +7,8 @@ func (implementation Implementation) Index(structure, index language.Type) langu
 	switch t := structure.(type) {
 		case Array:
 			return t.Subtype.Register(string(implementation.ExpressionOf(structure)+"["+implementation.ExpressionOf(index)+" % len("+implementation.ExpressionOf(structure)+")]"))
+		case List:
+			return t.Subtype.Register(string(implementation.ExpressionOf(structure)+"["+implementation.ExpressionOf(index)+" % len("+implementation.ExpressionOf(structure)+")]"))
 	}
 	
 	panic(implementation.Name()+".Index("+structure.Name()+", "+index.Name()+") Unimplemented")
@@ -17,6 +19,8 @@ func (implementation Implementation) Modify(structure, index, value language.Typ
 	
 	switch structure.(type) {
 		case Array:
+			return implementation.ExpressionOf(structure)+"["+implementation.ExpressionOf(index)+" % len("+implementation.ExpressionOf(structure)+")] = "+implementation.ExpressionOf(value)+"\n"
+		case List:
 			return implementation.ExpressionOf(structure)+"["+implementation.ExpressionOf(index)+" % len("+implementation.ExpressionOf(structure)+")] = "+implementation.ExpressionOf(value)+"\n"
 	}
 	

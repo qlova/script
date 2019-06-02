@@ -186,7 +186,3 @@ type Native interface {
 	Type
 	Native()
 }
-type Native interface {
-	Type
-	Native()
-}

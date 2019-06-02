@@ -14,7 +14,8 @@ func (implementation Implementation) Buffer() language.Buffer {
 	var buffer Buffer
 		buffer.sister = implementation.active
 		buffer.block = new(dynamic.Block)
-		buffer.block.Arguments = make(map[string][2]int)
+		buffer.block.ArgumentMapping = make(map[string]int)
+		buffer.block.ArgumentTransform = make(map[int]int)
 		
 	implementation.buffers = append(implementation.buffers, buffer)
 
@@ -29,7 +30,16 @@ func (implementation Implementation) Flush(b language.Buffer) {
 		implementation.AddInstruction(instruction)
 	}
 	
-	implementation.Active().Arguments = buffer.block.Arguments
+	//This is the out of-order function definition argument access clean-up.
+	
+	var CurrentMapping = implementation.Active().ArgumentMapping
+	var CurrentTransform = implementation.Active().ArgumentTransform
+	
+	var NewMapping = buffer.block.ArgumentMapping
+
+	for register := range CurrentMapping {
+		CurrentTransform[CurrentMapping[register]] = NewMapping[register]
+	}
 	
 	for i:=0; i < buffer.block.Registers; i++ {
 		implementation.ReserveRegister()

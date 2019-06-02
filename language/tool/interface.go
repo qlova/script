@@ -132,6 +132,9 @@ var LanguageInterface = [...]string{
 	"Invoke(t language.Type, method string, arguments []language.Type) language.Type",
 	"Execute(t language.Type, method string, arguments []language.Type) language.Statement",
 	"EndMethod() language.Statement",
+	
+	"//Util",
+	"Copy(t language.Type) language.Type",
 }
 
 func GenerateLanguageInterface() {

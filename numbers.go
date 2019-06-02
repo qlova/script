@@ -53,12 +53,7 @@ func (q Script) IntFromLanguageType(T language.Type) Int {
 
 //Return this Integer as a variable (optionally named).
 func (i Int) Var(name ...string) Int {
-	var register string
-	if len(name) > 0 {
-		register = name[0]
-	} else {
-		register = Unique()
-	}
+	var register = unique(name)
 
 	i.script.indent()
 	statement, variable := i.script.lang.Register(register, i.LanguageType())

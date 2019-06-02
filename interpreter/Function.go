@@ -11,22 +11,23 @@ func (implementation Implementation) Function(name string, registers []string, a
 		var block = implementation.program.CreateBlock()
 
 		implementation.Activate(block)
-		
+
+	
 		for i, register := range registers {
-			var table = implementation.program[block].Arguments[register]
-				table[0] = i
-				
-			 implementation.program[block].Arguments[register] = table
+			 implementation.program[block].ArgumentMapping[register] = i
+			 implementation.program[block].ArgumentTransform[i] = i
 		}
 
 		implementation.program[block].Registers += len(registers)
 		
 		implementation.program[block].Name = name
 		
-		return "", Function{
-			Expression: language.Statement(block.String()),
-			Subtype: returns,
-		}
+		//Return function pointer.
+		var register = implementation.ReserveRegister()
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			thread.Set(register, block)
+		})
+		return "", Function{Expression:language.Statement(strconv.Itoa(register)), Subtype: returns}
 	}
 	
 	panic(implementation.Name()+".Function() Unimplemented")
@@ -49,34 +50,18 @@ func (implementation Implementation) Call(f language.Function, arguments []langu
 	}
 	
 	var returnRegister = implementation.ReserveRegister()
-	
-	//TODO Need to sort arguments?
-	_, err := strconv.Atoi(string(block))
-	
-	if block[0] == '$' || err != nil {
-		var register, _ = strconv.Atoi(string(block[1:]))
-		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			var Converted = make([]interface{}, length)
-			for i := range addresses {
-				Converted[i] = thread.Get(addresses[i])
-			}
-			
-			
-			thread.Returns = returnRegister
-			thread.JumpTo(dynamic.BlockPointer(thread.Get(register).(int)), Converted...)
-		})	
-	} else {
-		var pointer = implementation.RegisterOf(f)
-		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			var Converted = make([]interface{}, length)
-			for i := range addresses {
-				Converted[i] = thread.Get(addresses[i])
-			}
-			
-			thread.Returns = returnRegister
-			thread.JumpTo(dynamic.BlockPointer(pointer), Converted...)
-		})
-	}
+
+	var register, _ = strconv.Atoi(string(block[1:]))
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		var Converted = make([]interface{}, length)
+		for i := range addresses {
+			Converted[i] = thread.Get(addresses[i])
+		}
+		
+		
+		thread.Returns = returnRegister
+		thread.JumpTo(dynamic.BlockPointer(thread.Get(register).(int)), Converted...)
+	})	
 	
 	return f.(Function).Subtype.Register(strconv.Itoa(returnRegister))
 }
@@ -89,41 +74,36 @@ func (implementation Implementation) Run(f language.Function, arguments []langua
 	for i := range arguments {
 		addresses[i] = implementation.RegisterOf(arguments[i])
 	}
-	
-	//TODO Need to sort arguments?
-	_, err := strconv.Atoi(string(block))
-	
-	if block[0] == '$' || err != nil {
-		var register, _ = strconv.Atoi(string(block[1:]))
-		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			var Converted = make([]interface{}, length)
-			for i := range addresses {
-				Converted[i] = thread.Get(addresses[i])
-			}
+
+	var register, _ = strconv.Atoi(string(block[1:]))
+	implementation.AddInstruction(func(thread *dynamic.Thread) {
+		var Converted = make([]interface{}, length)
+		for i := range addresses {
 			
-			thread.JumpTo(dynamic.BlockPointer(thread.Get(register).(int)), Converted...)
-		})	
-	} else {
-		var pointer = implementation.RegisterOf(f)
-		implementation.AddInstruction(func(thread *dynamic.Thread) {
-			var Converted = make([]interface{}, length)
-			for i := range addresses {
-				Converted[i] = thread.Get(addresses[i])
-			}
-			
-			thread.JumpTo(dynamic.BlockPointer(pointer), Converted...)
-		})
-	}
+			Converted[i] = thread.Get(addresses[i])
+		}
+		
+		println(register)
+		thread.DumpRegisters()
+		thread.JumpTo(dynamic.BlockPointer(thread.Get(register).(int)), Converted...)
+	})	
 	
 	return ""
 }
 
 func (implementation Implementation) Return(value language.Type) language.Statement {
-	var register = implementation.RegisterOf(value)
 	
-	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Return(thread.Get(register))
-	})
+	
+	if value == nil {
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			thread.Return()
+		})
+	} else {
+		var register = implementation.RegisterOf(value)
+		implementation.AddInstruction(func(thread *dynamic.Thread) {
+			thread.Return(thread.Get(register))
+		})
+	}
 	
 	return ""
 }

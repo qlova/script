@@ -9,6 +9,7 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 		case Integer:
 			switch b.(type) {
 				case String:
+					implementation.Import("fmt")
 					return String{Expression: "fmt.Sprint("+implementation.ExpressionOf(a)+")"}
 					
 				case Symbol:
@@ -35,6 +36,18 @@ func (implementation Implementation) Cast(a, b language.Type) language.Type {
 						implementation.neck.WriteString("func atoi(text string) int {\n\ti, _ := strconv.Atoi(text)\n\treturn i\n}\n\n")
 					}
 					return Integer{Expression: "atoi("+implementation.ExpressionOf(a)+")"}
+			}
+			
+		case Bit:
+			switch b.(type) {
+				case Integer:
+					if implementation.Flag("btoi") {
+						implementation.neck.WriteString("func btoi(bit bool) int {if bit{return 1}else{return 0}}\n\n")
+					}
+					return Integer{Expression: "btoi("+implementation.ExpressionOf(a)+")"}
+				case String:
+					implementation.Import("fmt")
+					return String{Expression: "fmt.Sprint("+implementation.ExpressionOf(a)+")"}
 			}
 	}
 	

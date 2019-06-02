@@ -245,7 +245,7 @@ func (t Array) Raw() language.Statement { return t.Expression }
 type List language.NewType
 func (t List) Number() {}
 func (t List) List() {}
-func (t List) Name() string { return "list" }
+func (t List) Name() string { return "[]"+t.Subtype.Name() }
 func (t List) Is(b language.Type) bool { _, ok := b.(List); return ok }
 func (t List) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t List) Raw() language.Statement { return t.Expression }

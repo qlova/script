@@ -1,25 +1,25 @@
 package language
 
 type Interface interface {
-	Quaternion() Quaternion
-	Sedenion() Sedenion
 	Real(r float64) Real
 	Rational() Rational
+	Natural(n uint) Natural
+	Octonion() Octonion
 	Integer(i int) Integer
 	Duplex() Duplex
-	Natural(n uint) Natural
 	Complex() Complex
-	Octonion() Octonion
+	Quaternion() Quaternion
+	Sedenion() Sedenion
+	Color() Color
+	Sound() Sound
+	Stream() Stream
 	Image() Image
 	Video() Video
-	Stream() Stream
-	Byte(b byte) Byte
-	Color() Color
-	Bit(b bool) Bit
-	Sound() Sound
 	Time() Time
 	Symbol(r rune) Symbol
 	String(s string) String
+	Bit(b bool) Bit
+	Byte(b byte) Byte
 	Name() string
 	Init()
 	Build(path string) func()
@@ -125,4 +125,6 @@ type Interface interface {
 	Invoke(t Type, method string, arguments []Type) Type
 	Execute(t Type, method string, arguments []Type) Statement
 	EndMethod() Statement
+	//Util
+	Copy(t Type) Type
 }

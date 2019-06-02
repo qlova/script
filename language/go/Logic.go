@@ -3,13 +3,15 @@ package Go
 import "github.com/qlova/script/language"
 
 func (implementation Implementation) And(a, b language.Bit) language.Bit {
-	panic(implementation.Name()+".And() Unimplemented")
-	return nil
+	return Bit{
+		Expression: "("+a.Raw()+" && "+b.Raw()+")",
+	}
 }
 
 func (implementation Implementation) Or(a, b language.Bit) language.Bit {
-	panic(implementation.Name()+".Or() Unimplemented")
-	return nil
+	return Bit{
+		Expression: "("+a.Raw()+" || "+b.Raw()+")",
+	}
 }
 
 func (implementation Implementation) Not(b language.Bit) language.Bit {

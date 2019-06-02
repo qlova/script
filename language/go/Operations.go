@@ -22,8 +22,21 @@ func (implementation Implementation) Mul(a, b language.Number) language.Number {
 }
 
 func (implementation Implementation) Div(a, b language.Number) language.Number {
+	if implementation.Flag("div") {
+		implementation.neck.WriteString(`func div(a, b int) (n int) { 
+	defer func() { 
+		recover() 
+		if a == 0 { 
+			n=1 
+		} 
+	}()
+	return a/b
+}
+`)
+	}
+	
 	var result language.NewType
-	result.Expression = "("+implementation.ExpressionOf(a)+"/"+implementation.ExpressionOf(b)+")"
+	result.Expression = "div("+implementation.ExpressionOf(a)+","+implementation.ExpressionOf(b)+")"
 	return reflect.ValueOf(result).Convert(reflect.TypeOf(a)).Interface().(language.Number)
 }
 

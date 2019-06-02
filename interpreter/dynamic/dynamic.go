@@ -5,7 +5,7 @@ import "fmt"
 import "reflect"
 import "runtime/debug"
 
-const Debug = false
+const Debug = true
 const ExtremeDebug = false
 
 type BlockPointer int 
@@ -26,8 +26,10 @@ type Thread struct {
 
 	InstructionCounter int
 	Block BlockPointer
-	Registers [][]interface{}
 	
+	//Virtual Registers & Arguments.
+	Registers, Arguments [][]interface{}
+
 	Callers []Caller
 	
 	Returns int
@@ -43,6 +45,12 @@ func (thread *Thread) DumpRegisters() {
 	for i, value := range thread.Registers[len(thread.Registers)-1] {
 		fmt.Println("\t", i, "\t", "[", reflect.TypeOf(value), "]", value)
 	}
+	if len(thread.Arguments) > 0 {
+		fmt.Println("Argument Dump")
+		for i, value := range thread.Arguments[len(thread.Arguments)-1] {
+			fmt.Println("\t", i, "\t", "[", reflect.TypeOf(value), "]", value)
+		}
+	}
 }
 
 //Write a value in the thread at the specified location.
@@ -57,6 +65,9 @@ func (thread Thread) Set(location int, value interface{}) {
 
 //Read a value from the thread at the specified location.
 func (thread Thread) Get(location int) interface{} {
+	if location < 0 {
+		return thread.Arguments[len(thread.Arguments)-1][-location]
+	}
 	return thread.Registers[len(thread.Registers)-1][location]
 }
 
@@ -75,12 +86,13 @@ func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
 	
 	//Initialise registers.
 	thread.Registers = append(thread.Registers, make([]interface{}, thread.Program[block].Registers))
+	thread.Arguments = append(thread.Arguments, make([]interface{}, len(arguments)+1))
 	
-	//Fill registers with arguments.
+	//Prepare arguments.
 	for i := range arguments {
-		thread.Set(i, arguments[i])
+		thread.Arguments[len(thread.Arguments)-1][thread.Program[block].ArgumentTransform[i]] = arguments[i]
 	}
-	
+
 	//Jump.
 	thread.Block = block
 	thread.InstructionCounter = -1
@@ -101,10 +113,11 @@ func (thread *Thread) Return(returns ...interface{}) {
 	//Return to the caller.
 	var Caller = thread.Callers[len(thread.Callers)-1]
 	thread.Block = Caller.Block
-	thread.InstructionCounter = Caller.InstructionCounter+1
+	thread.InstructionCounter = Caller.InstructionCounter
 	thread.Callers = thread.Callers[:len(thread.Callers)-1]
 
 	thread.Registers = thread.Registers[:len(thread.Registers)-1]
+	thread.Arguments = thread.Arguments[:len(thread.Arguments)-1]
 	
 	if len(returns) > 0 {
 		thread.Registers[len(thread.Registers)-1][Caller.Returns] = returns[0]
@@ -125,7 +138,12 @@ type Block struct {
 	Name string
 	
 	Instructions []Instruction
-	Arguments map[string][2]int //Argument mapping for out of order function defintions.
+	
+	//The argument mapping associates a string with a location in the block's argument slice. 
+	ArgumentMapping map[string]int
+	
+	//Which argument of this block is in which location.
+	ArgumentTransform map[int]int
 	
 	Main bool
 	Registers int
@@ -149,7 +167,12 @@ func (program Program) Dump() {
 }
 
 func (program *Program) CreateBlock() BlockPointer {
-	*program = append(*program, Block{Arguments: make(map[string][2]int)})
+	var block Block
+	
+	block.ArgumentMapping = make(map[string]int)
+	block.ArgumentTransform = make(map[int]int)
+	
+	*program = append(*program, block)
 	return BlockPointer(len(*program)-1)
 }
 
@@ -216,6 +239,7 @@ func (program Program) Run() {
 			}
 			
 			thread.Return()
+			thread.InstructionCounter++
 		}
 	}
 }

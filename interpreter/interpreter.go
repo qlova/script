@@ -149,22 +149,21 @@ func (implementation Implementation) RegisterOf(value language.Type) int {
 	var expression = string(implementation.ExpressionOf(value))
 	
 	i, err := strconv.Atoi(expression)
-	if err != nil && implementation.ExpressionOf(value)[0] == '$' {
-
-		//This is a function variable.
-		i, _ = strconv.Atoi(expression[1:])
-		
-	} else if err != nil {
+	if err != nil {
 		
 		//This must be an argument, has it been defined yet?
-		var arguments = implementation.Active().Arguments
+		var arguments = implementation.Active().ArgumentMapping
 		
-		if table, ok := arguments[expression]; ok {
-			return table[1]
+		if mapping, ok := arguments[expression]; ok {
+			return -mapping
 		} else {
+			
 			//The argument register is not defined yet, so we will create a mapping for it.
-			arguments[expression] = [2]int{-1, len(arguments)}
-			return len(arguments)-1
+			var mapping = arguments[expression]
+				mapping = len(arguments)+1
+			arguments[expression] = mapping
+			
+			return -len(arguments)
 		}
 	}
 	return i

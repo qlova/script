@@ -182,3 +182,7 @@ type Function interface {
 	Type
 	Function()
 }
+type Native interface {
+	Type
+	Native()
+}

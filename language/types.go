@@ -46,20 +46,10 @@ type Real interface {
 	Number()
 	Real()
 }
-type Rational interface {
-	Type
-	Number()
-	Rational()
-}
 type Natural interface {
 	Type
 	Number()
 	Natural()
-}
-type Octonion interface {
-	Type
-	Number()
-	Octonion()
 }
 type Integer interface {
 	Type
@@ -76,23 +66,25 @@ type Complex interface {
 	Number()
 	Complex()
 }
-type Quaternion interface {
-	Type
-	Number()
-	Quaternion()
-}
 type Sedenion interface {
 	Type
 	Number()
 	Sedenion()
 }
-type Time interface {
+type Rational interface {
 	Type
-	Time()
+	Number()
+	Rational()
 }
-type Symbol interface {
+type Quaternion interface {
 	Type
-	Symbol()
+	Number()
+	Quaternion()
+}
+type Octonion interface {
+	Type
+	Number()
+	Octonion()
 }
 type String interface {
 	Type
@@ -110,45 +102,69 @@ type Image interface {
 	Type
 	Image()
 }
+type Sound interface {
+	Type
+	Sound()
+}
+type Symbol interface {
+	Type
+	Symbol()
+}
 type Video interface {
 	Type
 	Video()
 }
-type Color interface {
+type Time interface {
 	Type
-	Color()
-}
-type Sound interface {
-	Type
-	Sound()
+	Time()
 }
 type Stream interface {
 	Type
 	Stream()
 }
-type Graph interface {
+type Color interface {
 	Type
-	Graph()
-}
-type Function interface {
-	Type
-	Function()
+	Color()
 }
 type Error interface {
 	Type
 	Error()
 }
-type List interface {
-	Type
-	List()
-}
 type Queue interface {
 	Type
 	Queue()
 }
+type Array interface {
+	Type
+	Array()
+}
+type List interface {
+	Type
+	List()
+}
+type Ring interface {
+	Type
+	Ring()
+}
+type Tree interface {
+	Type
+	Tree()
+}
+type Set interface {
+	Type
+	Set()
+}
 type Tensor interface {
 	Type
 	Tensor()
+}
+type Vector interface {
+	Type
+	Vector()
+}
+type Table interface {
+	Type
+	Table()
 }
 type Matrix interface {
 	Type
@@ -158,31 +174,11 @@ type Pointer interface {
 	Type
 	Pointer()
 }
-type Set interface {
+type Graph interface {
 	Type
-	Set()
+	Graph()
 }
-type Table interface {
+type Function interface {
 	Type
-	Table()
-}
-type Tree interface {
-	Type
-	Tree()
-}
-type Vector interface {
-	Type
-	Vector()
-}
-type Array interface {
-	Type
-	Array()
-}
-type Ring interface {
-	Type
-	Ring()
-}
-type Native interface {
-	Type
-	Native()
+	Function()
 }

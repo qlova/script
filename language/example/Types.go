@@ -10,13 +10,13 @@ func (t Rational) Is(b language.Type) bool { _, ok := b.(Rational); return ok }
 func (t Rational) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Rational) Raw() language.Statement { return t.Expression }
 
-type Natural language.NewType
-func (t Natural) Number() {}
-func (t Natural) Natural() {}
-func (t Natural) Name() string { return "natural" }
-func (t Natural) Is(b language.Type) bool { _, ok := b.(Natural); return ok }
-func (t Natural) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Natural) Raw() language.Statement { return t.Expression }
+type Quaternion language.NewType
+func (t Quaternion) Number() {}
+func (t Quaternion) Quaternion() {}
+func (t Quaternion) Name() string { return "quaternion" }
+func (t Quaternion) Is(b language.Type) bool { _, ok := b.(Quaternion); return ok }
+func (t Quaternion) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Quaternion) Raw() language.Statement { return t.Expression }
 
 type Octonion language.NewType
 func (t Octonion) Number() {}
@@ -34,6 +34,22 @@ func (t Real) Is(b language.Type) bool { _, ok := b.(Real); return ok }
 func (t Real) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Real) Raw() language.Statement { return t.Expression }
 
+type Natural language.NewType
+func (t Natural) Number() {}
+func (t Natural) Natural() {}
+func (t Natural) Name() string { return "natural" }
+func (t Natural) Is(b language.Type) bool { _, ok := b.(Natural); return ok }
+func (t Natural) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Natural) Raw() language.Statement { return t.Expression }
+
+type Integer language.NewType
+func (t Integer) Number() {}
+func (t Integer) Integer() {}
+func (t Integer) Name() string { return "integer" }
+func (t Integer) Is(b language.Type) bool { _, ok := b.(Integer); return ok }
+func (t Integer) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Integer) Raw() language.Statement { return t.Expression }
+
 type Duplex language.NewType
 func (t Duplex) Number() {}
 func (t Duplex) Duplex() {}
@@ -50,14 +66,6 @@ func (t Complex) Is(b language.Type) bool { _, ok := b.(Complex); return ok }
 func (t Complex) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Complex) Raw() language.Statement { return t.Expression }
 
-type Quaternion language.NewType
-func (t Quaternion) Number() {}
-func (t Quaternion) Quaternion() {}
-func (t Quaternion) Name() string { return "quaternion" }
-func (t Quaternion) Is(b language.Type) bool { _, ok := b.(Quaternion); return ok }
-func (t Quaternion) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Quaternion) Raw() language.Statement { return t.Expression }
-
 type Sedenion language.NewType
 func (t Sedenion) Number() {}
 func (t Sedenion) Sedenion() {}
@@ -66,13 +74,29 @@ func (t Sedenion) Is(b language.Type) bool { _, ok := b.(Sedenion); return ok }
 func (t Sedenion) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Sedenion) Raw() language.Statement { return t.Expression }
 
-type Integer language.NewType
-func (t Integer) Number() {}
-func (t Integer) Integer() {}
-func (t Integer) Name() string { return "integer" }
-func (t Integer) Is(b language.Type) bool { _, ok := b.(Integer); return ok }
-func (t Integer) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Integer) Raw() language.Statement { return t.Expression }
+type Byte language.NewType
+func (t Byte) Number() {}
+func (t Byte) Byte() {}
+func (t Byte) Name() string { return "byte" }
+func (t Byte) Is(b language.Type) bool { _, ok := b.(Byte); return ok }
+func (t Byte) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Byte) Raw() language.Statement { return t.Expression }
+
+type Image language.NewType
+func (t Image) Number() {}
+func (t Image) Image() {}
+func (t Image) Name() string { return "image" }
+func (t Image) Is(b language.Type) bool { _, ok := b.(Image); return ok }
+func (t Image) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Image) Raw() language.Statement { return t.Expression }
+
+type Sound language.NewType
+func (t Sound) Number() {}
+func (t Sound) Sound() {}
+func (t Sound) Name() string { return "sound" }
+func (t Sound) Is(b language.Type) bool { _, ok := b.(Sound); return ok }
+func (t Sound) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Sound) Raw() language.Statement { return t.Expression }
 
 type Symbol language.NewType
 func (t Symbol) Number() {}
@@ -98,21 +122,21 @@ func (t Bit) Is(b language.Type) bool { _, ok := b.(Bit); return ok }
 func (t Bit) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Bit) Raw() language.Statement { return t.Expression }
 
-type Byte language.NewType
-func (t Byte) Number() {}
-func (t Byte) Byte() {}
-func (t Byte) Name() string { return "byte" }
-func (t Byte) Is(b language.Type) bool { _, ok := b.(Byte); return ok }
-func (t Byte) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Byte) Raw() language.Statement { return t.Expression }
+type Stream language.NewType
+func (t Stream) Number() {}
+func (t Stream) Stream() {}
+func (t Stream) Name() string { return "stream" }
+func (t Stream) Is(b language.Type) bool { _, ok := b.(Stream); return ok }
+func (t Stream) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Stream) Raw() language.Statement { return t.Expression }
 
-type Image language.NewType
-func (t Image) Number() {}
-func (t Image) Image() {}
-func (t Image) Name() string { return "image" }
-func (t Image) Is(b language.Type) bool { _, ok := b.(Image); return ok }
-func (t Image) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Image) Raw() language.Statement { return t.Expression }
+type Color language.NewType
+func (t Color) Number() {}
+func (t Color) Color() {}
+func (t Color) Name() string { return "color" }
+func (t Color) Is(b language.Type) bool { _, ok := b.(Color); return ok }
+func (t Color) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Color) Raw() language.Statement { return t.Expression }
 
 type Video language.NewType
 func (t Video) Number() {}
@@ -130,30 +154,6 @@ func (t Time) Is(b language.Type) bool { _, ok := b.(Time); return ok }
 func (t Time) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Time) Raw() language.Statement { return t.Expression }
 
-type Color language.NewType
-func (t Color) Number() {}
-func (t Color) Color() {}
-func (t Color) Name() string { return "color" }
-func (t Color) Is(b language.Type) bool { _, ok := b.(Color); return ok }
-func (t Color) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Color) Raw() language.Statement { return t.Expression }
-
-type Sound language.NewType
-func (t Sound) Number() {}
-func (t Sound) Sound() {}
-func (t Sound) Name() string { return "sound" }
-func (t Sound) Is(b language.Type) bool { _, ok := b.(Sound); return ok }
-func (t Sound) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Sound) Raw() language.Statement { return t.Expression }
-
-type Stream language.NewType
-func (t Stream) Number() {}
-func (t Stream) Stream() {}
-func (t Stream) Name() string { return "stream" }
-func (t Stream) Is(b language.Type) bool { _, ok := b.(Stream); return ok }
-func (t Stream) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Stream) Raw() language.Statement { return t.Expression }
-
 type Vector language.NewType
 func (t Vector) Number() {}
 func (t Vector) Vector() {}
@@ -162,37 +162,13 @@ func (t Vector) Is(b language.Type) bool { _, ok := b.(Vector); return ok }
 func (t Vector) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Vector) Raw() language.Statement { return t.Expression }
 
-type Ring language.NewType
-func (t Ring) Number() {}
-func (t Ring) Ring() {}
-func (t Ring) Name() string { return "ring" }
-func (t Ring) Is(b language.Type) bool { _, ok := b.(Ring); return ok }
-func (t Ring) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Ring) Raw() language.Statement { return t.Expression }
-
-type Array language.NewType
-func (t Array) Number() {}
-func (t Array) Array() {}
-func (t Array) Name() string { return "array" }
-func (t Array) Is(b language.Type) bool { _, ok := b.(Array); return ok }
-func (t Array) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Array) Raw() language.Statement { return t.Expression }
-
-type List language.NewType
-func (t List) Number() {}
-func (t List) List() {}
-func (t List) Name() string { return "list" }
-func (t List) Is(b language.Type) bool { _, ok := b.(List); return ok }
-func (t List) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t List) Raw() language.Statement { return t.Expression }
-
-type Queue language.NewType
-func (t Queue) Number() {}
-func (t Queue) Queue() {}
-func (t Queue) Name() string { return "queue" }
-func (t Queue) Is(b language.Type) bool { _, ok := b.(Queue); return ok }
-func (t Queue) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Queue) Raw() language.Statement { return t.Expression }
+type Set language.NewType
+func (t Set) Number() {}
+func (t Set) Set() {}
+func (t Set) Name() string { return "set" }
+func (t Set) Is(b language.Type) bool { _, ok := b.(Set); return ok }
+func (t Set) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Set) Raw() language.Statement { return t.Expression }
 
 type Tensor language.NewType
 func (t Tensor) Number() {}
@@ -201,14 +177,6 @@ func (t Tensor) Name() string { return "tensor" }
 func (t Tensor) Is(b language.Type) bool { _, ok := b.(Tensor); return ok }
 func (t Tensor) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Tensor) Raw() language.Statement { return t.Expression }
-
-type Matrix language.NewType
-func (t Matrix) Number() {}
-func (t Matrix) Matrix() {}
-func (t Matrix) Name() string { return "matrix" }
-func (t Matrix) Is(b language.Type) bool { _, ok := b.(Matrix); return ok }
-func (t Matrix) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Matrix) Raw() language.Statement { return t.Expression }
 
 type Pointer language.NewType
 func (t Pointer) Number() {}
@@ -234,6 +202,22 @@ func (t Function) Is(b language.Type) bool { _, ok := b.(Function); return ok }
 func (t Function) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Function) Raw() language.Statement { return t.Expression }
 
+type Table language.NewType
+func (t Table) Number() {}
+func (t Table) Table() {}
+func (t Table) Name() string { return "table" }
+func (t Table) Is(b language.Type) bool { _, ok := b.(Table); return ok }
+func (t Table) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Table) Raw() language.Statement { return t.Expression }
+
+type Matrix language.NewType
+func (t Matrix) Number() {}
+func (t Matrix) Matrix() {}
+func (t Matrix) Name() string { return "matrix" }
+func (t Matrix) Is(b language.Type) bool { _, ok := b.(Matrix); return ok }
+func (t Matrix) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Matrix) Raw() language.Statement { return t.Expression }
+
 type Error language.NewType
 func (t Error) Number() {}
 func (t Error) Error() {}
@@ -242,13 +226,21 @@ func (t Error) Is(b language.Type) bool { _, ok := b.(Error); return ok }
 func (t Error) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Error) Raw() language.Statement { return t.Expression }
 
-type Table language.NewType
-func (t Table) Number() {}
-func (t Table) Table() {}
-func (t Table) Name() string { return "table" }
-func (t Table) Is(b language.Type) bool { _, ok := b.(Table); return ok }
-func (t Table) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Table) Raw() language.Statement { return t.Expression }
+type Queue language.NewType
+func (t Queue) Number() {}
+func (t Queue) Queue() {}
+func (t Queue) Name() string { return "queue" }
+func (t Queue) Is(b language.Type) bool { _, ok := b.(Queue); return ok }
+func (t Queue) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Queue) Raw() language.Statement { return t.Expression }
+
+type Ring language.NewType
+func (t Ring) Number() {}
+func (t Ring) Ring() {}
+func (t Ring) Name() string { return "ring" }
+func (t Ring) Is(b language.Type) bool { _, ok := b.(Ring); return ok }
+func (t Ring) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Ring) Raw() language.Statement { return t.Expression }
 
 type Tree language.NewType
 func (t Tree) Number() {}
@@ -258,11 +250,19 @@ func (t Tree) Is(b language.Type) bool { _, ok := b.(Tree); return ok }
 func (t Tree) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
 func (t Tree) Raw() language.Statement { return t.Expression }
 
-type Set language.NewType
-func (t Set) Number() {}
-func (t Set) Set() {}
-func (t Set) Name() string { return "set" }
-func (t Set) Is(b language.Type) bool { _, ok := b.(Set); return ok }
-func (t Set) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
-func (t Set) Raw() language.Statement { return t.Expression }
+type Array language.NewType
+func (t Array) Number() {}
+func (t Array) Array() {}
+func (t Array) Name() string { return "array" }
+func (t Array) Is(b language.Type) bool { _, ok := b.(Array); return ok }
+func (t Array) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t Array) Raw() language.Statement { return t.Expression }
+
+type List language.NewType
+func (t List) Number() {}
+func (t List) List() {}
+func (t List) Name() string { return "list" }
+func (t List) Is(b language.Type) bool { _, ok := b.(List); return ok }
+func (t List) Register(name string) language.Type { var result = t; result.Expression = language.Statement(name); return result }
+func (t List) Raw() language.Statement { return t.Expression }
 

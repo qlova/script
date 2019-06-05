@@ -4,32 +4,31 @@ import "github.com/qlova/script/language"
 
 func (implementation Implementation) And(a, b language.Bit) language.Bit {
 	return Bit{
-		Expression: "("+a.Raw()+" && "+b.Raw()+")",
+		Expression: "(" + a.Raw() + " && " + b.Raw() + ")",
 	}
 }
 
 func (implementation Implementation) Or(a, b language.Bit) language.Bit {
 	return Bit{
-		Expression: "("+a.Raw()+" || "+b.Raw()+")",
+		Expression: "(" + a.Raw() + " || " + b.Raw() + ")",
 	}
 }
 
 func (implementation Implementation) Not(b language.Bit) language.Bit {
-	panic(implementation.Name()+".Not() Unimplemented")
+	panic(implementation.Name() + ".Not() Unimplemented")
 	return nil
 }
 
 func (implementation Implementation) Equals(a, b language.Type) language.Bit {
-	return Bit{Expression: language.Statement("("+a.Raw()+"=="+b.Raw()+")")}
+	return Bit{Expression: language.Statement("(" + a.Raw() + "==" + b.Raw() + ")")}
 }
 
 func (implementation Implementation) Smaller(a, b language.Type) language.Bit {
-	panic(implementation.Name()+".Smaller() Unimplemented")
+	panic(implementation.Name() + ".Smaller() Unimplemented")
 	return nil
 }
 
 func (implementation Implementation) Greater(a, b language.Type) language.Bit {
-	panic(implementation.Name()+".Greater() Unimplemented")
+	panic(implementation.Name() + ".Greater() Unimplemented")
 	return nil
 }
-

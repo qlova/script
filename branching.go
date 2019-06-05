@@ -6,7 +6,7 @@ type ElseIfChain struct {
 	q Script
 
 	ElseIf []func()
-	Else func()
+	Else   func()
 }
 
 func (chain *ElseIfChain) eif(condition Bool, block func()) *ElseIfChain {
@@ -28,14 +28,14 @@ func (chain *ElseIfChain) e(block func()) *ElseIfChain {
 
 func (q Script) ElseIf(condition Bool, block func()) *ElseIfChain {
 	var chain = new(ElseIfChain)
-		chain.q = q
+	chain.q = q
 
 	return chain.eif(condition, block)
 }
 
 func (q Script) Else(block func()) *ElseIfChain {
 	var chain = new(ElseIfChain)
-		chain.q = q
+	chain.q = q
 
 	return chain.e(block)
 }
@@ -46,18 +46,18 @@ func (q Script) If(condition Bool, block func(), elseifchain ...*ElseIfChain) {
 	q.depth++
 	block()
 	q.depth--
-	
+
 	var chain *ElseIfChain
-	
+
 	if len(elseifchain) > 0 {
 		chain = elseifchain[0]
 	}
-	
+
 	if chain != nil {
 		for _, Elseif := range chain.ElseIf {
 			Elseif()
 		}
-		
+
 		if chain.Else != nil {
 			q.indent()
 			q.write(q.lang.Else())

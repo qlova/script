@@ -5,7 +5,7 @@ import "github.com/qlova/script/language"
 func (implementation Implementation) Main() language.Statement {
 	implementation.CreateBlock()
 	var block = implementation.Active()
-		block.Main = true
+	block.Main = true
 	return language.Statement("")
 }
 
@@ -14,7 +14,6 @@ func (implementation Implementation) EndMain() language.Statement {
 }
 
 func (implementation Implementation) Exit() language.Statement {
-	panic(implementation.Name()+".Exit() Unimplemented")
+	panic(implementation.Name() + ".Exit() Unimplemented")
 	return language.Statement("")
 }
-

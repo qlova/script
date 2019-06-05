@@ -4,7 +4,7 @@ type Language int
 
 const (
 	English Language = iota
-	
+
 	Afrikaans
 	Albanian
 	Amharic
@@ -107,13 +107,13 @@ const (
 	Yiddish
 	Yoruba
 	Zulu
-	
+
 	Klingon
-	
+
 	All
 )
 
-type Translatable [All+1]string
+type Translatable [All + 1]string
 
 func NoTranslation(name string) Translatable {
 	var t Translatable

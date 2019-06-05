@@ -3,9 +3,9 @@ package Javascript
 import "github.com/qlova/script/language"
 
 func (implementation Implementation) Register(register string, value language.Type) (language.Statement, language.Type) {
-	return language.Statement("let "+register+" = "+value.Raw()+";"), value.Register(register)
+	return language.Statement("let " + register + " = " + value.Raw() + ";"), value.Register(register)
 }
 
 func (implementation Implementation) Set(variable, value language.Type) language.Statement {
-	return language.Statement(variable.Raw()+" = "+value.Raw()+";")
+	return language.Statement(variable.Raw() + " = " + value.Raw() + ";")
 }

@@ -2,21 +2,21 @@ package compiler
 
 type Function struct {
 	Name Translatable
-	
+
 	Arguments []Type
-	Tokens []string
-	
+	Tokens    []string
+
 	Returns []Type
-	
+
 	Flags []Flag
-	
-	Inline func(*Compiler)
+
+	Inline  func(*Compiler)
 	Compile func(*Compiler)
-	
+
 	Variadic bool
-	
+
 	compiled bool
-	
+
 	Data interface{}
 }
 

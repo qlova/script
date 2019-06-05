@@ -1,11 +1,10 @@
 package script
 
-
 import "github.com/qlova/script/language"
 
 //A native value is a custom type defined in the target language.
 type Native struct {
-	script Script
+	script   Script
 	internal language.Native
 }
 
@@ -16,7 +15,7 @@ func (n Native) LanguageType() language.Type {
 
 func (n Native) Value() Value {
 	return Value{
-		script: n.script,
+		script:   n.script,
 		internal: n.LanguageType(),
 	}
 }
@@ -30,7 +29,7 @@ func (n Native) Var(name ...string) Native {
 	n.script.write(statement)
 
 	return Native{
-		script: n.script,
+		script:   n.script,
 		internal: variable.(language.Native),
 	}
 }
@@ -40,7 +39,7 @@ func (q Script) NativeFromLanguageType(T language.Type) Native {
 	if internal, ok := T.(language.Native); ok {
 		return Native{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")

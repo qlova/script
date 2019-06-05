@@ -11,7 +11,6 @@ func (implementation Implementation) EndMain() language.Statement {
 }
 
 func (implementation Implementation) Exit() language.Statement {
-	panic(implementation.Name()+".Exit() Unimplemented")
+	panic(implementation.Name() + ".Exit() Unimplemented")
 	return language.Statement("")
 }
-

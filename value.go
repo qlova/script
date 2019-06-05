@@ -3,13 +3,13 @@ package script
 import "github.com/qlova/script/language"
 
 type Value struct {
-	script Script
+	script   Script
 	internal language.Type
-	
+
 	//Array info
 	subtype Type
-	length int
-	
+	length  int
+
 	arguments []Type
 }
 
@@ -17,12 +17,11 @@ func (v Value) LanguageType() language.Type {
 	return v.internal
 }
 
-
 //Wrap a language.Type to an Integer.
 func (q Script) ValueFromLanguageType(T language.Type) Value {
 	return Value{
 		internal: T,
-		script: q,
+		script:   q,
 	}
 }
 
@@ -72,11 +71,11 @@ func (v Value) Var(name ...string) Value {
 	} else {
 		register = Unique()
 	}
-	
+
 	v.script.indent()
 	statement, variable := v.script.lang.Register(register, v.LanguageType())
 	v.script.write(statement)
-	
+
 	var result = v
 	result.internal = variable
 	return result

@@ -1,8 +1,8 @@
- package compiler
- 
+package compiler
+
 type Scope struct {
 	Variables map[string]Variable
-	Flags map[string]Flag
+	Flags     map[string]Flag
 }
 
 func NewScope() Scope {
@@ -21,26 +21,26 @@ func (c *Compiler) GetScope() Scope {
 }
 
 func (c *Compiler) LoseScope() {
-	
+
 	//var scope = c.Scope[len(c.Scope)-1]
-	
+
 	/*for name, variable := range scope.Variables {
 		if !variable.Protected {
 			c.PushType(variable.Type, name)
-			
+
 			if variable.Type.Collect != nil {
 				variable.Type.Collect(c)
 			}
-			
+
 			c.FreeType(variable.Type)
 		}
 	}
-	
+
 	for _, flag := range scope.Flags {
 		if flag.OnLost != nil {
 			flag.OnLost(c)
 		}
 	}*/
-	
+
 	c.Scope = c.Scope[:len(c.Scope)-1]
 }

@@ -4,24 +4,24 @@ import "strconv"
 import "github.com/qlova/script/language"
 import "github.com/qlova/script/interpreter/dynamic"
 
-func div(a, b int) (n int) { 
-	defer func() { 
-		recover() 
-		if a == 0 { 
-			n=1 
-		} 
+func div(a, b int) (n int) {
+	defer func() {
+		recover()
+		if a == 0 {
+			n = 1
+		}
 	}()
-	return a/b
+	return a / b
 }
 
 func (implementation Implementation) Add(a, b language.Number) language.Number {
 	var register int
-	
+
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
 
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Set(register, thread.Get(RA).(int) + thread.Get(RB).(int))
+		thread.Set(register, thread.Get(RA).(int)+thread.Get(RB).(int))
 	})
 
 	return a.Register(strconv.Itoa(register)).(language.Number)
@@ -29,24 +29,24 @@ func (implementation Implementation) Add(a, b language.Number) language.Number {
 
 func (implementation Implementation) Sub(a, b language.Number) language.Number {
 	var register int
-	
+
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Set(register, thread.Get(RA).(int) - thread.Get(RB).(int))
+		thread.Set(register, thread.Get(RA).(int)-thread.Get(RB).(int))
 	})
 
 	return a.Register(strconv.Itoa(register)).(language.Number)
 }
 
 func (implementation Implementation) Mul(a, b language.Number) language.Number {
-	
+
 	var register int
-	
+
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Set(register, thread.Get(RA).(int) * thread.Get(RB).(int))
+		thread.Set(register, thread.Get(RA).(int)*thread.Get(RB).(int))
 	})
 
 	return a.Register(strconv.Itoa(register)).(language.Number)
@@ -54,10 +54,10 @@ func (implementation Implementation) Mul(a, b language.Number) language.Number {
 
 func (implementation Implementation) Div(a, b language.Number) language.Number {
 	var register int
-	
+
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
-	
+
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, div(thread.Get(RA).(int), thread.Get(RB).(int)))
 	})
@@ -66,15 +66,15 @@ func (implementation Implementation) Div(a, b language.Number) language.Number {
 }
 
 func pow(base, exp int) int {
-	var result = 1;
+	var result = 1
 	for {
-		if (exp & 1 > 0) {
+		if exp&1 > 0 {
 			result *= base
-	}
+		}
 		exp >>= 1
-		if (exp == 0) {
+		if exp == 0 {
 			break
-	}
+		}
 		base *= base
 	}
 
@@ -99,9 +99,8 @@ func (implementation Implementation) Mod(a, b language.Number) language.Number {
 	register = implementation.ReserveRegister()
 	RA, RB := implementation.RegisterOf(a), implementation.RegisterOf(b)
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
-		thread.Set(register, thread.Get(RA).(int) % thread.Get(RB).(int))
+		thread.Set(register, thread.Get(RA).(int)%thread.Get(RB).(int))
 	})
 
 	return a.Register(strconv.Itoa(register)).(language.Number)
 }
-

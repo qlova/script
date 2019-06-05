@@ -1,29 +1,29 @@
 package main
 
 import (
-	"os"
 	"fmt"
-	"strings"
+	"os"
 	"path"
+	"strings"
 )
 
 var NumberTypes = map[string]string{
-	"real": "r float64",
-	"rational": "",
-	"natural": "n uint",
-	"integer": "i int",
-	"duplex": "",
-	"complex": "",
+	"real":       "r float64",
+	"rational":   "",
+	"natural":    "n uint",
+	"integer":    "i int",
+	"duplex":     "",
+	"complex":    "",
 	"quaternion": "",
-	"octonion": "",
-	"sedenion": "",
+	"octonion":   "",
+	"sedenion":   "",
 }
 
 var HumanTypes = map[string]string{
 	"symbol": "r rune",
 	"string": "s string",
 
-	"bit": "b bool",
+	"bit":  "b bool",
 	"byte": "b byte",
 
 	"color": "",
@@ -32,17 +32,17 @@ var HumanTypes = map[string]string{
 	"video": "",
 
 	"time": "",
-	
+
 	"stream": "",
 }
 
 var StructureTypes = map[string]string{
 	"error": "",
-	
-	"array": "",
-	"list": "",
 
-	"set": "",
+	"array": "",
+	"list":  "",
+
+	"set":   "",
 	"table": "",
 
 	"queue": "",
@@ -50,22 +50,22 @@ var StructureTypes = map[string]string{
 	"tensor": "",
 	"vector": "",
 	"matrix": "",
-	
+
 	"pointer": "",
-	"ring": "",
-	"tree": "",
-	"graph": "",
-	
+	"ring":    "",
+	"tree":    "",
+	"graph":   "",
+
 	"function": "",
 }
 
 func GenerateLanguageTypes() {
-	file, err := os.Create(path.Dir(os.Args[0])+"/../types.go")
+	file, err := os.Create(path.Dir(os.Args[0]) + "/../types.go")
 	if err != nil {
 		fmt.Println(err)
 	}
 	defer file.Close()
-	
+
 	fmt.Fprintln(file, `package language
 	
 type NewType struct {
@@ -109,27 +109,27 @@ type Metatype interface {
 	Metatype()
 }
 `)
-	
+
 	for t := range NumberTypes {
 		var title = strings.Title(t)
-		fmt.Fprintln(file, "type "+title+ " interface {")
-			fmt.Fprintln(file, "\tType")
-			fmt.Fprintln(file, "\tNumber()")
-			fmt.Fprintln(file, "\t"+title+"()")
+		fmt.Fprintln(file, "type "+title+" interface {")
+		fmt.Fprintln(file, "\tType")
+		fmt.Fprintln(file, "\tNumber()")
+		fmt.Fprintln(file, "\t"+title+"()")
 		fmt.Fprintln(file, "}")
 	}
 	for t := range HumanTypes {
 		var title = strings.Title(t)
-		fmt.Fprintln(file, "type "+title+ " interface {")
-			fmt.Fprintln(file, "\tType")
-			fmt.Fprintln(file, "\t"+title+"()")
+		fmt.Fprintln(file, "type "+title+" interface {")
+		fmt.Fprintln(file, "\tType")
+		fmt.Fprintln(file, "\t"+title+"()")
 		fmt.Fprintln(file, "}")
 	}
 	for t := range StructureTypes {
 		var title = strings.Title(t)
-		fmt.Fprintln(file, "type "+title+ " interface {")
-			fmt.Fprintln(file, "\tType")
-			fmt.Fprintln(file, "\t"+title+"()")
+		fmt.Fprintln(file, "type "+title+" interface {")
+		fmt.Fprintln(file, "\tType")
+		fmt.Fprintln(file, "\t"+title+"()")
 		fmt.Fprintln(file, "}")
 	}
 }

@@ -23,6 +23,6 @@ func (implementation Implementation) Set(variable, value language.Type) language
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, thread.Get(other))
 	})
-	
+
 	return language.Statement("")
 }

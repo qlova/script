@@ -11,7 +11,7 @@ func atoi(text string) int {
 }
 
 func btoi(bit bool) int {
-	if bit{
+	if bit {
 		return 1
 	} else {
 		return 0
@@ -19,79 +19,77 @@ func btoi(bit bool) int {
 }
 
 func (implementation Implementation) Cast(a, b language.Type) language.Type {
-	
+
 	var register = implementation.RegisterOf(a)
 	switch a.(type) {
-		case Integer:
-			switch b.(type) {
-				case String:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, fmt.Sprint(thread.Get(register)))
-					})
-					return b.Register(strconv.Itoa(result))
-					
-					
-				case Symbol:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, rune(thread.Get(register).(int)))
-					})
-					return b.Register(strconv.Itoa(result))
-					
-				case Bit:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, thread.Get(register).(int) != 0)
-					})
-					return b.Register(strconv.Itoa(result))
-			}
-			
-		case Symbol:
-			switch b.(type) {
-				case String:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, string(thread.Get(register).(rune)))
-					})
-					return b.Register(strconv.Itoa(result))
-					
-				case Integer:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, int(thread.Get(register).(rune)))
-					})
-					return b.Register(strconv.Itoa(result))
-			}
-			
+	case Integer:
+		switch b.(type) {
 		case String:
-			switch b.(type) {
-				case Integer:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, atoi(thread.Get(register).(string)))
-					})
-					return b.Register(strconv.Itoa(result))
-			}
-		
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, fmt.Sprint(thread.Get(register)))
+			})
+			return b.Register(strconv.Itoa(result))
+
+		case Symbol:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, rune(thread.Get(register).(int)))
+			})
+			return b.Register(strconv.Itoa(result))
+
 		case Bit:
-			switch b.(type) {
-				case Integer:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, btoi(thread.Get(register).(bool)))
-					})
-					return b.Register(strconv.Itoa(result))
-				case String:
-					var result = implementation.ReserveRegister()
-					implementation.AddInstruction(func(thread *dynamic.Thread) {
-						thread.Set(result, fmt.Sprint(thread.Get(register).(bool)))
-					})
-					return b.Register(strconv.Itoa(result))
-			}
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, thread.Get(register).(int) != 0)
+			})
+			return b.Register(strconv.Itoa(result))
+		}
+
+	case Symbol:
+		switch b.(type) {
+		case String:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, string(thread.Get(register).(rune)))
+			})
+			return b.Register(strconv.Itoa(result))
+
+		case Integer:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, int(thread.Get(register).(rune)))
+			})
+			return b.Register(strconv.Itoa(result))
+		}
+
+	case String:
+		switch b.(type) {
+		case Integer:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, atoi(thread.Get(register).(string)))
+			})
+			return b.Register(strconv.Itoa(result))
+		}
+
+	case Bit:
+		switch b.(type) {
+		case Integer:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, btoi(thread.Get(register).(bool)))
+			})
+			return b.Register(strconv.Itoa(result))
+		case String:
+			var result = implementation.ReserveRegister()
+			implementation.AddInstruction(func(thread *dynamic.Thread) {
+				thread.Set(result, fmt.Sprint(thread.Get(register).(bool)))
+			})
+			return b.Register(strconv.Itoa(result))
+		}
 	}
-	
-	panic(implementation.Name()+".Cast("+a.Name()+", "+b.Name()+") Unimplemented")
+
+	panic(implementation.Name() + ".Cast(" + a.Name() + ", " + b.Name() + ") Unimplemented")
 	return nil
 }
-

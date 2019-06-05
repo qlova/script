@@ -3,7 +3,7 @@ package script
 import "github.com/qlova/script/language"
 
 type Rune struct {
-	script Script
+	script   Script
 	internal language.Symbol
 
 	literal *rune
@@ -18,7 +18,7 @@ func (q Script) Rune(s ...rune) Rune {
 	}
 
 	return Rune{
-		script: q,
+		script:  q,
 		literal: &literal,
 	}
 }
@@ -33,7 +33,7 @@ func (r Rune) LanguageType() language.Type {
 
 func (r Rune) Value() Value {
 	return Value{
-		script: r.script,
+		script:   r.script,
 		internal: r.LanguageType(),
 	}
 }
@@ -41,7 +41,7 @@ func (r Rune) Value() Value {
 func (v Value) Rune() Rune {
 	if r, ok := v.internal.(language.Symbol); ok {
 		return Rune{
-			script: v.script,
+			script:   v.script,
 			internal: r,
 		}
 	}
@@ -54,7 +54,7 @@ func (q Script) RuneFromLanguageType(T language.Type) Rune {
 	if internal, ok := T.(language.Symbol); ok {
 		return Rune{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")

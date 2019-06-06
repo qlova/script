@@ -57,6 +57,8 @@ var StructureTypes = map[string]string{
 	"graph":   "",
 
 	"function": "",
+	
+	"native": "",
 }
 
 func GenerateLanguageTypes() {
@@ -81,7 +83,7 @@ func (t NewType) Is(b Type) bool { c, ok := b.(NewType); return ok && c.Custom =
 func (t NewType) Register(name string) Type { return NewType{Expression: Statement(name)} }
 func (t NewType) Raw() Statement { return t.Expression }
 
-type Statement string
+type Statement = string
 
 type Buffer interface {
 	Buffer()

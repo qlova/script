@@ -4,7 +4,7 @@ import "github.com/qlova/script/language"
 
 //A String is an ordered sequence of symbols, often used to denote words, sentences and text.
 type String struct {
-	script Script
+	script   Script
 	internal language.String
 
 	literal *string
@@ -19,7 +19,7 @@ func (q Script) String(s ...string) String {
 	}
 
 	return String{
-		script: q,
+		script:  q,
 		literal: &literal,
 	}
 }
@@ -35,7 +35,7 @@ func (s String) LanguageType() language.Type {
 
 func (s String) Value() Value {
 	return Value{
-		script: s.script,
+		script:   s.script,
 		internal: s.LanguageType(),
 	}
 }
@@ -44,7 +44,7 @@ func (s String) Value() Value {
 func (v Value) String() String {
 	if s, ok := v.internal.(language.String); ok {
 		return String{
-			script: v.script,
+			script:   v.script,
 			internal: s,
 		}
 	}
@@ -57,7 +57,7 @@ func (q Script) StringFromLanguageType(T language.Type) String {
 	if internal, ok := T.(language.String); ok {
 		return String{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")
@@ -72,7 +72,7 @@ func (a String) Add(b String) String {
 	if a.literal != nil && b.literal != nil {
 		var sum = *a.literal + *b.literal
 		return String{
-			script: a.script,
+			script:  a.script,
 			literal: &sum,
 		}
 	}

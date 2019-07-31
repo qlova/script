@@ -4,13 +4,13 @@ import "github.com/qlova/script/language"
 
 type Bool struct {
 	internal language.Bit
-	script Script
-	literal *bool
+	script   Script
+	literal  *bool
 }
 
 func (b Bool) Value() Value {
 	return Value{
-		script: b.script,
+		script:   b.script,
 		internal: b.LanguageType(),
 	}
 }
@@ -48,7 +48,7 @@ func (q Script) Not(b Bool) Bool {
 func (v Value) Bool() Bool {
 	if b, ok := v.internal.(language.Bit); ok {
 		return Bool{
-			script: v.script,
+			script:   v.script,
 			internal: b,
 		}
 	}
@@ -78,7 +78,7 @@ func (q Script) BoolFromLanguageType(T language.Type) Bool {
 	if internal, ok := T.(language.Bit); ok {
 		return Bool{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")

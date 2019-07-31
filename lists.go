@@ -4,9 +4,9 @@ import "github.com/qlova/script/language"
 
 //A String is an ordered sequence of symbols, often used to denote words, sentences and text.
 type List struct {
-	script Script
+	script   Script
 	internal language.List
-	
+
 	subtype Type
 }
 
@@ -15,10 +15,10 @@ func (q Script) List(elements ...Type) List {
 	for i := range elements {
 		Converted[i] = elements[i].LanguageType()
 	}
-	return List {
-		script: q,
+	return List{
+		script:   q,
 		internal: q.lang.List(Converted...),
-		subtype: elements[0],
+		subtype:  elements[0],
 	}
 }
 
@@ -27,7 +27,7 @@ func (q Script) ListFromLanguageType(T language.Type) List {
 	if internal, ok := T.(language.List); ok {
 		return List{
 			internal: internal,
-			script: q,
+			script:   q,
 			//subtype is nil
 		}
 	}
@@ -35,11 +35,11 @@ func (q Script) ListFromLanguageType(T language.Type) List {
 	return List{}
 }
 
-func (l List) Value() Value {	
+func (l List) Value() Value {
 	return Value{
-		script: l.script,
+		script:   l.script,
 		internal: l.LanguageType(),
-		
+
 		subtype: l.subtype,
 	}
 }
@@ -58,13 +58,13 @@ func (l List) LanguageType() language.Type {
 func (v Value) List() List {
 	if l, ok := v.internal.(language.List); ok {
 		return List{
-			script: v.script,
+			script:   v.script,
 			internal: l,
-			
+
 			subtype: v.subtype,
 		}
 	}
-	
+
 	panic("Cannot cast to List")
 	return List{}
 }
@@ -72,9 +72,9 @@ func (v Value) List() List {
 //Return the value at index of the Array.
 func (l List) Index(index Int) Value {
 	return Value{
-		script: l.script,
+		script:   l.script,
 		internal: l.script.lang.Index(l.LanguageType(), index.LanguageType()),
-	}	
+	}
 }
 
 //Return the value at index of the Array.
@@ -85,9 +85,9 @@ func (l List) Modify(index Int, value Type) {
 
 func (l List) Length() Int {
 	return Int{
-		script: l.script,
+		script:   l.script,
 		internal: l.script.lang.Length(l.LanguageType()),
-	}	
+	}
 }
 
 //Return the value at index of the Array.

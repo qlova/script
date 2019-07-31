@@ -6,10 +6,10 @@ import "github.com/qlova/script"
 const X, Y = 100, 7
 
 func main() {
-	
+
 	var software = script.Program(func(q script.Script) {
 		q.Main(func() {
-			
+
 			q.Print(q.String("My Favourite Number:"), q.Int(22))
 			q.Print()
 
@@ -17,7 +17,7 @@ func main() {
 
 			q.Print(q.String("Operations on"), x, q.String("&"), y)
 			q.Print(q.String("======================"))
-			
+
 			q.Print(q.String("Double:"), x.Mul(q.Int(2)), q.Int(2).Mul(y))
 			q.Print(q.String("Add:"), x.Add(y))
 			q.Print(q.String("Sub:"), x.Sub(y))
@@ -27,7 +27,7 @@ func main() {
 			q.Print(q.String("Pow:"), x.Pow(y))
 		})
 	})
-	
+
 	//Print out the source code of the program in Go.
 	code := software.Go()
 	if code.Error {
@@ -36,7 +36,7 @@ func main() {
 	}
 	fmt.Println(code)
 
-	//Run the program and get the output.	
+	//Run the program and get the output.
 	fmt.Println("\nOutput:")
 
 	err := software.Run()
@@ -44,4 +44,3 @@ func main() {
 		fmt.Println(err)
 	}
 }
- 

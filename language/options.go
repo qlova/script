@@ -4,10 +4,10 @@ package language
 const (
 	//Produce stable deterministic results. Specificiation TBA.
 	Deterministic = iota
-	
+
 	//Sacrifice stability & cross-language determinism for pretty human readable code.
 	Pretty
-	
+
 	//Sacrifice stability & cross-language determinism for peformance, language specific calls will be used where possible.
 	Fast
 )

@@ -8,16 +8,17 @@ import "runtime/debug"
 const Debug = true
 const ExtremeDebug = false
 
-type BlockPointer int 
+type BlockPointer int
+
 func (pointer BlockPointer) String() string {
 	return strconv.Itoa(int(pointer))
 }
 
 //A caller keeps track of the history of the calling frame, where to jump back to etc.
 type Caller struct {
-	Block BlockPointer
+	Block              BlockPointer
 	InstructionCounter int
-	Returns int
+	Returns            int
 }
 
 //A thread is capable of running a program.
@@ -25,13 +26,13 @@ type Thread struct {
 	Program
 
 	InstructionCounter int
-	Block BlockPointer
-	
+	Block              BlockPointer
+
 	//Virtual Registers & Arguments.
 	Registers, Arguments [][]interface{}
 
 	Callers []Caller
-	
+
 	Returns int
 }
 
@@ -55,11 +56,11 @@ func (thread *Thread) DumpRegisters() {
 
 //Write a value in the thread at the specified location.
 func (thread Thread) Set(location int, value interface{}) {
-	
+
 	if ExtremeDebug {
 		Trace()
 	}
-	
+
 	thread.Registers[len(thread.Registers)-1][location] = value
 }
 
@@ -75,19 +76,19 @@ func (thread Thread) Get(location int) interface{} {
 func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
 	//Update callers.
 	thread.Callers = append(thread.Callers, Caller{
-		Block: thread.Block,
+		Block:              thread.Block,
 		InstructionCounter: thread.InstructionCounter,
-		Returns:  thread.Returns,
+		Returns:            thread.Returns,
 	})
-	
+
 	if Debug {
-		println("jumping from block (", thread.Block,", #",thread.InstructionCounter,") to a new block (", block,", #0) with")
+		println("jumping from block (", thread.Block, ", #", thread.InstructionCounter, ") to a new block (", block, ", #0) with")
 	}
-	
+
 	//Initialise registers.
 	thread.Registers = append(thread.Registers, make([]interface{}, thread.Program[block].Registers))
 	thread.Arguments = append(thread.Arguments, make([]interface{}, len(arguments)+1))
-	
+
 	//Prepare arguments.
 	for i := range arguments {
 		thread.Arguments[len(thread.Arguments)-1][thread.Program[block].ArgumentTransform[i]] = arguments[i]
@@ -96,16 +97,15 @@ func (thread *Thread) JumpTo(block BlockPointer, arguments ...interface{}) {
 	//Jump.
 	thread.Block = block
 	thread.InstructionCounter = -1
-	
+
 	if Debug {
-		
+
 		println(len(thread.Program[thread.Block].Instructions))
 		println("instructions &")
 		println(thread.Program[thread.Block].Registers)
 		println("registers")
 	}
-}	
-
+}
 
 //Return to the caller.
 func (thread *Thread) Return(returns ...interface{}) {
@@ -118,13 +118,13 @@ func (thread *Thread) Return(returns ...interface{}) {
 
 	thread.Registers = thread.Registers[:len(thread.Registers)-1]
 	thread.Arguments = thread.Arguments[:len(thread.Arguments)-1]
-	
+
 	if len(returns) > 0 {
 		thread.Registers[len(thread.Registers)-1][Caller.Returns] = returns[0]
 	}
-	
+
 	if Debug {
-		println("jumping back to block (", Caller.Block,") with")
+		println("jumping back to block (", Caller.Block, ") with")
 		println(len(thread.Program[thread.Block].Instructions))
 		println("instructions")
 	}
@@ -136,16 +136,16 @@ type Instruction func(thread *Thread)
 //A block consists of a number of 'instructions' and a number of registers.
 type Block struct {
 	Name string
-	
+
 	Instructions []Instruction
-	
-	//The argument mapping associates a string with a location in the block's argument slice. 
+
+	//The argument mapping associates a string with a location in the block's argument slice.
 	ArgumentMapping map[string]int
-	
+
 	//Which argument of this block is in which location.
 	ArgumentTransform map[int]int
-	
-	Main bool
+
+	Main      bool
 	Registers int
 }
 
@@ -159,7 +159,7 @@ func (program Program) Dump() {
 		if block.Main {
 			fmt.Print("\tmain\t")
 		} else {
-			fmt.Print("\t"+block.Name+"\t")
+			fmt.Print("\t" + block.Name + "\t")
 		}
 		fmt.Println("block - ", i, " has ", len(block.Instructions), " instructions & ", block.Registers, "registers")
 	}
@@ -168,12 +168,12 @@ func (program Program) Dump() {
 
 func (program *Program) CreateBlock() BlockPointer {
 	var block Block
-	
+
 	block.ArgumentMapping = make(map[string]int)
 	block.ArgumentTransform = make(map[int]int)
-	
+
 	*program = append(*program, block)
-	return BlockPointer(len(*program)-1)
+	return BlockPointer(len(*program) - 1)
 }
 
 func (program *Program) WriteTo(block BlockPointer, instruction Instruction) {
@@ -182,28 +182,28 @@ func (program *Program) WriteTo(block BlockPointer, instruction Instruction) {
 
 func (program *Program) ReserveRegister(block BlockPointer) int {
 	(*program)[block].Registers++
-	return (*program)[block].Registers-1
+	return (*program)[block].Registers - 1
 }
 
 func (program Program) Run() {
 	//Create a new thread to run this program.
 	var thread Thread
 	thread.Program = program
-	
+
 	//Find main.
 	for pointer, block := range thread.Program {
 		if block.Main {
 			thread.Block = BlockPointer(pointer)
 		}
 	}
-	
+
 	//Initisalise the registers.
 	thread.Registers = append(thread.Registers, make([]interface{}, program[thread.Block].Registers))
-	
+
 	if Debug {
 		program.Dump()
 	}
-	
+
 	for {
 		if int(thread.Block) >= len(program) {
 			if Debug {
@@ -211,7 +211,7 @@ func (program Program) Run() {
 				println(thread.Block)
 			}
 		}
-		
+
 		if thread.InstructionCounter >= len(program[thread.Block].Instructions) {
 			if Debug {
 				println("runtime error: invalid instructions")
@@ -222,11 +222,11 @@ func (program Program) Run() {
 				program.Dump()
 			}
 		}
-		
+
 		if Debug {
 			println("running instruction ", thread.InstructionCounter, " of block ", thread.Block)
 		}
-		
+
 		//Process the next instruction.
 		program[thread.Block].Instructions[thread.InstructionCounter](&thread)
 		thread.InstructionCounter++
@@ -237,7 +237,7 @@ func (program Program) Run() {
 			if len(thread.Callers) == 0 {
 				return
 			}
-			
+
 			thread.Return()
 			thread.InstructionCounter++
 		}

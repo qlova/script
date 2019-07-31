@@ -6,19 +6,19 @@ import "text/scanner"
 //A cache is a storage container that contains code. It can be compiled at a later point in time.
 type Cache struct {
 	bytes.Buffer
-	
+
 	filename string
-	line int
-	
+	line     int
+
 	Match string
 }
 
-func (c *Compiler) NewCustomCache(begin, end  func(*Compiler) bool) Cache {
+func (c *Compiler) NewCustomCache(begin, end func(*Compiler) bool) Cache {
 	var cache Cache
-	
+
 	cache.filename = c.Scanners[len(c.Scanners)-1].Filename
-	cache.line = c.Scanners[len(c.Scanners)-1].Line-1
-	
+	cache.line = c.Scanners[len(c.Scanners)-1].Line - 1
+
 	var depth = 1
 	for {
 		c.Scanners[len(c.Scanners)-1].Scan()
@@ -34,12 +34,12 @@ func (c *Compiler) NewCustomCache(begin, end  func(*Compiler) bool) Cache {
 		} else if begin(c) {
 			depth++
 		}
-		
+
 		cache.Write([]byte(tok))
 	}
-	
+
 	cache.Write([]byte("\n"))
-	
+
 	return cache
 }
 
@@ -60,8 +60,7 @@ func (c *Compiler) NewCache(open string, matches ...string) Cache {
 
 //Compile the given cache, pretending the filename is name and the line number is line.
 func (c *Compiler) CompileCache(cache Cache) {
-	
-	
+
 	var s scanner.Scanner
 	s.Init(&cache)
 	s.Filename = cache.filename
@@ -70,12 +69,12 @@ func (c *Compiler) CompileCache(cache Cache) {
 	c.Scanners = append(c.Scanners, &s)
 	c.CurrentLines = append(c.CurrentLines, "")
 	c.LineOffset = cache.line
-	
+
 	var length = len(c.Scanners)
-	
+
 	for {
 		c.ScanStatement()
-		
+
 		if len(c.Scanners) < length {
 			c.LineOffset = 0
 			return

@@ -7,4 +7,3 @@ func (implementation Implementation) Buffer() language.Buffer {
 }
 
 func (implementation Implementation) Flush(buffer language.Buffer) {}
-

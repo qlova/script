@@ -21,4 +21,3 @@ func (implementation Implementation) Tail() language.Statement {
 func (implementation Implementation) Last() language.Statement {
 	return language.Statement("")
 }
-

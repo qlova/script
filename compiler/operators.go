@@ -1,7 +1,7 @@
-package compiler 
+package compiler
 
 type Operator struct {
-	Symbol string
+	Symbol     string
 	Precedence int
 }
 
@@ -12,5 +12,5 @@ func (c *Compiler) GetOperator(symbol string) Operator {
 		}
 	}
 
-	return Operator{Precedence:-1}
+	return Operator{Precedence: -1}
 }

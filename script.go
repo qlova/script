@@ -1,16 +1,16 @@
 package script
 
 import (
-	"fmt"
 	"bytes"
 	"errors"
+	"fmt"
 	//"io"
-	
+
 	//"os"
 	"runtime/debug"
-	
-	"math/big"
+
 	"encoding/base64"
+	"math/big"
 )
 
 import "github.com/qlova/script/interpreter"
@@ -20,16 +20,17 @@ import (
 	Golang "github.com/qlova/script/language/go"
 )
 
-var id int64 = 0;
+var id int64 = 0
+
 func Unique() string {
 	id++
 	return base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
 }
 
 type SourceCode struct {
-	Error bool
+	Error        bool
 	ErrorMessage string
-	Data []byte
+	Data         []byte
 }
 
 func (code SourceCode) String() string {
@@ -50,21 +51,20 @@ func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
 	}()
 
 	program(script)
-	
+
 	var buffer bytes.Buffer
 	buffer.WriteString(string(script.lang.Head()))
 	buffer.Write(script.head.Bytes())
-	
+
 	buffer.WriteString(string(script.lang.Neck()))
 	buffer.Write(script.neck.Bytes())
-	
+
 	buffer.WriteString(string(script.lang.Body()))
 	buffer.Write(script.body.Bytes())
-	
-	
+
 	buffer.Write(script.tail.Bytes())
 	buffer.WriteString(string(script.lang.Tail()))
-	
+
 	buffer.WriteString(string(script.lang.Last()))
 	buffer.Write(script.last.Bytes())
 
@@ -72,6 +72,7 @@ func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
 
 	return
 }
+
 //Return the programs SourceCode in Go.
 func (program Program) Go() (code SourceCode) {
 	return program.SourceCode(Golang.Language())
@@ -89,41 +90,41 @@ func (program Program) Run() (err error) {
 			err = errors.New(fmt.Sprint(r, "\n", string(debug.Stack())))
 		}
 	}()
-	
+
 	program(script)
-	
+
 	script.lang.(interpreter.Implementation).Start()
 
 	return
 }
 
 /*func (p Program) Source(language language.Interface) (source string, err error) {
-	script := NewScript()
+script := NewScript()
 
-	script.lang = language
-	script.lang.Init()
+script.lang = language
+script.lang.Init()
 
-	//Catch errors.
-	/*defer func() {
-		if r := recover(); r != nil {
-			if message, ok := r.(string); ok {
-				err = errors.New(message)
-			} else {
-				err = errors.New(fmt.Sprint(r))
-			}
+//Catch errors.
+/*defer func() {
+	if r := recover(); r != nil {
+		if message, ok := r.(string); ok {
+			err = errors.New(message)
+		} else {
+			err = errors.New(fmt.Sprint(r))
 		}
-	}()*/
-	
-	/*p(script)
-	
+	}
+}()*/
+
+/*p(script)
+
 	script.head.WriteString(string(script.lang.Head()))
 	script.neck.WriteString(string(script.lang.Neck()))
 	script.body.WriteString(string(script.lang.Body()))
 	script.tail.WriteString(string(script.lang.Tail()))
 	script.last.WriteString(string(script.lang.Last()))
-	
+
 	source = string(script.head.Bytes())+string(script.neck.Bytes())+string(script.body.Bytes())+string(script.tail.Bytes())+string(script.last.Bytes())
-	
+
 	return
 }
 
@@ -133,7 +134,7 @@ func (p Program) WriteToFile(path string, language language.Interface) (err erro
 		return err
 	}
 	defer file.Close()
-	
+
 	script := NewScript()
 
 	script.lang = language
@@ -149,21 +150,21 @@ func (p Program) WriteToFile(path string, language language.Interface) (err erro
 			}
 		}
 	}()*/
-	
+
 /*	p(script)
-	
+
 	script.head.WriteString(string(script.lang.Head()))
 	script.neck.WriteString(string(script.lang.Neck()))
 	script.body.WriteString(string(script.lang.Body()))
 	script.tail.WriteString(string(script.lang.Tail()))
 	script.last.WriteString(string(script.lang.Last()))
-	
+
 	file.Write(script.head.Bytes())
 	file.Write(script.neck.Bytes())
 	file.Write(script.body.Bytes())
 	file.Write(script.tail.Bytes())
 	file.Write(script.last.Bytes())
-	
+
 	return
 }*/
 
@@ -182,26 +183,26 @@ type context struct {
 	body bytes.Buffer
 	tail bytes.Buffer
 	last bytes.Buffer
-	
+
 	Optimise bool
-	
+
 	//function stuff
-	global string
+	global    string
 	arguments []Type
 	registers []string
-	returns Type
-	
+	returns   Type
+
 	index Int
 	value Value
 }
 
 type script struct {
 	depth int
-	
+
 	lang language.Interface
-	
+
 	*context
-	
+
 	stack []*context
 }
 
@@ -212,18 +213,18 @@ func (s Script) push() {
 
 func (s Script) pop() *context {
 	var context = s.context
-	
+
 	var old = s.stack[len(s.stack)-1]
 	s.stack = s.stack[:len(s.stack)-1]
-	
+
 	s.context = old
-	
+
 	return context
 }
 
 func NewScript() Script {
 	var script = Script{script: new(script)}
-		script.context = new(context)
+	script.context = new(context)
 	return script
 }
 
@@ -257,7 +258,7 @@ func (q Script) Raw(language string, statement language.Statement) {
 func (q Script) Main(f func()) {
 	q.write(q.lang.Main())
 	q.depth++
-		f()
+	f()
 	q.depth--
 	q.write(q.lang.EndMain())
 }

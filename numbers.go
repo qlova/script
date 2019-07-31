@@ -5,7 +5,7 @@ import "math/big"
 
 //An Int is a numeric integer value consisting of a magnitude and a sign.
 type Int struct {
-	script Script
+	script   Script
 	internal language.Integer
 
 	literal *big.Int
@@ -17,7 +17,7 @@ func (i Int) Literal() *big.Int {
 
 func (i Int) Value() Value {
 	return Value{
-		script: i.script,
+		script:   i.script,
 		internal: i.LanguageType(),
 	}
 }
@@ -26,7 +26,7 @@ func (i Int) Value() Value {
 func (v Value) Int() Int {
 	if i, ok := v.internal.(language.Integer); ok {
 		return Int{
-			script: v.script,
+			script:   v.script,
 			internal: i,
 		}
 	}
@@ -44,7 +44,7 @@ func (q Script) IntFromLanguageType(T language.Type) Int {
 	if internal, ok := T.(language.Integer); ok {
 		return Int{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")
@@ -60,7 +60,7 @@ func (i Int) Var(name ...string) Int {
 	i.script.write(statement)
 
 	return Int{
-		script: i.script,
+		script:   i.script,
 		internal: variable.(language.Integer),
 	}
 }
@@ -87,7 +87,7 @@ func (q Script) Int(i ...int) Int {
 	}
 
 	return Int{
-		script: q,
+		script:  q,
 		literal: literal,
 	}
 }
@@ -95,7 +95,7 @@ func (q Script) Int(i ...int) Int {
 //Return a new String type with the value s.
 func (q Script) BigInt(i *big.Int) Int {
 	return Int{
-		script: q,
+		script:  q,
 		literal: i,
 	}
 }
@@ -104,7 +104,7 @@ func (a Int) Add(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var sum = big.NewInt(0).Add(a.literal, b.literal)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: sum,
 		}
 	}
@@ -115,7 +115,7 @@ func (a Int) Sub(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var difference = big.NewInt(0).Sub(a.literal, b.literal)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: difference,
 		}
 	}
@@ -126,7 +126,7 @@ func (a Int) Mul(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var product = big.NewInt(0).Mul(a.literal, b.literal)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: product,
 		}
 	}
@@ -137,7 +137,7 @@ func (a Int) Div(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var quotient = big.NewInt(0).Div(a.literal, b.literal)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: quotient,
 		}
 	}
@@ -148,7 +148,7 @@ func (a Int) Mod(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var modulus = big.NewInt(0).Mod(a.literal, b.literal)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: modulus,
 		}
 	}
@@ -159,7 +159,7 @@ func (a Int) Pow(b Int) Int {
 	if a.literal != nil && b.literal != nil {
 		var exponent = big.NewInt(0).Exp(a.literal, b.literal, nil)
 		return Int{
-			script: a.script,
+			script:  a.script,
 			literal: exponent,
 		}
 	}

@@ -8,18 +8,18 @@ import "github.com/qlova/script/interpreter/dynamic"
 
 type implementation struct {
 	symbols map[string]dynamic.BlockPointer
-	
+
 	program dynamic.Program
 
 	//Trackers for program blocks.
-	active dynamic.BlockPointer 		//This is the code block we are writing to.
-	inactive []dynamic.BlockPointer	   //These are the code blocks we were writing to.
-	
+	active   dynamic.BlockPointer   //This is the code block we are writing to.
+	inactive []dynamic.BlockPointer //These are the code blocks we were writing to.
+
 	//In order to support out-of order function definitions, we need to use Buffers.
 	buffers []Buffer
-	
+
 	//Stores instruction-count positions of loops.
-	loops []int
+	loops    []int
 	ifstates []IfState
 }
 
@@ -37,17 +37,17 @@ func New() Implementation {
 
 	implementation.inactive = make([]dynamic.BlockPointer, 0)
 	implementation.buffers = make([]Buffer, 0)
-	
+
 	return Implementation{&implementation}
 }
 
 func (implementation Implementation) String(s string) language.String {
 	var register = implementation.ReserveRegister()
-	
+
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, s)
 	})
-	return String{Expression:language.Statement(strconv.Itoa(register))}
+	return String{Expression: language.Statement(strconv.Itoa(register))}
 }
 
 func (implementation Implementation) Integer(i int) language.Integer {
@@ -55,7 +55,7 @@ func (implementation Implementation) Integer(i int) language.Integer {
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, i)
 	})
-	return Integer{Expression:language.Statement(strconv.Itoa(register))}
+	return Integer{Expression: language.Statement(strconv.Itoa(register))}
 }
 
 func (implementation Implementation) Symbol(r rune) language.Symbol {
@@ -63,7 +63,7 @@ func (implementation Implementation) Symbol(r rune) language.Symbol {
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, r)
 	})
-	return Symbol{Expression:language.Statement(strconv.Itoa(register))}
+	return Symbol{Expression: language.Statement(strconv.Itoa(register))}
 }
 
 func (implementation Implementation) Bit(b bool) language.Bit {
@@ -71,25 +71,42 @@ func (implementation Implementation) Bit(b bool) language.Bit {
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		thread.Set(register, b)
 	})
-	return Bit{Expression:language.Statement(strconv.Itoa(register))}
+	return Bit{Expression: language.Statement(strconv.Itoa(register))}
 }
 
-func (implementation Implementation) Rational() language.Rational { panic("Not implemented"); return nil }
-func (implementation Implementation) Natural(n uint) language.Natural { panic("Not implemented"); return nil }
+func (implementation Implementation) Rational() language.Rational {
+	panic("Not implemented")
+	return nil
+}
+func (implementation Implementation) Natural(n uint) language.Natural {
+	panic("Not implemented")
+	return nil
+}
 func (implementation Implementation) Complex() language.Complex { panic("Not implemented"); return nil }
-func (implementation Implementation) Real(r float64) language.Real { panic("Not implemented"); return nil }
+func (implementation Implementation) Real(r float64) language.Real {
+	panic("Not implemented")
+	return nil
+}
 
 func (implementation Implementation) Duplex() language.Duplex { panic("Not implemented"); return nil }
-func (implementation Implementation) Quaternion() language.Quaternion { panic("Not implemented"); return nil }
-func (implementation Implementation) Octonion() language.Octonion { panic("Not implemented"); return nil }
-func (implementation Implementation) Sedenion() language.Sedenion { panic("Not implemented"); return nil }
+func (implementation Implementation) Quaternion() language.Quaternion {
+	panic("Not implemented")
+	return nil
+}
+func (implementation Implementation) Octonion() language.Octonion {
+	panic("Not implemented")
+	return nil
+}
+func (implementation Implementation) Sedenion() language.Sedenion {
+	panic("Not implemented")
+	return nil
+}
 func (implementation Implementation) Byte(b byte) language.Byte { panic("Not implemented"); return nil }
-func (implementation Implementation) Image() language.Image { panic("Not implemented"); return nil }
-func (implementation Implementation) Sound() language.Sound { panic("Not implemented"); return nil }
-func (implementation Implementation) Video() language.Video { panic("Not implemented"); return nil }
-func (implementation Implementation) Time() language.Time { panic("Not implemented"); return nil }
-func (implementation Implementation) Stream() language.Stream { panic("Not implemented"); return nil }
-
+func (implementation Implementation) Image() language.Image     { panic("Not implemented"); return nil }
+func (implementation Implementation) Sound() language.Sound     { panic("Not implemented"); return nil }
+func (implementation Implementation) Video() language.Video     { panic("Not implemented"); return nil }
+func (implementation Implementation) Time() language.Time       { panic("Not implemented"); return nil }
+func (implementation Implementation) Stream() language.Stream   { panic("Not implemented"); return nil }
 
 func (implementation Implementation) Color() language.Color { panic("Not implemented"); return nil }
 
@@ -102,7 +119,7 @@ func (implementation Implementation) Init() {
 }
 
 func (implementation Implementation) Build(path string) func() {
-	panic(implementation.Name()+".Build() Unimplemented")
+	panic(implementation.Name() + ".Build() Unimplemented")
 	return nil
 }
 
@@ -113,7 +130,7 @@ func (implementation Implementation) Literal(t language.Type) interface{} {
 func (implementation Implementation) Active() *dynamic.Block {
 	if len(implementation.buffers) > 0 {
 		var buffer = implementation.buffers[len(implementation.buffers)-1]
-		
+
 		if buffer.sister == implementation.active {
 			return implementation.buffers[len(implementation.buffers)-1].block
 		}
@@ -132,7 +149,6 @@ func (implementation Implementation) SetInstruction(index int, instruction dynam
 	active.Instructions[index] = instruction
 }
 
-
 func (implementation Implementation) AddInstruction(instruction dynamic.Instruction) {
 	var active = implementation.Active()
 	active.Instructions = append(active.Instructions, instruction)
@@ -142,27 +158,27 @@ func (implementation Implementation) AddInstruction(instruction dynamic.Instruct
 func (implementation Implementation) ReserveRegister() int {
 	var block = implementation.Active()
 	block.Registers++
-	return block.Registers-1
+	return block.Registers - 1
 }
 
 func (implementation Implementation) RegisterOf(value language.Type) int {
 	var expression = string(implementation.ExpressionOf(value))
-	
+
 	i, err := strconv.Atoi(expression)
 	if err != nil {
-		
+
 		//This must be an argument, has it been defined yet?
 		var arguments = implementation.Active().ArgumentMapping
-		
+
 		if mapping, ok := arguments[expression]; ok {
 			return -mapping
 		} else {
-			
+
 			//The argument register is not defined yet, so we will create a mapping for it.
 			var mapping = arguments[expression]
-				mapping = len(arguments)+1
+			mapping = len(arguments) + 1
 			arguments[expression] = mapping
-			
+
 			return -len(arguments)
 		}
 	}
@@ -196,12 +212,12 @@ func (implementation Implementation) Deactivate() {
 
 func GoTypeOf(t interface{}) reflect.Type {
 	switch t.(type) {
-		case String:
-			 return reflect.TypeOf("")
-		case Integer:
-			 return reflect.TypeOf(0)
-		default:
-			panic("Unimplemented")
+	case String:
+		return reflect.TypeOf("")
+	case Integer:
+		return reflect.TypeOf(0)
+	default:
+		panic("Unimplemented")
 	}
 	return nil
 }

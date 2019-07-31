@@ -1,11 +1,10 @@
 package script
 
-
 import "github.com/qlova/script/language"
 
 //An Int is a numeric integer value consisting of a magnitude and a sign.
 type Float struct {
-	script Script
+	script   Script
 	internal language.Real
 
 	literal *float64
@@ -22,7 +21,7 @@ func (f Float) LanguageType() language.Type {
 
 func (f Float) Value() Value {
 	return Value{
-		script: f.script,
+		script:   f.script,
 		internal: f.LanguageType(),
 	}
 }
@@ -31,7 +30,7 @@ func (f Float) Value() Value {
 func (v Value) Float() Float {
 	if i, ok := v.internal.(language.Real); ok {
 		return Float{
-			script: v.script,
+			script:   v.script,
 			internal: i,
 		}
 	}
@@ -44,7 +43,7 @@ func (q Script) FloatFromLanguageType(T language.Type) Float {
 	if internal, ok := T.(language.Real); ok {
 		return Float{
 			internal: internal,
-			script: q,
+			script:   q,
 		}
 	}
 	panic("Invalid wrap!")
@@ -60,7 +59,7 @@ func (q Script) Float(f ...float64) Float {
 	}
 
 	return Float{
-		script: q,
+		script:  q,
 		literal: &literal,
 	}
 }

@@ -12,14 +12,14 @@ func (implementation Implementation) Print(values ...language.Type) language.Sta
 		implementation.AddInstruction(func(thread *dynamic.Thread) {
 			fmt.Print(thread.Get(register))
 		})
-	
+
 		if i < len(values)-1 {
 			implementation.AddInstruction(func(thread *dynamic.Thread) {
 				fmt.Print(" ")
 			})
 		}
 	}
-	
+
 	implementation.AddInstruction(func(thread *dynamic.Thread) {
 		fmt.Println()
 	})
@@ -28,7 +28,7 @@ func (implementation Implementation) Print(values ...language.Type) language.Sta
 }
 
 func (implementation Implementation) Write(stream language.Stream, values ...language.Type) language.Statement {
-	
+
 	if stream == nil {
 		for _, value := range values {
 
@@ -41,8 +41,7 @@ func (implementation Implementation) Write(stream language.Stream, values ...lan
 
 		return language.Statement("")
 	}
-	
-	panic(implementation.Name()+".Write() Unimplemented")
+
+	panic(implementation.Name() + ".Write() Unimplemented")
 	return language.Statement("")
 }
-

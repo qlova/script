@@ -84,3 +84,13 @@ func (q Script) BoolFromLanguageType(T language.Type) Bool {
 	panic("Invalid wrap!")
 	return Bool{}
 }
+
+//True returns a Boolean set to true.
+func (q Script) True() Bool {
+	return q.Bool(true)
+}
+
+//False returns a Boolean set to false.
+func (q Script) False() Bool {
+	return q.Bool(false)
+}

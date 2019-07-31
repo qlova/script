@@ -31,3 +31,8 @@ func (implementation Implementation) Return(value language.Type) language.Statem
 	panic(implementation.Name() + ".Return() Unimplemented")
 	return language.Statement("")
 }
+
+func (implementation Implementation) Scope(name string) language.Function {
+	panic(implementation.Name()+".Scope() Unimplemented")
+	return nil
+}

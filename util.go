@@ -12,5 +12,5 @@ func unique(name []string) string {
 		register = "_" + register
 	}
 
-	return register
+	return "var_" + register
 }

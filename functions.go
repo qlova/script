@@ -1,165 +1,117 @@
 package script
 
-import "bytes"
-import "github.com/qlova/script/language"
+import (
+	"fmt"
+	"reflect"
+)
 
-type Func struct {
-	script   Script
-	internal language.Function
-
-	arguments []Type
-	returns   Type
+type Function struct {
+	Name    string
+	Args    []Argument
+	Returns Value
+	Block   func()
 }
 
-//Return a new String type with the value s.
-func (q Script) Return(value ...Type) {
-	q.indent()
-	if len(value) > 0 {
-		q.write(q.script.lang.Return(value[0].LanguageType()))
-		q.returns = value[0]
-	} else {
-		q.write(q.script.lang.Return(nil))
-	}
+type Argument struct {
+	Name string
+	Value
 }
 
-func (v Value) Arg(name ...string) Type {
-	v.script.arguments = append(v.script.arguments, v)
+type Variable string
 
-	var unique string
-	if len(name) > 0 {
-		unique = name[0]
-	} else {
-		unique = Unique()
-	}
+func (q Ctx) dummyFunc(function interface{}, strings ...string) (func(), []reflect.Value) {
+	var FunctionType = reflect.TypeOf(function)
+	var Original = reflect.ValueOf(function)
 
-	v.script.registers = append(v.script.registers, unique)
+	var NumberOfArguments = FunctionType.NumIn()
 
-	return Value{
-		script:   v.script,
-		internal: v.internal.Register(name[0]),
-	}
-}
-
-//Return a new Function based on the contents of the provided function.
-// Arguments are defined inside the function, with Type.Value().Arg()
-func (q Script) Func(f func(), names ...string) Func {
-	var name string
-	if len(names) > 0 {
-		name = names[0]
-	}
-
-	var buffer = q.lang.Buffer()
-	q.push()
-	f()
-	var context = q.pop()
-	//println(context.body.String())
-
-	var Converted = make([]language.Type, len(context.arguments))
-
-	for i := range context.arguments {
-		Converted[i] = context.arguments[i].LanguageType()
-	}
-
-	var returns language.Type
-	if context.returns != nil {
-		returns = context.returns.LanguageType()
-	}
-
-	statement, function := q.script.lang.Function(name, context.registers, Converted, returns)
-
-	//If we are creating a global scope function.
-	if name != "" {
-		q.head.WriteString(string(statement))
-		q.lang.Flush(buffer)
-		q.head.Write(context.body.Bytes())
-		q.head.WriteString(string(q.script.lang.EndFunction()))
-
-		return Func{
-			internal:  function,
-			script:    q,
-			arguments: context.arguments,
-			returns:   context.returns,
+	//Define the function body by passing dummy arguments with their expected locations.
+	var DummyArgs = make([]reflect.Value, NumberOfArguments)
+	for i := 0; i < NumberOfArguments; i++ {
+		var ArgumentName = Variable(fmt.Sprintf("arg_%v", i))
+		if len(strings)-1 > i {
+			ArgumentName = Variable(strings[i+1])
 		}
 
-	} else {
-		var expression bytes.Buffer
-		expression.WriteString(string(statement))
-		q.lang.Flush(buffer)
-		expression.Write(context.body.Bytes())
-		expression.WriteString(string(q.script.lang.EndFunction()))
-		return Func{
-			internal:  function.Register(string(expression.Bytes())).(language.Function),
-			script:    q,
-			arguments: context.arguments,
-			returns:   context.returns,
+		var Pointer = reflect.New(FunctionType.In(0))
+
+		DummyArgs[i] = Pointer.Elem()
+		q.New(Pointer.Interface().(EmptyType))
+		DummyArgs[i].FieldByName("Type").Set(reflect.ValueOf(Type{
+			Ctx:     q,
+			Runtime: q.Language.Argument(string(ArgumentName), i),
+		}))
+	}
+
+	return func() {
+		Original.Call(DummyArgs)
+	}, DummyArgs
+}
+
+//DefineFunc defines a new function from a *func(...) ...
+func (q Ctx) DefineFunc(function interface{}, strings ...string) {
+	var FunctionType = reflect.TypeOf(function).Elem()
+	var FunctionValue = reflect.ValueOf(function).Elem()
+
+	var NumberOfArguments = FunctionType.NumIn()
+
+	var FunctionName = q.ID("function_")
+	if len(strings) > 0 {
+		FunctionName = strings[0]
+	}
+
+	var f, DummyArgs = q.dummyFunc(reflect.ValueOf(function).Elem().Interface(), strings...)
+
+	var Args = make([]Argument, NumberOfArguments)
+
+	for i, arg := range DummyArgs {
+		Args[i].Name = fmt.Sprintf("arg_%v", i)
+		if len(strings)-1 > i {
+			Args[i].Name = strings[i+1]
 		}
+		Args[i].Value = arg.Interface().(Value)
 	}
 
-}
-
-func (f Func) HasReturnValue() bool {
-	return f.returns != nil
-}
-
-func (f Func) LanguageType() language.Type {
-	return f.internal
-}
-
-func (f Func) Value() Value {
-	return Value{
-		script:   f.script,
-		internal: f.LanguageType(),
-	}
-}
-
-func (v Value) IsFunc() bool {
-	_, ok := v.LanguageType().(language.Function)
-	return ok
-}
-
-//Get this value as a string or cast to a string.
-func (v Value) Func() Func {
-	if f, ok := v.internal.(language.Function); ok {
-		return Func{
-			script:   v.script,
-			internal: f,
-
-			arguments: v.arguments,
-		}
+	var Returns Value = nil
+	if FunctionType.NumOut() > 0 {
+		Returns = reflect.New(FunctionType.Out(0)).Elem().Interface().(Value)
 	}
 
-	panic("Cannot cast to Function")
-	return Func{}
+	q.Language.DefineFunction(Function{
+		Name:    FunctionName,
+		Args:    Args,
+		Returns: Returns,
+		Block:   f,
+	})
+
+	FunctionValue.Set(reflect.MakeFunc(FunctionType,
+		func(ActualArgs []reflect.Value) (returns []reflect.Value) {
+
+			var Args = make([]Value, NumberOfArguments)
+
+			for i, arg := range ActualArgs {
+				Args[i] = arg.Interface().(Value)
+			}
+
+			if Returns == nil {
+				q.Language.RunFunction(FunctionName, Args)
+				return
+			}
+
+			var NewReturns = reflect.New(FunctionType.Out(0)).Elem()
+			NewReturns.FieldByName("Type").Set(reflect.ValueOf(
+				Type{
+					Ctx:     q,
+					Runtime: q.Language.CallFunction(FunctionName, Args),
+				},
+			))
+
+			return []reflect.Value{
+				NewReturns,
+			}
+		}))
 }
 
-func (f Func) Arguments() []Type {
-	return f.arguments
-}
-
-func (f Func) Call(arguments ...Type) Value {
-
-	var Converted = make([]language.Type, len(arguments))
-
-	for i := range arguments {
-		Converted[i] = arguments[i].LanguageType()
-	}
-
-	return Value{
-		script:   f.script,
-		internal: f.script.lang.Call(f.LanguageType().(language.Function), Converted),
-	}
-}
-
-func (f Func) Run(arguments ...Type) Value {
-
-	var Converted = make([]language.Type, len(arguments))
-
-	for i := range arguments {
-		Converted[i] = arguments[i].LanguageType()
-	}
-
-	f.script.indent()
-	f.script.write(f.script.lang.Run(f.LanguageType().(language.Function), Converted))
-
-	return Value{}
+func (q Ctx) Return(v Value) {
+	q.Language.Return(v)
 }

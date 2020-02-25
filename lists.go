@@ -1,104 +1,61 @@
 package script
 
-import "github.com/qlova/script/language"
+import (
+	"reflect"
+)
 
-//A String is an ordered sequence of symbols, often used to denote words, sentences and text.
+//List type.
 type List struct {
-	script   Script
-	internal language.List
-
-	subtype Type
+	Type
 }
 
-func (q Script) List(elements ...Type) List {
-	var Converted = make([]language.Type, len(elements))
-	for i := range elements {
-		Converted[i] = elements[i].LanguageType()
+//Make makes a list.
+func (*List) Make(q Ctx, collection Collection, sizes ...int) {
+	var T = reflect.TypeOf(collection).Elem()
+	var V = reflect.ValueOf(collection).Elem()
+
+	var L, ok = T.FieldByName("L")
+	if !ok {
+		panic("array type must have literal `L` field")
 	}
-	return List{
-		script:   q,
-		internal: q.lang.List(Converted...),
-		subtype:  elements[0],
-	}
-}
+	var ElementType = L.Type.Elem()
 
-//Wrap a language.Type to a List.
-func (q Script) ListFromLanguageType(T language.Type) List {
-	if internal, ok := T.(language.List); ok {
-		return List{
-			internal: internal,
-			script:   q,
-			//subtype is nil
-		}
-	}
-	panic("Invalid wrap!")
-	return List{}
-}
+	var ZeroType = reflect.SliceOf(
+		GoTypeOf(reflect.Zero(ElementType).Interface().(Value)))
 
-func (l List) Value() Value {
-	return Value{
-		script:   l.script,
-		internal: l.LanguageType(),
+	var Zero = reflect.Zero(ZeroType).Interface()
 
-		subtype: l.subtype,
-	}
-}
-
-//Return this Integer as a variable (optionally named).
-func (l List) Var(name ...string) List {
-	return l.Value().Var(name...).List()
-}
-
-//Cast a String to a language.Type ready to be passed to the method of a Language.
-func (l List) LanguageType() language.Type {
-	return l.internal
-}
-
-//Get this value as a string or cast to a string.
-func (v Value) List() List {
-	if l, ok := v.internal.(language.List); ok {
-		return List{
-			script:   v.script,
-			internal: l,
-
-			subtype: v.subtype,
-		}
+	if len(sizes) > 0 {
+		Zero = reflect.MakeSlice(ZeroType, sizes[0], sizes[0]).Interface()
 	}
 
-	panic("Cannot cast to List")
-	return List{}
-}
+	//Create a runtime representation of the array.
+	V.FieldByName("List").Set(reflect.ValueOf(List{
+		NewType(q, func() interface{} {
+			return Zero
+		}),
+	}))
 
-//Return the value at index of the Array.
-func (l List) Index(index Int) Value {
-	return Value{
-		script:   l.script,
-		internal: l.script.lang.Index(l.LanguageType(), index.LanguageType()),
+	//Create Mutate method.
+	if Mutate, ok := T.FieldByName("Mutate"); ok {
+		V.FieldByName("Mutate").Set(reflect.MakeFunc(Mutate.Type,
+			func(args []reflect.Value) []reflect.Value {
+				q.Mutate(collection, args[0].Interface().(Int), args[1].Interface().(Value))
+				return nil
+			}))
 	}
-}
 
-//Return the value at index of the Array.
-func (l List) Modify(index Int, value Type) {
-	l.script.indent()
-	l.script.write(l.script.lang.Modify(l.LanguageType(), index.LanguageType(), value.LanguageType()))
-}
-
-func (l List) Length() Int {
-	return Int{
-		script:   l.script,
-		internal: l.script.lang.Length(l.LanguageType()),
+	//Create Index method.
+	if Index, ok := T.FieldByName("Index"); ok {
+		V.FieldByName("Index").Set(reflect.MakeFunc(Index.Type,
+			func(args []reflect.Value) (returns []reflect.Value) {
+				var result = reflect.New(ElementType).Elem()
+				result.FieldByName("Type").Set(reflect.ValueOf(Type{
+					Ctx:     q,
+					Runtime: q.Index(collection, args[0].Interface().(Int)),
+				}))
+				returns = append(returns, result)
+				return
+			}))
 	}
-}
-
-//Return the value at index of the Array.
-func (l List) Subtype() Type {
-	return l.subtype
-}
-
-func (l List) ForEach(f func(), names ...string) {
-	l.script.foreach(l, f, names...)
-}
-
-func (l List) Copy() List {
-	return l.script.ValueFromLanguageType(l.script.lang.Copy(l.LanguageType())).Value().List()
 }

@@ -1,264 +1,36 @@
 package script
 
 import (
-	"bytes"
-	"errors"
-	"fmt"
-	//"io"
-
-	//"os"
-	"runtime/debug"
-
 	"encoding/base64"
 	"math/big"
 )
 
-import "github.com/qlova/script/interpreter"
-import "github.com/qlova/script/language"
-
-import (
-	Golang "github.com/qlova/script/language/go"
-)
-
-var id int64 = 0
-
-func Unique() string {
-	id++
-	return base64.RawURLEncoding.EncodeToString(big.NewInt(id).Bytes())
+//Ctx is the script ctx.
+type Ctx struct {
+	Language
+	*ctx
 }
 
-type SourceCode struct {
-	Error        bool
-	ErrorMessage string
-	Data         []byte
-}
-
-func (code SourceCode) String() string {
-	return string(code.Data)
-}
-
-type Program func(Script)
-
-func (program Program) SourceCode(lang language.Interface) (code SourceCode) {
-	script := NewScript()
-	script.lang = lang
-
-	defer func() {
-		if r := recover(); r != nil {
-			code.Error = true
-			code.ErrorMessage = fmt.Sprint(r, "\n", string(debug.Stack()))
-		}
-	}()
-
-	program(script)
-
-	var buffer bytes.Buffer
-	buffer.WriteString(string(script.lang.Head()))
-	buffer.Write(script.head.Bytes())
-
-	buffer.WriteString(string(script.lang.Neck()))
-	buffer.Write(script.neck.Bytes())
-
-	buffer.WriteString(string(script.lang.Body()))
-	buffer.Write(script.body.Bytes())
-
-	buffer.Write(script.tail.Bytes())
-	buffer.WriteString(string(script.lang.Tail()))
-
-	buffer.WriteString(string(script.lang.Last()))
-	buffer.Write(script.last.Bytes())
-
-	code.Data = buffer.Bytes()
-
-	return
-}
-
-//Return the programs SourceCode in Go.
-func (program Program) Go() (code SourceCode) {
-	return program.SourceCode(Golang.Language())
-}
-
-//Starts the program and waits for it to complete.
-func (program Program) Run() (err error) {
-	script := NewScript()
-
-	script.lang = interpreter.New()
-
-	//Catch errors.
-	defer func() {
-		if r := recover(); r != nil {
-			err = errors.New(fmt.Sprint(r, "\n", string(debug.Stack())))
-		}
-	}()
-
-	program(script)
-
-	script.lang.(interpreter.Implementation).Start()
-
-	return
-}
-
-/*func (p Program) Source(language language.Interface) (source string, err error) {
-script := NewScript()
-
-script.lang = language
-script.lang.Init()
-
-//Catch errors.
-/*defer func() {
-	if r := recover(); r != nil {
-		if message, ok := r.(string); ok {
-			err = errors.New(message)
-		} else {
-			err = errors.New(fmt.Sprint(r))
-		}
+func NewCtx() Ctx {
+	var ctx = Ctx{
+		nil, new(ctx),
 	}
-}()*/
-
-/*p(script)
-
-	script.head.WriteString(string(script.lang.Head()))
-	script.neck.WriteString(string(script.lang.Neck()))
-	script.body.WriteString(string(script.lang.Body()))
-	script.tail.WriteString(string(script.lang.Tail()))
-	script.last.WriteString(string(script.lang.Last()))
-
-	source = string(script.head.Bytes())+string(script.neck.Bytes())+string(script.body.Bytes())+string(script.tail.Bytes())+string(script.last.Bytes())
-
-	return
+	ctx.id = make(map[string]int64)
+	return ctx
 }
 
-func (p Program) WriteToFile(path string, language language.Interface) (err error) {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+type ctx struct {
+	//Ctx variables.
+	id map[string]int64
 
-	script := NewScript()
-
-	script.lang = language
-	script.lang.Init()
-
-	//Catch errors.
-	/*defer func() {
-		if r := recover(); r != nil {
-			if message, ok := r.(string); ok {
-				err = errors.New(message)
-			} else {
-				err = errors.New(fmt.Sprint(r))
-			}
-		}
-	}()*/
-
-/*	p(script)
-
-	script.head.WriteString(string(script.lang.Head()))
-	script.neck.WriteString(string(script.lang.Neck()))
-	script.body.WriteString(string(script.lang.Body()))
-	script.tail.WriteString(string(script.lang.Tail()))
-	script.last.WriteString(string(script.lang.Last()))
-
-	file.Write(script.head.Bytes())
-	file.Write(script.neck.Bytes())
-	file.Write(script.body.Bytes())
-	file.Write(script.tail.Bytes())
-	file.Write(script.last.Bytes())
-
-	return
-}*/
-
-type Script struct {
-	*script
+	defining  bool
+	variables []string
 }
 
-type Type interface {
-	LanguageType() language.Type
-	Value() Value
+func (ctx Ctx) ID(prefix string) string {
+	ctx.id[prefix]++
+	return prefix + base64.RawURLEncoding.EncodeToString(big.NewInt(ctx.id[prefix]).Bytes())
 }
 
-type context struct {
-	head bytes.Buffer
-	neck bytes.Buffer
-	body bytes.Buffer
-	tail bytes.Buffer
-	last bytes.Buffer
-
-	Optimise bool
-
-	//function stuff
-	global    string
-	arguments []Type
-	registers []string
-	returns   Type
-
-	index Int
-	value Value
-}
-
-type script struct {
-	depth int
-
-	lang language.Interface
-
-	*context
-
-	stack []*context
-}
-
-func (s Script) push() {
-	s.stack = append(s.stack, s.context)
-	s.context = &context{}
-}
-
-func (s Script) pop() *context {
-	var context = s.context
-
-	var old = s.stack[len(s.stack)-1]
-	s.stack = s.stack[:len(s.stack)-1]
-
-	s.context = old
-
-	return context
-}
-
-func NewScript() Script {
-	var script = Script{script: new(script)}
-	script.context = new(context)
-	return script
-}
-
-func (q Script) Init() {
-	q.lang.Init()
-}
-
-func (q Script) Last() {
-	q.lang.Last()
-}
-
-func (q Script) indent() {
-	for i := 0; i < q.depth; i++ {
-		q.body.WriteByte('\t')
-	}
-}
-
-func (q Script) write(s language.Statement) {
-	q.body.WriteString(string(s))
-}
-
-func (q Script) Raw(language string, statement language.Statement) {
-	if q.lang.Name() == language {
-		q.write(statement)
-	}
-}
-
-/*
-	Main is the entry point of the program, this will be called when the program is executed.
-*/
-func (q Script) Main(f func()) {
-	q.write(q.lang.Main())
-	q.depth++
-	f()
-	q.depth--
-	q.write(q.lang.EndMain())
-}
+//Script is a script.
+type Script func(Ctx)

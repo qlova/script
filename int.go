@@ -6,8 +6,11 @@ type Int struct {
 }
 
 //Int returns a new Int from a Go int.
-func (q Ctx) Int(literal int) Int {
-	return Int{q.Literal(literal)}
+func (q Ctx) Int(literal ...int) Int {
+	if len(literal) > 0 {
+		return Int{q.Literal(literal[0])}
+	}
+	return Int{q.Literal(0)}
 }
 
 //Set sets the integer.
@@ -18,6 +21,18 @@ func (a Int) Set(b Int) {
 //Setc sets the integer.
 func (a Int) SetL(b int) {
 	a.Ctx.Set(a, a.Ctx.Int(b))
+}
+
+func (a Int) Equals(b Int) Bool {
+	return a.Ctx.Language.Same(a, b)
+}
+
+func (a Int) Plus(b Int) Int {
+	return a.Ctx.Language.Plus(a, b)
+}
+
+func (a Int) Return(result Int) {
+	result.Ctx.Return(result)
 }
 
 //IntList is an array of ints.
@@ -94,12 +109,4 @@ func (q Ctx) IntTableL(elements map[string]int) IntTable {
 	var table = IntTable{L: values}
 	q.Make(&table)
 	return table
-}
-
-func (a Int) Plus(b Int) Int {
-	return a.Ctx.Language.Plus(a, b)
-}
-
-func (a Int) Return(result Int) {
-	result.Ctx.Return(result)
 }

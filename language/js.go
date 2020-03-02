@@ -10,50 +10,36 @@ import (
 	"github.com/qlova/script"
 )
 
-//Go returns a script formatted as Go source code.
-func Go(f func(q script.Ctx)) []byte {
+//Javascript returns a script formatted as Javascript source code.
+func Javascript(f func(q script.Ctx)) []byte {
 	var q = script.NewCtx()
-	var language = new(golang)
+	var language = new(javascript)
 	language.imports = make(map[string]bool)
-	language.neck.WriteString("package main\n\n")
 	q.Language = language
 	f(q)
-	language.neck.WriteString("\n")
 	return append(language.neck.Bytes(), language.Bytes()...)
 }
 
-type golang struct {
+type javascript struct {
 	tabs int
 	bytes.Buffer
 	neck    bytes.Buffer
 	imports map[string]bool
 }
 
-func (out *golang) Import(pkg string) {
-	if _, ok := out.imports[pkg]; ok {
-		return
-	}
-	fmt.Fprintf(&out.neck, "import \"%v\"\n", pkg)
-	out.imports[pkg] = true
-}
-
-func (out *golang) indent() {
+func (out *javascript) indent() {
 	fmt.Fprint(out, strings.Repeat("\t", out.tabs))
 }
 
-func (out *golang) Main(f func()) {
-	fmt.Fprintln(out, "func main() {")
-	out.tabs++
+func (out *javascript) Main(f func()) {
 	f()
-	out.tabs--
-	fmt.Fprintln(out, "}")
 }
 
-func (out *golang) Raw(value script.Value) string {
+func (out *javascript) Raw(value script.Value) string {
 	return out.valueOf(value)
 }
 
-func (out *golang) valueOf(value script.Value) string {
+func (out *javascript) valueOf(value script.Value) string {
 	switch runtime := value.T().Get().(type) {
 	case string:
 		return strconv.Quote(runtime)
@@ -72,7 +58,7 @@ func (out *golang) valueOf(value script.Value) string {
 	}
 }
 
-func (out *golang) typeOf(value script.Value) string {
+func (out *javascript) typeOf(value script.Value) string {
 	if value == nil {
 		return ""
 	}
@@ -88,52 +74,52 @@ func (out *golang) typeOf(value script.Value) string {
 	}
 }
 
-func (out *golang) Set(a, b script.Value) {
+func (out *javascript) Set(a, b script.Value) {
 	out.indent()
-	fmt.Fprintf(out, "%v = %v\n", out.valueOf(a), out.valueOf(b))
+	fmt.Fprintf(out, "%v = %v;\n", out.valueOf(a), out.valueOf(b))
 }
 
-func (out *golang) Field(structure script.Value, name string) script.Result {
+func (out *javascript) Field(structure script.Value, name string) script.Result {
 	f := func() interface{} {
 		return expression(fmt.Sprintf("%v.%v", out.valueOf(structure), name))
 	}
 	return &f
 }
 
-func (out *golang) Index(a script.Value, b script.Int) script.Result {
+func (out *javascript) Index(a script.Value, b script.Int) script.Result {
 	f := func() interface{} {
 		return expression(fmt.Sprintf("%v[%v]", out.valueOf(a), out.valueOf(b)))
 	}
 	return &f
 }
 
-func (out *golang) Mutate(a script.Value, b script.Int, c script.Value) {
+func (out *javascript) Mutate(a script.Value, b script.Int, c script.Value) {
 	out.indent()
-	fmt.Fprintf(out, "%v[%v] = %v\n", out.valueOf(a), out.valueOf(b), out.valueOf(c))
+	fmt.Fprintf(out, "%v[%v] = %v;\n", out.valueOf(a), out.valueOf(b), out.valueOf(c))
 }
 
-func (out *golang) Lookup(a script.Value, b script.String) script.Result {
+func (out *javascript) Lookup(a script.Value, b script.String) script.Result {
 	f := func() interface{} {
 		return expression(fmt.Sprintf("%v[%v]", out.valueOf(a), out.valueOf(b)))
 	}
 	return &f
 }
 
-func (out *golang) Insert(a script.Value, b script.String, c script.Value) {
+func (out *javascript) Insert(a script.Value, b script.String, c script.Value) {
 	out.indent()
-	fmt.Fprintf(out, "%v[%v] = %v\n", out.valueOf(a), out.valueOf(b), out.valueOf(c))
+	fmt.Fprintf(out, "%v[%v] = %v;\n", out.valueOf(a), out.valueOf(b), out.valueOf(c))
 }
 
-func (out *golang) DefineVariable(name string, value script.Value) script.Result {
+func (out *javascript) DefineVariable(name string, value script.Value) script.Result {
 	out.indent()
-	fmt.Fprintf(out, "var %v = %v\n", name, out.valueOf(value))
+	fmt.Fprintf(out, "let %v = %v;\n", name, out.valueOf(value))
 	f := func() interface{} {
 		return expression(name)
 	}
 	return &f
 }
 
-func (out *golang) DefineStruct(def script.Struct) {
+func (out *javascript) DefineStruct(def script.Struct) {
 	out.indent()
 	fmt.Fprintf(out, "type %v struct {\n", def.Name)
 	out.tabs++
@@ -160,16 +146,16 @@ func (out *golang) DefineStruct(def script.Struct) {
 	}
 }
 
-func (out *golang) Argument(name string, nth int) script.Result {
+func (out *javascript) Argument(name string, nth int) script.Result {
 	f := func() interface{} {
 		return expression(name)
 	}
 	return &f
 }
 
-func (out *golang) If(first script.If, chain []script.If, last func()) {
+func (out *javascript) If(first script.If, chain []script.If, last func()) {
 	out.indent()
-	fmt.Fprintf(out, "if %v {\n", out.valueOf(first.Condition))
+	fmt.Fprintf(out, "if (%v) {\n", out.valueOf(first.Condition))
 	out.tabs++
 	first.Block()
 	out.tabs--
@@ -177,7 +163,7 @@ func (out *golang) If(first script.If, chain []script.If, last func()) {
 	fmt.Fprintf(out, "}")
 	if len(chain) > 0 {
 		for _, link := range chain {
-			fmt.Fprintf(out, " else if %v {\n", out.valueOf(link.Condition))
+			fmt.Fprintf(out, " else if (%v) {\n", out.valueOf(link.Condition))
 			out.tabs++
 			link.Block()
 			out.tabs--
@@ -195,7 +181,7 @@ func (out *golang) If(first script.If, chain []script.If, last func()) {
 	}
 }
 
-func (out *golang) For(set script.Int,
+func (out *javascript) For(set script.Int,
 	condition script.ForLoopCondition,
 	action script.ForLoopAction,
 	f func(script.Int)) {
@@ -205,7 +191,7 @@ func (out *golang) For(set script.Int,
 	if action.Operator != script.Plus1 && action.Operator != script.Minus1 {
 		last = out.valueOf(action.Subject)
 	}
-	fmt.Fprintf(out, "for i := %v; i %v %v; i %v %v {\n",
+	fmt.Fprintf(out, "for (let i = %v; i %v %v; i %v %v) {\n",
 		out.valueOf(set),
 		condition.Operator,
 		out.valueOf(condition.Subject),
@@ -219,9 +205,9 @@ func (out *golang) For(set script.Int,
 	fmt.Fprintln(out, "}")
 }
 
-func (out *golang) While(condition script.Bool, f func()) {
+func (out *javascript) While(condition script.Bool, f func()) {
 	out.indent()
-	fmt.Fprintf(out, "for %v {\n", out.valueOf(condition))
+	fmt.Fprintf(out, "while (%v) {\n", out.valueOf(condition))
 	out.tabs++
 	f()
 	out.tabs--
@@ -229,9 +215,9 @@ func (out *golang) While(condition script.Bool, f func()) {
 	fmt.Fprintln(out, "}")
 }
 
-func (out *golang) Loop(f func()) {
+func (out *javascript) Loop(f func()) {
 	out.indent()
-	fmt.Fprint(out, "for {\n")
+	fmt.Fprint(out, "while true {\n")
 	out.tabs++
 	f()
 	out.tabs--
@@ -239,15 +225,14 @@ func (out *golang) Loop(f func()) {
 	fmt.Fprintln(out, "}")
 }
 
-func (out *golang) Break() {
+func (out *javascript) Break() {
 	out.indent()
-	fmt.Fprint(out, "break\n")
+	fmt.Fprint(out, "break;\n")
 }
 
-func (out *golang) Print(values script.Values) {
+func (out *javascript) Print(values script.Values) {
 	out.indent()
-	out.Import("fmt")
-	fmt.Fprint(out, "fmt.Println(")
+	fmt.Fprint(out, "console.log(")
 	if len(values) > 0 {
 		fmt.Fprint(out, out.valueOf(values[0]))
 		for _, value := range values[1:] {
@@ -257,7 +242,7 @@ func (out *golang) Print(values script.Values) {
 	fmt.Fprintln(out, ")")
 }
 
-func (out *golang) DefineFunction(function script.Function) {
+func (out *javascript) DefineFunction(function script.Function) {
 
 	var name = function.Name
 	var args = function.Args
@@ -265,7 +250,7 @@ func (out *golang) DefineFunction(function script.Function) {
 	var f = function.Block
 
 	out.indent()
-	fmt.Fprintf(out, "func %v(", name)
+	fmt.Fprintf(out, "function %v(", name)
 	if len(args) > 0 {
 		fmt.Fprintf(out, "%v %v", args[0].Name, out.typeOf(args[0].Value))
 		for _, arg := range args[1:] {
@@ -279,7 +264,7 @@ func (out *golang) DefineFunction(function script.Function) {
 	fmt.Fprint(out, "}\n\n")
 }
 
-func (out *golang) CallFunction(name string, args []script.Value) script.Result {
+func (out *javascript) CallFunction(name string, args []script.Value) script.Result {
 	var call = name + "("
 	if len(args) > 0 {
 		call += out.valueOf(args[0])
@@ -295,7 +280,7 @@ func (out *golang) CallFunction(name string, args []script.Value) script.Result 
 	return &f
 }
 
-func (out *golang) RunFunction(name string, args []script.Value) {
+func (out *javascript) RunFunction(name string, args []script.Value) {
 	out.indent()
 	fmt.Fprintf(out, "%v(", name)
 	if len(args) > 0 {
@@ -304,10 +289,10 @@ func (out *golang) RunFunction(name string, args []script.Value) {
 			fmt.Fprintf(out, ",%v", out.valueOf(arg))
 		}
 	}
-	fmt.Fprint(out, ")")
+	fmt.Fprint(out, ");")
 }
 
-func (out *golang) CallMethod(structure script.Value, name string, args []script.Value) script.Result {
+func (out *javascript) CallMethod(structure script.Value, name string, args []script.Value) script.Result {
 	var call = fmt.Sprintf("%v.%v(", out.valueOf(structure), name)
 	if len(args) > 0 {
 		call += out.valueOf(args[0])
@@ -323,7 +308,7 @@ func (out *golang) CallMethod(structure script.Value, name string, args []script
 	return &f
 }
 
-func (out *golang) RunMethod(structure script.Value, name string, args []script.Value) {
+func (out *javascript) RunMethod(structure script.Value, name string, args []script.Value) {
 	out.indent()
 	fmt.Fprintf(out, "%v.%v(", out.valueOf(structure), name)
 	if len(args) > 0 {
@@ -332,34 +317,38 @@ func (out *golang) RunMethod(structure script.Value, name string, args []script.
 			fmt.Fprintf(out, ",%v", out.valueOf(arg))
 		}
 	}
-	fmt.Fprint(out, ")")
+	fmt.Fprint(out, ");")
 }
 
-func (out *golang) Return(v script.Value) {
+func (out *javascript) Return(v script.Value) {
 	out.indent()
-	fmt.Fprintf(out, "return %v\n", out.valueOf(v))
+	if v == nil {
+		fmt.Fprint(out, "return;\n")
+		return
+	}
+	fmt.Fprintf(out, "return %v;\n", out.valueOf(v))
 }
 
-func (out *golang) Plus(a, b script.Int) script.Int {
+func (out *javascript) Plus(a, b script.Int) script.Int {
 	return script.Int{
 		Type: Expression(a.Ctx, fmt.Sprintf("(%v + %v)", out.valueOf(a), out.valueOf(b))),
 	}
 }
 
-func (out *golang) Not(b script.Bool) script.Bool {
+func (out *javascript) Not(b script.Bool) script.Bool {
 	return script.Bool{
 		Type: Expression(b.Ctx, fmt.Sprintf("(!%v)", out.valueOf(b))),
 	}
 }
 
-func (out *golang) Same(a, b script.Int) script.Bool {
+func (out *javascript) Same(a, b script.Int) script.Bool {
 	return script.Bool{
-		Type: Expression(b.Ctx, fmt.Sprintf("(%v == %v)", out.valueOf(a), out.valueOf(b))),
+		Type: Expression(b.Ctx, fmt.Sprintf("(%v === %v)", out.valueOf(a), out.valueOf(b))),
 	}
 }
 
-func (out *golang) Join(a, b script.String) script.String {
+func (out *javascript) Join(a, b script.String) script.String {
 	return script.String{
-		Type: Expression(b.Ctx, fmt.Sprintf("(%v + %v)", out.valueOf(a), out.valueOf(b))),
+		Type: Expression(b.Ctx, fmt.Sprintf("(%v +%v)", out.valueOf(a), out.valueOf(b))),
 	}
 }

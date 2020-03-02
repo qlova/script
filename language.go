@@ -1,9 +1,14 @@
 package script
 
+import "io"
+
 type Result *func() interface{}
 
 //Language is a script language implementation.
 type Language interface {
+	io.Writer
+	Raw(Value) string
+
 	Main(func())
 	Print(Values)
 	If(If, []If, func())
@@ -45,4 +50,8 @@ type Language interface {
 	Return(Value)
 
 	Plus(Int, Int) Int
+	Same(Int, Int) Bool
+	Not(Bool) Bool
+
+	Join(String, String) String
 }

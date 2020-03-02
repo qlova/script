@@ -19,6 +19,10 @@ func NewType(q Ctx, runtime func() interface{}) Type {
 	}
 }
 
+func (T Type) ValueFromCtx(AnyCtx) Value {
+	return T
+}
+
 func (T Type) Get() interface{} {
 	return (*T.Runtime)()
 }

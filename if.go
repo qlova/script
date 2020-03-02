@@ -5,10 +5,10 @@ type If struct {
 	Block     func()
 }
 
-func (q Ctx) If(condition Bool, f func()) *ElseIfChain {
+func (q Ctx) If(condition AnyBool, f func()) *ElseIfChain {
 	var chain ElseIfChain
 	chain.q = q
-	chain.If.Condition = condition
+	chain.If.Condition = condition.BoolFromCtx(q)
 	chain.If.Block = f
 	return &chain
 }
@@ -52,5 +52,6 @@ func (chain *ElseIfChain) Else(f func()) ElseIfEnder {
 }
 
 func (chain *ElseIfChain) End() {
-
+	var q = chain.q
+	q.Language.If(chain.If, chain.Chain, nil)
 }

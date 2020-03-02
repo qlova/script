@@ -1,6 +1,10 @@
 package runtime
 
-import "github.com/qlova/script"
+import (
+	"fmt"
+
+	"github.com/qlova/script"
+)
 
 //Runtime implements the script.Language interface.
 //Providing a way to execute scripts at runtime.
@@ -19,6 +23,10 @@ type Runtime struct {
 
 	//The returning value.
 	returning, returned interface{}
+}
+
+func (runtime *Runtime) Raw(value script.Value) string {
+	return fmt.Sprint((*value.T().Runtime)())
 }
 
 //Main function.
@@ -40,6 +48,11 @@ func (runtime *Runtime) compile(function func(), parent bool) *Block {
 	runtime.Current = backup
 
 	return block
+}
+
+//Not implements implements script.Language.Not
+func (runtime *Runtime) Write([]byte) (int, error) {
+	return 0, nil
 }
 
 //Execute compiles and executes a script.

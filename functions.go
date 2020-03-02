@@ -112,6 +112,10 @@ func (q Ctx) DefineFunc(function interface{}, strings ...string) {
 		}))
 }
 
-func (q Ctx) Return(v Value) {
-	q.Language.Return(v)
+func (q Ctx) Return(v ...Value) {
+	if len(v) == 0 {
+		q.Language.Return(nil)
+		return
+	}
+	q.Language.Return(v[0])
 }
